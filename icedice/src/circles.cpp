@@ -1,5 +1,5 @@
 #include "circles.h"
-#include "opencv2/imgproc/imgproc.hpp"
+#include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
 
 #include "debug.h"
@@ -36,14 +36,17 @@ vector<Vec3f> findCircles(Mat src_gray, Mat *view, double maxMeanSqrDist)
 	vector<vector<Point> > contours;
 	vector<Vec4i> hierarchy;
 
-	findContours( *view, contours, hierarchy, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE );
+	findContours( *view, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
 	*view = Mat::zeros(src_gray.rows, src_gray.cols, CV_8UC3);
 	
 	vector<Vec3f> circles;
-	for(int idx=0, id0=0 ; idx >= 0; idx = hierarchy[idx][0] )
+	
+	for(int idx=hierarchy[0][0], id0=0 ; idx >= 0; id0=idx, idx = hierarchy[idx][0] )
 	{
 		Point center(0,0);
 		int count = 0;
+		ERR("idx: %d\n", idx);
+		Scalar c = Scalar(15*id0,255 - 15*id0,0);
 		for(int i=id0 ; i< idx ; i++)
 		{
 			vector<Point> cont = contours[i];
@@ -52,10 +55,14 @@ vector<Vec3f> findCircles(Mat src_gray, Mat *view, double maxMeanSqrDist)
 			{
 				Point p = cont[j];
 				center += p;
+				rectangle(*view, p, p, c);
 			}
+			
 		}
 		center.x = center.x / count;
 		center.y = center.y / count;
+		
+		circle(*view, center, 3, c);
 		
 		double radius = 0;
 		for(int i=id0 ; i<idx ; i++)
