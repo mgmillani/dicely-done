@@ -57,7 +57,7 @@ vector<Vec3f> findCircles(Mat src_gray, Mat *view, double maxMeanSqrDist)
 			vector<Point> cont = contours[i];
 			count += cont.size();
 			Point p0 = cont[0];
-			for(int j=0 ; j<cont.size() ; j++)
+			for(unsigned int j=0 ; j<cont.size() ; j++)
 			{
 				Point p = cont[j];
 				center += p;
@@ -76,7 +76,7 @@ vector<Vec3f> findCircles(Mat src_gray, Mat *view, double maxMeanSqrDist)
 		for(int i=id0 ; i<id1 ; i++)
 		{
 			vector<Point> cont = contours[i];
-			for(int j=0 ; j<cont.size() ; j++)
+			for(unsigned int j=0 ; j<cont.size() ; j++)
 			{
 				Point p = cont[j];
 				Point diff = center - p;
@@ -89,7 +89,7 @@ vector<Vec3f> findCircles(Mat src_gray, Mat *view, double maxMeanSqrDist)
 		for(int i=id0 ; i<id1 ; i++)
 		{
 			vector<Point> cont = contours[i];
-			for(int j=0 ; j<cont.size() ; j++)
+			for(unsigned int j=0 ; j<cont.size() ; j++)
 			{
 				Point p = cont[j];
 				Point diff = center - p;
