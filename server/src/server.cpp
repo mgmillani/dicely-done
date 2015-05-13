@@ -3,6 +3,10 @@
 #include <iostream>
 #include <stdio.h>
 
+#include "icedice.h"
+#include "circles.h"
+#include "squares.h"
+
 #include "debug.h"
 
 using namespace cv;
@@ -26,109 +30,6 @@ typedef struct
 
 void CircleMethod( int t, void* info );
 
-vector<Vec3f> findCircles(Mat src_gray, Mat *view, double param1, double param2)
-{
-	//TRACE("%lf %lf", param1, param2);
-	/// Reduce the noise so we avoid false circle detection
-  GaussianBlur( src_gray, *view, Size(9, 9), 2, 2 );
-	cv::Canny(*view,*view, 20, 140, 3);
-
-	cv::threshold(*view, *view, 200, 255 ,0);
-	//*view = src_gray;
-  vector<Vec3f> circles;
-
-  /// Apply the Hough Transform to find the circles
-  HoughCircles( *view, circles, CV_HOUGH_GRADIENT, 1, view->rows/50, param1, param2, 0, view->rows/15 );
-  
-	return circles;
-}
-
-vector<Vec3f> findCircles2(Mat src_gray, Mat *view, double maxMeanSqrDist)
-{
-	GaussianBlur( src_gray, *view, Size(9, 9), 2, 2 );
-	cv::Canny(*view,*view, 20, 140, 3);
-	int dilation_size = 1;
-	Mat element = getStructuringElement( MORPH_RECT,
-                                       Size( 2*dilation_size + 1, 2*dilation_size+1 ),
-                                       Point( dilation_size, dilation_size ) );
-	dilate(*view, *view, element);
-	
-	vector<vector<Point> > contours;
-	vector<Vec4i> hierarchy;
-
-	findContours( *view, contours, hierarchy, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE );
-	*view = Mat::zeros(src_gray.rows, src_gray.cols, CV_8UC3);
-	int idx = 0;
-	for( ; idx >= 0; idx = hierarchy[idx][0] )
-	{
-		Scalar color( rand()&255, rand()&255, rand()&255 );
-		drawContours( *view, contours, idx, color, CV_FILLED, 8, hierarchy );
-	}
-	
-	vector<Vec3f> circles;
-	//for(int idx=0 ; idx >= 0; idx = hierarchy[idx][0] )
-	for(int i=0 ; i<contours.size() ; i++)
-	{
-		Point center(0,0);
-		vector<Point> cont = contours[i];
-		for(int j=0 ; j<cont.size() ; j++)
-		{
-			Point p = cont[j];
-			center += p;
-		}
-		center.x = center.x / cont.size();
-		center.y = center.y / cont.size();
-		
-		double radius = 0;
-		for(int j=0 ; j<cont.size() ; j++)
-		{
-			Point p = cont[j];
-			Point diff = center - p;
-			radius += diff.x * diff.x + diff.y * diff.y;
-		}
-		radius = sqrt(radius / cont.size());
-		
-		double sqrSdist = 0;
-		for(int j=0 ; j<cont.size() ; j++)
-		{
-			Point p = cont[j];
-			Point diff = center - p;
-			double dist = sqrt(diff.x * diff.x + diff.y * diff.y) - radius;
-			sqrSdist += dist * dist;
-		}
-		sqrSdist = sqrSdist / cont.size();
-		//ERR("sqrSdist: %lf\n", sqrSdist);
-		if(sqrSdist < maxMeanSqrDist)
-		{
-			Vec3f circ;
-			circ[0] = center.x;
-			circ[1] = center.y;
-			circ[2] = radius;
-			circles.push_back(circ);
-		}
-	}
-	
-	return circles;
-	
-}
-
-std::vector<cv::Vec4i> findLines(Mat src_gray, Mat *view)
-{
-	GaussianBlur( src_gray, *view, Size(9, 9), 2, 2 );
-	cv::Canny(*view, *view, 20, 140, 3);
-	//cv::threshold(*view, *view, 220, 255 ,0);
-	
-	int dilation_size = 1;
-	Mat element = getStructuringElement( MORPH_RECT,
-                                       Size( 2*dilation_size + 1, 2*dilation_size+1 ),
-                                       Point( dilation_size, dilation_size ) );
-	dilate(*view, *view, element);
-	
-	std::vector<cv::Vec4i> lines;
-	cv::HoughLinesP(*view, lines, 1, CV_PI/360, 50, 30, 0);
-	
-	return lines;
-}
 
 /** @function main */
 int main(int argc, char** argv)
@@ -151,9 +52,8 @@ int main(int argc, char** argv)
 
   /// Convert it to gray
   cvtColor( src, src_gray, CV_BGR2GRAY );
-
-	//vector<Vec3f> circles = findCircles2(src_gray, &circ_img, cP1, cP2);
-	vector<Vec3f> circles = findCircles2(src_gray, &circ_img, cMaxMeanSqr);
+  
+	vector<Vec3f> circles = findCircles(src_gray, &circ_img, cMaxMeanSqr);
 	std::vector<cv::Vec4i> lines = findLines(src_gray, &line_img);
 	
 	//cvtColor(circ_img, circ_img, CV_GRAY2BGR);
@@ -207,7 +107,7 @@ void CircleMethod( int t, void* infoP )
 	if ( t==0)
 		t = 1;
 	
-	vector<Vec3f> circles = findCircles2(info->src_gray, &info->view, t);
+	vector<Vec3f> circles = findCircles(info->src_gray, &info->view, t);
 	
 	//cvtColor(info->view, info->view, CV_GRAY2BGR);
 	
