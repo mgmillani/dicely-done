@@ -1,4 +1,6 @@
-CMake*
+CMakeCache.txt
+CMakeFiles
 Makefile
 cmake*
-circles
+server-main
+*.a
