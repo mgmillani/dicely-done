@@ -36,36 +36,44 @@ vector<Vec3f> findCircles(Mat src_gray, Mat *view, double maxMeanSqrDist)
 	vector<vector<Point> > contours;
 	vector<Vec4i> hierarchy;
 
-	findContours( *view, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
+	findContours( *view, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE );
 	*view = Mat::zeros(src_gray.rows, src_gray.cols, CV_8UC3);
 	
 	vector<Vec3f> circles;
 	
-	for(int idx=hierarchy[0][0], id0=0 ; idx >= 0; id0=idx, idx = hierarchy[idx][0] )
+	for(int id0=0, k=0 ; id0 >= 0; id0 = hierarchy[id0][0], k++ )
 	{
+		//ERR("hierarchy: %d %d %d %d\n", hierarchy[id0][0], hierarchy[id0][1], hierarchy[id0][2], hierarchy[id0][3]);
+		// o contorno atual vai de contours[id0] até contours[id1];
+		int id1 = hierarchy[id0][0];
+		if(id1 < 0)
+			id1 = contours.size();
+		//ERR("contour: %d -> %d\n", id0,id1);
 		Point center(0,0);
 		int count = 0;
-		ERR("idx: %d\n", idx);
-		Scalar c = Scalar(15*id0,255 - 15*id0,0);
-		for(int i=id0 ; i< idx ; i++)
+		Scalar c = Scalar(22*k,255 - 15*k,0);
+		for(int i=id0 ; i<id1 ; i++)
 		{
 			vector<Point> cont = contours[i];
 			count += cont.size();
+			Point p0 = cont[0];
 			for(int j=0 ; j<cont.size() ; j++)
 			{
 				Point p = cont[j];
 				center += p;
 				rectangle(*view, p, p, c);
+				//line(*view, p0, p, c);
+				p0 = p;
 			}
 			
 		}
 		center.x = center.x / count;
 		center.y = center.y / count;
 		
-		circle(*view, center, 3, c);
+		//circle(*view, center, 3, c);
 		
 		double radius = 0;
-		for(int i=id0 ; i<idx ; i++)
+		for(int i=id0 ; i<id1 ; i++)
 		{
 			vector<Point> cont = contours[i];
 			for(int j=0 ; j<cont.size() ; j++)
@@ -78,7 +86,7 @@ vector<Vec3f> findCircles(Mat src_gray, Mat *view, double maxMeanSqrDist)
 		radius = sqrt(radius / count);
 		
 		double sqrSdist = 0;
-		for(int i=id0 ; i<idx ; i++)
+		for(int i=id0 ; i<id1 ; i++)
 		{
 			vector<Point> cont = contours[i];
 			for(int j=0 ; j<cont.size() ; j++)
@@ -88,16 +96,17 @@ vector<Vec3f> findCircles(Mat src_gray, Mat *view, double maxMeanSqrDist)
 				double dist = sqrt(diff.x * diff.x + diff.y * diff.y) - radius;
 				sqrSdist += dist * dist;
 			}
-			sqrSdist = sqrSdist / cont.size();
-			//ERR("sqrSdist: %lf\n", sqrSdist);
-			if(sqrSdist < maxMeanSqrDist)
-			{
-				Vec3f circ;
-				circ[0] = center.x;
-				circ[1] = center.y;
-				circ[2] = radius;
-				circles.push_back(circ);
-			}
+		}
+		sqrSdist = sqrSdist / count;
+			
+		if(sqrSdist < maxMeanSqrDist)
+		{
+			//ERR("sqrSdist: %lf < %lf\n", sqrSdist, maxMeanSqrDist);
+			Vec3f circ;
+			circ[0] = center.x;
+			circ[1] = center.y;
+			circ[2] = radius;
+			circles.push_back(circ);
 		}
 	}
 	
