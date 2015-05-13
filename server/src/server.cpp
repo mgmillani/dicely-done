@@ -20,8 +20,10 @@ int const max_BINARY_value = 255;
 int cP1 = 100;
 int cP2 = 15;
 int cMaxMeanSqr = 15;
+int sMaxMeanSqr = 15;
 
 char circWindow[] = "Circle";
+char sqrWindow[] = "Square";
 
 typedef struct
 {
@@ -29,6 +31,7 @@ typedef struct
 }t_info;
 
 void CircleMethod( int t, void* info );
+void SquareMethod(int t, void* infoP);
 
 
 /** @function main */
@@ -42,7 +45,8 @@ int main(int argc, char** argv)
 	}
 
   Mat src, src_gray, dst, circ_img, line_img;
-  t_info info;
+  t_info infoC;
+  t_info infoS;
 
   /// Read the image
   src = imread( argv[1], 1 );
@@ -86,14 +90,17 @@ int main(int argc, char** argv)
   namedWindow( circWindow, CV_WINDOW_AUTOSIZE );
   //imshow( "Hough Circle Transform Image", src );
   imshow( circWindow, circ_img );
+  namedWindow( sqrWindow, CV_WINDOW_AUTOSIZE );
+  imshow( sqrWindow, line_img );
   //imshow( "Hough Circle Transform Lines", line_img );
 
 
-	info.src = src;
-	info.src_gray = src_gray;
+	infoC.src = infoS.src =  src;
+	infoC.src_gray = infoC.src_gray = src_gray;
 
 	char* trackbar_label = "Treshold 1:";
-  createTrackbar( trackbar_label, circWindow, &cMaxMeanSqr, 500, CircleMethod, &info );
+  createTrackbar( trackbar_label, circWindow, &cMaxMeanSqr, 500, CircleMethod, &infoC );
+  createTrackbar( trackbar_label, sqrWindow, &sMaxMeanSqr, 500, SquareMethod, &infoS );
 
   while((char)waitKey(0) != 'q')
 		;
@@ -125,4 +132,20 @@ void CircleMethod( int t, void* infoP )
 	namedWindow( circWindow, CV_WINDOW_AUTOSIZE );
 	imshow( circWindow, info->view );
 	
+}
+
+void SquareMethod(int t, void* infoP)
+{
+	t_info *info = (t_info *)infoP;
+	std::vector<cv::Vec4i> lines = findLines(info->src_gray, &info->view);
+	
+	for( size_t i=0 ; i<lines.size() ; i++)
+	{
+		cv::Vec4i v = lines[i];
+		cv::line(info->view, cv::Point(v[0], v[1]), cv::Point(v[2], v[3]), CV_RGB(0,0,255));
+		cv::line(info->view, cv::Point(v[0], v[1]), cv::Point(v[2], v[3]), CV_RGB(0,0,255));
+	}
+	
+	namedWindow( circWindow, CV_WINDOW_AUTOSIZE );
+	imshow( circWindow, info->view );
 }
