@@ -5,6 +5,6 @@
 
 using namespace cv;
 
-vector<Vec3f> findCircles(Mat src_gray, Mat *view, double maxMeanSqrDist);
+vector<Vec3f> findCircles(Mat canny, double maxMeanSqrDist);
 
 #endif
