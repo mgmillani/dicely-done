@@ -1,4 +1,4 @@
-#include "circles.h"
+#include "circles.hpp"
 #include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
 
@@ -6,49 +6,27 @@
 
 using namespace cv;
 
-vector<Vec3f> findCirclesOLD(Mat src_gray, Mat *view, double param1, double param2)
+vector<Vec3f> findCircles(Mat canny, double maxMeanSqrDist)
 {
-	//TRACE("%lf %lf", param1, param2);
-	/// Reduce the noise so we avoid false circle detection
-  GaussianBlur( src_gray, *view, Size(9, 9), 2, 2 );
-	cv::Canny(*view,*view, 20, 140, 3);
-
-	cv::threshold(*view, *view, 200, 255 ,0);
-	//*view = src_gray;
-  vector<Vec3f> circles;
-
-  /// Apply the Hough Transform to find the circles
-  HoughCircles( *view, circles, CV_HOUGH_GRADIENT, 1, view->rows/50, param1, param2, 0, view->rows/15 );
-  
-	return circles;
-}
-
-vector<Vec3f> findCircles(Mat src_gray, Mat *view, double maxMeanSqrDist)
-{
-	GaussianBlur( src_gray, *view, Size(9, 9), 2, 2 );
-	cv::Canny(*view,*view, 20, 140, 3);
+	vector<vector<Point> > contours;
+	vector<Vec4i> hierarchy;
 	int dilation_size = 1;
+	Mat temp;
 	Mat element = getStructuringElement( MORPH_RECT,
                                        Size( 2*dilation_size + 1, 2*dilation_size+1 ),
                                        Point( dilation_size, dilation_size ) );
-	dilate(*view, *view, element);
-	
-	vector<vector<Point> > contours;
-	vector<Vec4i> hierarchy;
+	dilate(canny, temp, element);
 
-	findContours( *view, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE );
-	*view = Mat::zeros(src_gray.rows, src_gray.cols, CV_8UC3);
+	findContours( temp, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE );
 	
 	vector<Vec3f> circles;
 	
 	for(int id0=0, k=0 ; id0 >= 0; id0 = hierarchy[id0][0], k++ )
 	{
-		//ERR("hierarchy: %d %d %d %d\n", hierarchy[id0][0], hierarchy[id0][1], hierarchy[id0][2], hierarchy[id0][3]);
-		// o contorno atual vai de contours[id0] até contours[id1];
+		// current contour goes from contours[id0] until contours[id1];
 		int id1 = hierarchy[id0][0];
 		if(id1 < 0)
 			id1 = contours.size();
-		//ERR("contour: %d -> %d\n", id0,id1);
 		Point center(0,0);
 		int count = 0;
 		Scalar c = Scalar(22*k,255 - 15*k,0);
@@ -61,16 +39,11 @@ vector<Vec3f> findCircles(Mat src_gray, Mat *view, double maxMeanSqrDist)
 			{
 				Point p = cont[j];
 				center += p;
-				rectangle(*view, p, p, c);
-				//line(*view, p0, p, c);
 				p0 = p;
-			}
-			
+			}			
 		}
 		center.x = center.x / count;
 		center.y = center.y / count;
-		
-		//circle(*view, center, 3, c);
 		
 		double radius = 0;
 		for(int i=id0 ; i<id1 ; i++)
@@ -101,7 +74,6 @@ vector<Vec3f> findCircles(Mat src_gray, Mat *view, double maxMeanSqrDist)
 			
 		if(sqrSdist < maxMeanSqrDist)
 		{
-			//ERR("sqrSdist: %lf < %lf\n", sqrSdist, maxMeanSqrDist);
 			Vec3f circ;
 			circ[0] = center.x;
 			circ[1] = center.y;
