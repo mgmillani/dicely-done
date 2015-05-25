@@ -1,8 +1,6 @@
-#include "circles.hpp"
 #include <opencv2/imgproc/imgproc.hpp>
-#include <iostream>
 
-#include "debug.h"
+#include "shapes.hpp"
 
 using namespace cv;
 
@@ -84,4 +82,19 @@ vector<Vec3f> findCircles(Mat canny, double maxMeanSqrDist)
 	
 	return circles;
 	
+}
+
+std::vector<Vec4i> findLines(Mat canny, int t)
+{	
+	int dilation_size = 1;
+	Mat temp;
+	Mat element = getStructuringElement( MORPH_RECT,
+                                       Size( 2*dilation_size + 1, 2*dilation_size+1 ),
+                                       Point( dilation_size, dilation_size ) );
+	dilate(canny, temp, element);
+	
+	std::vector<cv::Vec4i> lines;
+	cv::HoughLinesP(temp, lines, 1, CV_PI/180, 50, 50, 2);
+	
+	return lines;
 }
