@@ -4,9 +4,6 @@
 #include <stdio.h>
 
 #include "icedice.hpp"
-#include "circles.hpp"
-#include "squares.hpp"
-#include "faces.hpp"
 
 #include "debug.h"
 
@@ -79,50 +76,4 @@ int main(int argc, char** argv)
   while((char)waitKey(0) != 'q')
 		;
   return 0;
-}
-
-/** @function CircleMethod */
-void CircleMethod( int t, void* infoP )
-{
-	/*t_info *info = (t_info *)infoP;
-	if ( t==0)
-		t = 1;
-	
-	vector<Vec3f> circles = findCircles(info->src_gray, &info->view, t);
-	
-	//cvtColor(info->view, info->view, CV_GRAY2BGR);
-	
-	/// Draw the circles detected	
-  for( size_t i = 0; i < circles.size(); i++ )
-  {
-		Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-		int radius = cvRound(circles[i][2]);
-		// circle center		
-		circle( info->view, center, 3, Scalar(0,255,0), -1, 8, 0 );
-		// circle outline
-		circle( info->view, center, radius, Scalar(0,0,255), 1, 8, 0 );
-	}
-	
-	namedWindow( circWindow, CV_WINDOW_AUTOSIZE );
-	imshow( circWindow, info->view );*/
-	
-}
-
-void SquareMethod(int t, void* infoP)
-{
-	/*t_info *info = (t_info *)infoP;
-	
-	std::vector<cv::Vec4i> lines = findLines(info->src_gray, t, &info->view);
-	
-	cvtColor( info->view, info->view, CV_GRAY2BGR );
-	
-	for( size_t i=0 ; i<lines.size() ; i++)
-	{
-		cv::Vec4i v = lines[i];
-		cv::line(info->view, cv::Point(v[0], v[1]), cv::Point(v[2], v[3]), CV_RGB(0,0,255));
-		cv::line(info->view, cv::Point(v[0], v[1]), cv::Point(v[2], v[3]), CV_RGB(0,0,255));
-	}
-	
-	namedWindow( sqrWindow, CV_WINDOW_AUTOSIZE );
-	imshow( sqrWindow, info->view );*/
 }
