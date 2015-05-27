@@ -2,6 +2,8 @@
 
 #include "shapes.hpp"
 
+#include "debug.h"
+
 using namespace cv;
 
 vector<Vec3f> findCircles(Mat canny, double maxMeanSqrDist)
@@ -13,18 +15,20 @@ vector<Vec3f> findCircles(Mat canny, double maxMeanSqrDist)
 	Mat element = getStructuringElement( MORPH_RECT,
                                        Size( 2*dilation_size + 1, 2*dilation_size+1 ),
                                        Point( dilation_size, dilation_size ) );
-	dilate(canny, temp, element);
-
+	//dilate(canny, temp, element);
+	temp = canny;
 	findContours( temp, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE );
 	
 	vector<Vec3f> circles;
-	
+	if(hierarchy.size() == 0)
+		return circles;
 	for(int id0=0, k=0 ; id0 >= 0; id0 = hierarchy[id0][0], k++ )
 	{
-		// current contour goes from contours[id0] until contours[id1];
+		// current contour goes from contours[id0] until contours[id1-1];
 		int id1 = hierarchy[id0][0];
 		if(id1 < 0)
 			id1 = contours.size();
+						
 		Point center(0,0);
 		int count = 0;
 		Scalar c = Scalar(22*k,255 - 15*k,0);
@@ -51,10 +55,10 @@ vector<Vec3f> findCircles(Mat canny, double maxMeanSqrDist)
 			{
 				Point p = cont[j];
 				Point diff = center - p;
-				radius += diff.x * diff.x + diff.y * diff.y;
+				radius += sqrt(diff.x * diff.x + diff.y * diff.y);
 			}
 		}
-		radius = sqrt(radius / count);
+		radius = radius / count;
 		
 		double sqrSdist = 0;
 		for(int i=id0 ; i<id1 ; i++)
@@ -65,12 +69,12 @@ vector<Vec3f> findCircles(Mat canny, double maxMeanSqrDist)
 				Point p = cont[j];
 				Point diff = center - p;
 				double dist = sqrt(diff.x * diff.x + diff.y * diff.y) - radius;
-				sqrSdist += dist * dist;
+				sqrSdist += abs(dist); // * dist;
 			}
 		}
 		sqrSdist = sqrSdist / count;
 			
-		if(sqrSdist < maxMeanSqrDist)
+		if(sqrSdist < radius * 0.15 && count > 16)
 		{
 			Vec3f circ;
 			circ[0] = center.x;
@@ -94,7 +98,7 @@ std::vector<Vec4i> findLines(Mat canny, int t)
 	dilate(canny, temp, element);
 	
 	std::vector<cv::Vec4i> lines;
-	cv::HoughLinesP(temp, lines, 1, CV_PI/180, 50, 50, 2);
+	cv::HoughLinesP(temp, lines, 1, CV_PI/180, 85, 10, 1);
 	
 	return lines;
 }
