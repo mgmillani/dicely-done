@@ -1,7 +1,9 @@
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
 #include <iostream>
 #include <stdio.h>
+
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+#include <opencv2/opencv.hpp>
 
 #include "icedice.hpp"
 
@@ -36,44 +38,33 @@ void SquareMethod(int t, void* infoP);
 int main(int argc, char** argv)
 {
 
-	if(argc == 1)
+	VideoCapture cap(1);
+	if(!cap.isOpened())
 	{
-		printf("usage: %s <img>\n", argv[0]);
-		return 1;
+		TRACE("Failed to open camera");
+		return -1;
+	}
+	
+	namedWindow( window, CV_WINDOW_AUTOSIZE );
+	
+	while(1)
+	{
+		Mat frame;
+		cap >> frame;
+		std::vector<t_face> faces = findFaces(&frame);
+		
+		for(size_t i=0 ; i<faces.size() ; i++)
+		{
+			t_face face = faces[i];
+			Point center(face.center[0], face.center[1]);
+			int v = face.value;
+			TRACE("Value:%d\n",v);
+			circle(frame, center, 20, Scalar(255 * (v&1) ,255 * (v&2), 255 * (v&4)), 3, 8, 0);
+		}
+		
+		imshow(window, frame);
+		if((char)waitKey(30) == 'q' ) break;
 	}
 
-  Mat src, src_gray, dst, circ_img, line_img;
-  t_info infoC;
-  t_info infoS;
-
-  /// Read the image
-  src = imread( argv[1], 1 );
-
-  if( !src.data )
-    { return -1; }
-
-  std::vector<t_face> faces = findFaces(&src);
-  for(size_t i=0 ; i<faces.size() ; i++)
-  {
-		t_face face = faces[i];
-		Point center(face.center[0], face.center[1]);
-		int v = face.value;
-		TRACE("Value:%d\n",v);
-		circle(src, center, 20, Scalar(255 * (v&1) ,255 * (v&2), 255 * (v&4)), 1, 8, 0);
-  }
-
-  /// Show your results
-  namedWindow( window, CV_WINDOW_AUTOSIZE );
-  imshow( window, src );
-
-	/*infoC.src = infoS.src =  src;
-	infoC.src_gray = infoS.src_gray = src_gray;
-
-	char* trackbar_label = "Treshold 1:";
-  createTrackbar( trackbar_label, circWindow, &cMaxMeanSqr, 500, CircleMethod, &infoC );
-  createTrackbar( trackbar_label, sqrWindow, &sMaxMeanSqr, 500, SquareMethod, &infoS );
-	*/
-  while((char)waitKey(0) != 'q')
-		;
   return 0;
 }
