@@ -60,7 +60,7 @@ vector<Vec3f> findCircles(Mat canny, double maxMeanSqrDist)
 		}
 		radius = radius / count;
 		
-		double sqrSdist = 0;
+		double avgDist = 0;
 		for(int i=id0 ; i<id1 ; i++)
 		{
 			vector<Point> cont = contours[i];
@@ -69,12 +69,12 @@ vector<Vec3f> findCircles(Mat canny, double maxMeanSqrDist)
 				Point p = cont[j];
 				Point diff = center - p;
 				double dist = sqrt(diff.x * diff.x + diff.y * diff.y) - radius;
-				sqrSdist += abs(dist); // * dist;
+				avgDist += abs(dist); // * dist;
 			}
 		}
-		sqrSdist = sqrSdist / count;
+		avgDist = avgDist / count;
 			
-		if(sqrSdist < radius * 0.15 && count > 16)
+		if(avgDist < radius * 0.3 && count > 12)
 		{
 			Vec3f circ;
 			circ[0] = center.x;
