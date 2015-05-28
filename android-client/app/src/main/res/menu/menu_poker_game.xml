@@ -1,6 +1,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".PokerGame">
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
+
+
+    <!--item android:id="@+id/action_settings" android:title="@string/action_settings"
+        android:orderInCategory="100" app:showAsAction="never" /-->
+
+    <item android:id="@+id/action_test_round_1" app:showAsAction="never"
+        android:title="Test Round 1" />
+    <item android:id="@+id/action_test_waiting_screen" app:showAsAction="never"
+        android:title="Test Waiting Screen" />
+
 </menu>

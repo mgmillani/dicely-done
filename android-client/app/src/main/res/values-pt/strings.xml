@@ -6,5 +6,6 @@
     <string name="chips_player">Suas fichas:</string>
 
     <string name="instruction_wait">Espere a sua vez de jogar.</string>
+    <string name="instruction_throw_dice">Jogue os dados na frente da webcam.</string>
 
 </resources>

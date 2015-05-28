@@ -9,5 +9,6 @@
     <string name="chips_player">Your Chips:</string>
 
     <string name="instruction_wait">Please wait until your turn.</string>
+    <string name="instruction_throw_dice">Please throw your dice in front of the webcam.</string>
 
 </resources>
