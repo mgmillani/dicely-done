@@ -5,4 +5,9 @@
 
     <string name="bet_total">Total Bet:</string>
     <string name="bet_player">Your Bet:</string>
+
+    <string name="chips_player">Your Chips:</string>
+
+    <string name="instruction_wait">Please wait until your turn.</string>
+
 </resources>

@@ -3,9 +3,11 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="bettingchip_size">80dp</dimen>
+    <dimen name="bettingchip_size">63dp</dimen>
 
-    <dimen name="chipsetview_totalval_width">20dp</dimen>
-    <dimen name="chipsetview_spacer_width">10dp</dimen>
+    <dimen name="chipsetview_totalval_width">60dp</dimen>
+    <dimen name="chipsetview_spacer_width">5dp</dimen>
+
+    <dimen name="betview_spacer_width">30dp</dimen>
 
 </resources>

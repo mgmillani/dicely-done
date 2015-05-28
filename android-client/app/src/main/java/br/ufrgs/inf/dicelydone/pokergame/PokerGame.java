@@ -27,7 +27,7 @@ public class PokerGame extends AppCompatActivity {
     /**
      * This argument must contain the added bet of all players.
      */
-    public static final String ARG_OVERALL_BET = "br.ufrgs.inf.dicelydone.OVERALL_BET";
+    public static final String ARG_TOTAL_BET = "br.ufrgs.inf.dicelydone.TOTAL_BET";
 
 
     @Override
