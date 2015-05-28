@@ -1,9 +1,13 @@
 package br.ufrgs.inf.dicelydone.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
+
 /**
  * A set of betting chips.
  */
-public class ChipSet {
+public class ChipSet implements Parcelable {
 
     private int[] mNumChips;
     private int mVal;
@@ -33,16 +37,36 @@ public class ChipSet {
         return mNumChips[type.getIndex()];
     }
 
-    public void addChips(Chip type, int x) {
+    /**
+     * Adds the given number of chips of the given type.
+     *
+     * <p>
+     * If given negative values, may leave a negative number
+     * of chips on the set.
+     */
+    public void addChips(@NonNull Chip type, int x) {
         mNumChips[type.getIndex()] += x;
+        mVal += type.getValue() * x;
     }
 
-    public void addChips5(int x) {
-        mNumChips[1] += x;
-    }
+    /**
+     * Removes the given number of chips of the given type, or
+     * as many as possible.
+     *
+     * <p>
+     * Ensures no more chips are taken as one already has, that
+     * is, the resulting set has no negative number of chips.
+     *
+     * @return The number of chips actually taken.
+     */
+    public int takeChips(@NonNull Chip type, int desired) {
+        int total = mNumChips[type.getIndex()];
+        int taken = (total < desired)? total : desired;
 
-    public void addChips10(int x) {
-        mNumChips[2] += x;
+        mNumChips[type.getIndex()] -= taken;
+        mVal -= type.getValue() * taken;
+
+        return taken;
     }
 
     private void recalculateValue() {
@@ -53,4 +77,29 @@ public class ChipSet {
         }
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mVal);
+        dest.writeIntArray(mNumChips);
+    }
+
+    public static final Parcelable.Creator<ChipSet> CREATE = new Parcelable.Creator<ChipSet>() {
+        @Override
+        public ChipSet createFromParcel(Parcel source) {
+            ChipSet result = new ChipSet();
+            result.mVal = source.readInt();
+            result.mNumChips = source.createIntArray();
+            return result;
+        }
+
+        @Override
+        public ChipSet[] newArray(int size) {
+            return new ChipSet[size];
+        }
+    };
 }
