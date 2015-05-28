@@ -13,9 +13,7 @@ import java.util.Random;
 import br.ufrgs.inf.dicelydone.ChipSetView;
 import br.ufrgs.inf.dicelydone.HandView;
 import br.ufrgs.inf.dicelydone.R;
-import br.ufrgs.inf.dicelydone.model.Chip;
 import br.ufrgs.inf.dicelydone.model.ChipSet;
-import br.ufrgs.inf.dicelydone.model.Die;
 import br.ufrgs.inf.dicelydone.model.Hand;
 
 /**
@@ -59,18 +57,6 @@ public class WaitingScreen extends Fragment {
             mTotalBet = savedInstanceState.getInt(ARG_TOTAL_BET);
             mPlayerBet = savedInstanceState.getParcelable(ARG_PLAYER_BET);
             mPlayerChips = savedInstanceState.getParcelable(ARG_CHIPS);
-        } else {
-            mHand = new Hand();
-            mTotalBet = 0;
-            mPlayerBet = new ChipSet();
-            mPlayerChips = new ChipSet();
-
-            for (Chip c : Chip.values()) {
-                mPlayerChips.addChips(c, 10);
-                Log.v(TAG, "player has " + mPlayerChips.getChips(c) + " chips of value " + c.toString());
-            }
-
-            randomizeHand();
         }
 
     }
@@ -95,8 +81,6 @@ public class WaitingScreen extends Fragment {
         mPlayerBetView = (ChipSetView) result.findViewById(R.id.playerBetView);
         mPlayerChipsView = (ChipSetView) result.findViewById(R.id.playerChipsView);
 
-        updateView();
-
         return result;
     }
 
@@ -115,30 +99,12 @@ public class WaitingScreen extends Fragment {
         updateView();
     }
 
-    private void randomizeHand() {
-        mHand.clear();
-
-        int numDice = 5;//mRand.nextInt(6);
-        for (int i = 0; i < numDice; i++) {
-            mHand.add(Die.byVal(mRand.nextInt(6) + 1));
-        }
-    }
-
     private void updateView() {
         Log.d(TAG, "updating view");
 
-        if (mHandView != null) {
-            mHandView.setHand(mHand);
-        }
-
-        if (mPlayerBetView != null) {
-            mPlayerBetView.setChipSet(mPlayerBet);
-        }
-
-        if (mPlayerChipsView != null) {
-            mPlayerChipsView.setChipSet(mPlayerChips);
-            Log.v(TAG, "updating chips view");
-        }
+        mHandView.setHand(mHand);
+        mPlayerBetView.setChipSet(mPlayerBet);
+        mPlayerChipsView.setChipSet(mPlayerChips);
 
         if (mTotalBetView != null) {
             mTotalBetView.setText(Integer.toString(mTotalBet));

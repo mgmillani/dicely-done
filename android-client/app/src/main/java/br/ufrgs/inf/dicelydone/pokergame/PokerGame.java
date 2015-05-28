@@ -1,13 +1,19 @@
 package br.ufrgs.inf.dicelydone.pokergame;
 
-import android.app.FragmentTransaction;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import br.ufrgs.inf.dicelydone.R;
+import br.ufrgs.inf.dicelydone.model.Chip;
+import br.ufrgs.inf.dicelydone.model.ChipSet;
+import br.ufrgs.inf.dicelydone.model.Die;
 import br.ufrgs.inf.dicelydone.model.Hand;
 
 
@@ -32,10 +38,23 @@ public class PokerGame extends AppCompatActivity {
      */
     public static final String ARG_TOTAL_BET = "br.ufrgs.inf.dicelydone.TOTAL_BET";
 
+
+    private Hand mHand;
+    private int mTotalBet;
+    private ChipSet mPlayerBet;
+    private ChipSet mPlayerChips;
+
+    private int mRound=0;
+
+    private Random mRand;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_poker_game);
+
+        mRand = new Random(System.currentTimeMillis());
+        initGame();
 
         if (findViewById(R.id.pokergame_fragment_container) != null) {
 
@@ -44,11 +63,8 @@ public class PokerGame extends AppCompatActivity {
                 return;
             }
 
-            WaitingScreen firstFragment = new WaitingScreen();
-            firstFragment.setArguments(getIntent().getExtras()); // Intent isn't null since we have no savedInstanceState
-
             getFragmentManager().beginTransaction()
-                    .add(R.id.pokergame_fragment_container, firstFragment).commit();
+                    .add(R.id.pokergame_fragment_container, openWaitingScreen()).commit();
 
         }
     }
@@ -64,39 +80,90 @@ public class PokerGame extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-        case R.id.action_test_round_1: {
-            Round1 fragment = new Round1();
-            fragment.setArguments(null);
-
-            FragmentTransaction tr = getFragmentManager().beginTransaction();
-
-            tr.replace(R.id.pokergame_fragment_container, fragment);
-            tr.addToBackStack(null);
-
-            tr.commit();
-
-            Toast.makeText(this, "Test round 1", Toast.LENGTH_SHORT).show();
+        case R.id.action_test_round_1:
+            replaceFragment(openRound1());
             return true;
-        }
 
-        case R.id.action_test_waiting_screen: {
-            WaitingScreen fragment = new WaitingScreen();
-            fragment.setArguments(null);
-
-            FragmentTransaction tr = getFragmentManager().beginTransaction();
-
-            tr.replace(R.id.pokergame_fragment_container, fragment);
-            tr.addToBackStack(null);
-
-            tr.commit();
-            Toast.makeText(this, "Test waiting screen", Toast.LENGTH_SHORT).show();
+        case R.id.action_test_waiting_screen:
+            replaceFragment(openWaitingScreen());
             return true;
-        }
+
+        case R.id.action_restart:
+            initGame();
+            replaceFragment(openWaitingScreen());
+            return true;
 
         default:
             return super.onOptionsItemSelected(item);
         }
 
+    }
+
+    private void initGame() {
+        mHand = new Hand();
+        mTotalBet = 0;
+        mPlayerBet = new ChipSet();
+        mPlayerChips = new ChipSet();
+
+        for (Chip c : Chip.values()) {
+            mPlayerChips.addChips(c, 10);
+        }
+    }
+
+    private void replaceFragment(Fragment frag) {
+        getFragmentManager().beginTransaction()
+                .replace(R.id.pokergame_fragment_container, frag)
+                .commit();
+    }
+
+    private Fragment openRound1() {
+        // Create the fragment for round 1
+        Round1 fragment = new Round1();
+        fragment.setArguments(null);
+
+        // Wait two seconds then randomize the dice and go wait.
+        Timer t = new Timer();
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                PokerGame.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mHand.clear();
+                        randomizeHand(5);
+                        replaceFragment(openWaitingScreen());
+                    }
+                });
+            }
+        }, 2000);
+
+        return fragment;
+    }
+
+    private Fragment openWaitingScreen() {
+        // Create the fragment for the waiting screen
+        WaitingScreen fragment = new WaitingScreen();
+
+        Bundle args = new Bundle();
+        args.putParcelable(WaitingScreen.ARG_HAND, mHand);
+        args.putInt(WaitingScreen.ARG_TOTAL_BET, mTotalBet);
+        args.putParcelable(WaitingScreen.ARG_PLAYER_BET, mPlayerBet);
+        args.putParcelable(WaitingScreen.ARG_CHIPS, mPlayerChips);
+
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
+    /**
+     * Adds random dice to the current hand.
+     *
+     * @param numDice Number of dice to add.
+     */
+    private void randomizeHand(int numDice) {
+        for (int i = 0; i < numDice; i++) {
+            mHand.add(Die.byVal(mRand.nextInt(6) + 1));
+        }
     }
 
 }
