@@ -86,7 +86,7 @@ public class HandView extends LinearLayout {
             dieViews[i].setVisibility(VISIBLE);
         }
         for (;i<5; i++) {
-            dieViews[i].setVisibility(GONE);
+            dieViews[i].setVisibility(INVISIBLE);
         }
     }
 }
