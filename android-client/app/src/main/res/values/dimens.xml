@@ -2,4 +2,10 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="bettingchip_size">80dp</dimen>
+
+    <dimen name="chipsetview_totalval_width">20dp</dimen>
+    <dimen name="chipsetview_spacer_width">10dp</dimen>
+
 </resources>
