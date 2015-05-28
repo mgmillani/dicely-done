@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -12,12 +11,12 @@ import br.ufrgs.inf.dicelydone.model.Die;
 
 
 /**
- * TODO: document your custom view class.
+ * A graphical component showing a face of a die.
  */
 public class DieView extends View {
 
     private int mDotColor = R.color.bright_foreground_material_light;
-    private Die mDie = Die.ONE;
+    private Die mDie;
 
     private Paint mPaint;
 
@@ -43,8 +42,8 @@ public class DieView extends View {
 
         mDotColor = a.getInteger(R.styleable.DieView_dotColor, mDotColor);
 
-        int dieVal = a.getInteger(R.styleable.DieView_dieValue, mDie.getValue());
-        mDie = Die.byVal(dieVal);
+        int dieVal = a.getInteger(R.styleable.DieView_dieValue, -1);
+        mDie = (1 <= dieVal && dieVal <= 6)? Die.byVal(dieVal) : mDie;
 
         a.recycle();
 
@@ -56,6 +55,19 @@ public class DieView extends View {
     int mPaddingRight;
     int mPaddingTop;
     int mPaddingBottom;
+
+
+    public Die getDie() { return mDie; }
+
+    public void setDie(Die die) {
+        mDie = die;
+    }
+
+    public int getDotColor() { return mDotColor; }
+
+    public void setDotColor(int color) {
+        mDotColor = color;
+    }
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -146,18 +158,6 @@ public class DieView extends View {
 
     private void drawDot(Canvas canvas, int x, int y) {
         canvas.drawCircle(mPaddingLeft+ x*mDieSize/4, mPaddingTop+y*mDieSize/4, mDieSize/10, mPaint);
-    }
-
-    public Die getDie() { return mDie; }
-
-    public void setDie(Die die) {
-        mDie = die;
-    }
-
-    public int getDotColor() { return mDotColor; }
-
-    public void setDotColor(int color) {
-        mDotColor = color;
     }
 
 }

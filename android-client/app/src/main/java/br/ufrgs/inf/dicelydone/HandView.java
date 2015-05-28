@@ -6,14 +6,15 @@ import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
+import br.ufrgs.inf.dicelydone.model.Die;
 import br.ufrgs.inf.dicelydone.model.Hand;
 
 /**
- * Created by ggazzi on 27/05/15.
+ * A graphical component for showing a set of (at most five) dice.
  */
 public class HandView extends LinearLayout {
 
-    private @NonNull Hand mHand = new Hand();
+    private @NonNull Hand mHand = new Hand(Die.ONE, Die.TWO, Die.THREE, Die.FOUR, Die.FIVE);
     private final DieView[] dieViews = new DieView[5];
 
     public HandView(Context context) {
@@ -31,6 +32,7 @@ public class HandView extends LinearLayout {
         init(attrs, defStyleAttr, 0);
     }
 
+//    Needs API 21
 //    public HandView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
 //        super(context, attrs, defStyleAttr, defStyleRes);
 //        init(attrs, defStyleAttr, defStyleRes);
