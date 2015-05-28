@@ -20,8 +20,8 @@ std::vector<t_face> findFaces(Mat *image)
 	//GaussianBlur( canny, canny, Size(3, 3), 1.5, 1.5 );
   
 	cv::Canny(canny, canny, 70, 180, 3);
-	namedWindow( "Canny", CV_WINDOW_AUTOSIZE ); imshow("Canny", canny);
-	std::vector<Vec3f> circles = findCircles(canny, 10);
+	//namedWindow( "Canny", CV_WINDOW_AUTOSIZE ); imshow("Canny", canny);
+	std::vector<Vec3f> circles = findCircles(canny, 15);
 	
 	std::vector<t_face> faces;
 	// searches for a big circle that contains small ones
@@ -33,7 +33,7 @@ std::vector<t_face> findFaces(Mat *image)
 		face.value = 0;
 		face.center[0] = 0;
 		face.center[1] = 0;
-		int sqrRadius = bigCircle[2] * bigCircle[2];
+		int sqrRadius = bigCircle[2] * bigCircle[2] * 1.2;
 		
 		for(size_t j=0; j<circles.size() ; j++)
 		{
@@ -57,6 +57,8 @@ std::vector<t_face> findFaces(Mat *image)
 		// if there is anything within the big circle
 		if(face.value > 0)
 		{
+			face.center[0] /= face.value;
+			face.center[1] /= face.value;
 			faces.push_back(face);
 		}
 		
