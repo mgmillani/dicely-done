@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bet_total">Aposta Total:</string>
+    <string name="bet_player">Sua Aposta:</string>
+
+    <string name="chips_player">Suas fichas:</string>
+
+    <string name="instruction_wait">Espere a sua vez de jogar.</string>
+
+</resources>
