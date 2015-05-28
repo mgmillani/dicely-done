@@ -75,8 +75,7 @@ public class ChipSetView extends GridLayout {
         // Create and configure the label for the total value
         mLblVal = new TextView(context, null, defStyleAttr);
         mLblVal.setGravity(Gravity.CENTER_HORIZONTAL);
-        mLblVal.setTextSize(32);
-        mLblVal.setTextColor(res.getColor(R.color.bright_foreground_material_light));
+        mLblVal.setTextAppearance(context, R.style.PokerGame_TextAppearance_ChipSumVal);
 
         LayoutParams params = new LayoutParams(spec(0, 2), spec(0));
         params.setGravity(Gravity.CENTER);
