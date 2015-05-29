@@ -11,6 +11,8 @@
 
     <item android:id="@+id/action_test_round_1" app:showAsAction="never"
         android:title="Test Round 1" />
+    <item android:id="@+id/action_test_round_2" app:showAsAction="never"
+        android:title="Test Round 2" />
     <item android:id="@+id/action_test_waiting_screen" app:showAsAction="never"
         android:title="Test Waiting Screen" />
 

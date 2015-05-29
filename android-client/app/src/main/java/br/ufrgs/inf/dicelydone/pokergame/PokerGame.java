@@ -84,6 +84,10 @@ public class PokerGame extends AppCompatActivity {
             replaceFragment(openRound1());
             return true;
 
+        case R.id.action_test_round_2:
+            replaceFragment(openRound2());
+            return true;
+
         case R.id.action_test_waiting_screen:
             replaceFragment(openWaitingScreen());
             return true;
@@ -140,19 +144,29 @@ public class PokerGame extends AppCompatActivity {
         return fragment;
     }
 
+    private Fragment openRound2() {
+        // Create the fragment for round 2
+        Round2 fragment = new Round2();
+        fragment.setArguments(assembleParams());
+
+        return fragment;
+    }
+
     private Fragment openWaitingScreen() {
         // Create the fragment for the waiting screen
         WaitingScreen fragment = new WaitingScreen();
+        fragment.setArguments(assembleParams());
 
+        return fragment;
+    }
+
+    private Bundle assembleParams() {
         Bundle args = new Bundle();
         args.putParcelable(WaitingScreen.ARG_HAND, mHand);
         args.putInt(WaitingScreen.ARG_TOTAL_BET, mTotalBet);
         args.putParcelable(WaitingScreen.ARG_PLAYER_BET, mPlayerBet);
         args.putParcelable(WaitingScreen.ARG_CHIPS, mPlayerChips);
-
-        fragment.setArguments(args);
-
-        return fragment;
+        return args;
     }
 
     /**

@@ -10,5 +10,6 @@
 
     <string name="instruction_wait">Wait for your turn</string>
     <string name="instruction_bet">Place your bet</string>
+    <string name="instruction_throw_dice">Throw your dice</string>
 
 </resources>

@@ -7,5 +7,6 @@
 
     <string name="instruction_wait">Espere a sua vez</string>
     <string name="instruction_throw_dice">Jogue os dados</string>
+    <string name="instruction_bet">Aposte</string>
 
 </resources>
