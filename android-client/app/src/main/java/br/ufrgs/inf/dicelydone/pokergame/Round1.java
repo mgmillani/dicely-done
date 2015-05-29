@@ -10,6 +10,9 @@ import br.ufrgs.inf.dicelydone.R;
 
 /**
  * Fragment for the first round, where players roll their dice.
+ *
+ * <p>
+ * Just displays the instructions for the player.
  */
 public class Round1 extends Fragment {
 

@@ -19,6 +19,7 @@ import br.ufrgs.inf.dicelydone.model.Hand;
 /**
  * Fragment for the waiting phase of the poker game.
  *
+ * <p>
  * Displays the player's dice, chips and bet, as well
  * as the overall bet.
  */

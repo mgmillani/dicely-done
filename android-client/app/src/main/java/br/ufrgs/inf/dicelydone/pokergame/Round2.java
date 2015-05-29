@@ -16,6 +16,11 @@ import br.ufrgs.inf.dicelydone.model.Hand;
 
 /**
  * Fragment for the round 2, where players place their bets.
+ *
+ * <p>
+ * Displays the player's dice, chips and bet, as well
+ * as the overall bet. Allows the player to move chips
+ * from his stash to the bet and vice versa.
  */
 public class Round2 extends Fragment {
 
