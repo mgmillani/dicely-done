@@ -3,6 +3,7 @@ package br.ufrgs.inf.dicelydone.pokergame;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -18,6 +19,7 @@ import br.ufrgs.inf.dicelydone.model.Hand;
 
 public class PokerGame extends AppCompatActivity
     implements Round1.EventHandler, Round2.EventHandler {
+
     /**
      * This argument must be an instance of {@link Hand} containing the player's dice.
      */
@@ -38,8 +40,16 @@ public class PokerGame extends AppCompatActivity
      */
     public static final String ARG_TOTAL_BET = "br.ufrgs.inf.dicelydone.TOTAL_BET";
 
+    /**
+     * This argument must contain the minimum individual bet to continue playing.
+     */
+    public static final String ARG_INDIVIDUAL_BET = "br.ufrgs.inf.dicelydone.INDIVIDUAL_BET";
+
+    private static final String TAG = "PokerGame";
+
 
     private int mTotalBet;
+    private int mIndividualBet;
     private Hand mHand;
     private ChipSet mPlayerBet;
     private ChipSet mPlayerChips;
@@ -101,6 +111,7 @@ public class PokerGame extends AppCompatActivity
         delayed(3000, new Runnable() {
             @Override
             public void run() {
+                simulateRound2();
                 replaceFragment(openRound2());
             }
         });
@@ -112,6 +123,8 @@ public class PokerGame extends AppCompatActivity
 
         mPlayerBet = playerBet;
         mTotalBet += playerBet.getValue();
+
+        mIndividualBet = playerBet.getValue();
 
         replaceFragment(openWaitingScreen());
     }
@@ -126,6 +139,7 @@ public class PokerGame extends AppCompatActivity
     private void initGame() {
         mHand = new Hand();
         mTotalBet = 0;
+        mIndividualBet = 0;
         mPlayerBet = new ChipSet();
         mPlayerChips = new ChipSet();
 
@@ -183,11 +197,39 @@ public class PokerGame extends AppCompatActivity
 
     private Bundle assembleParams() {
         Bundle args = new Bundle();
-        args.putParcelable(WaitingScreen.ARG_HAND, mHand);
-        args.putInt(WaitingScreen.ARG_TOTAL_BET, mTotalBet);
-        args.putParcelable(WaitingScreen.ARG_PLAYER_BET, mPlayerBet);
-        args.putParcelable(WaitingScreen.ARG_CHIPS, mPlayerChips);
+        args.putParcelable(ARG_HAND, mHand);
+        args.putInt(ARG_TOTAL_BET, mTotalBet);
+        args.putInt(ARG_INDIVIDUAL_BET, mIndividualBet);
+        args.putParcelable(ARG_PLAYER_BET, mPlayerBet);
+        args.putParcelable(ARG_CHIPS, mPlayerChips);
         return args;
+    }
+
+    private void simulateRound2() {
+        // Randomly choose the amount of players and their bets
+        int nPlayers = mRand.nextInt(6);
+        Log.v(TAG, "Simulating " + nPlayers + " players");
+
+        for (int i=0; i<nPlayers; i++) {
+            if (mRand.nextInt(3) < 2) { // 1/3 chance of folding
+                int raise = mRand.nextInt(40);
+                mIndividualBet += raise;
+                mTotalBet += mIndividualBet;
+                Log.v(TAG, "Player " + (i+1) + " raised " + raise + " to " + mIndividualBet + ", total " + mTotalBet);
+            } else {
+                Log.v(TAG, "Player " + (i+1) + " folded.");
+            }
+        }
+
+        // Create the minimum bet for the player
+        // (Greedy strategy: start with the most valuable chips)
+        for (int i=Chip.values().length-1; i >= 0; i--) {
+            Chip c = Chip.values()[i];
+
+            int remaining = mIndividualBet - mPlayerBet.getValue();
+            int taken = mPlayerChips.takeChips(c, remaining/c.getValue());
+            mPlayerBet.addChips(c, taken);
+        }
     }
 
 }

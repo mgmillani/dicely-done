@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import br.ufrgs.inf.dicelydone.ChipSetView;
@@ -48,6 +49,7 @@ public class Round2 extends Fragment {
     public static final String ARG_CHIPS = PokerGame.ARG_CHIPS;
     public static final String ARG_PLAYER_BET = PokerGame.ARG_PLAYER_BET;
     public static final String ARG_TOTAL_BET = PokerGame.ARG_TOTAL_BET;
+    public static final String ARG_INDIVIDUAL_BET = PokerGame.ARG_INDIVIDUAL_BET;
 
     private EventHandler mCallback;
 
@@ -55,11 +57,13 @@ public class Round2 extends Fragment {
     private ChipSetView mPlayerChipsView;
     private ChipSetView mPlayerBetView;
     private TextView mTotalBetView;
+    private Button mBtnBet;
 
     private Hand mHand;
     private ChipSet mPlayerChips;
     private ChipSet mPlayerBet;
     private int mTotalBet;
+    private int mIndividualBet;
 
     public Round2() {
         // Required empty constructor
@@ -74,6 +78,7 @@ public class Round2 extends Fragment {
             mPlayerChips = savedInstanceState.getParcelable(ARG_CHIPS);
             mPlayerBet = savedInstanceState.getParcelable(ARG_PLAYER_BET);
             mTotalBet = savedInstanceState.getInt(ARG_TOTAL_BET);
+            mIndividualBet = savedInstanceState.getInt(ARG_INDIVIDUAL_BET, 0);
         }
     }
 
@@ -85,6 +90,7 @@ public class Round2 extends Fragment {
         outState.putParcelable(ARG_CHIPS, mPlayerChips);
         outState.putParcelable(ARG_PLAYER_BET, mPlayerBet);
         outState.putInt(ARG_TOTAL_BET, mTotalBet);
+        outState.putInt(ARG_INDIVIDUAL_BET, mIndividualBet);
     }
 
     @Override
@@ -95,6 +101,7 @@ public class Round2 extends Fragment {
         mTotalBetView = (TextView) result.findViewById(R.id.totalBetView);
         mPlayerBetView = (ChipSetView) result.findViewById(R.id.playerBetView);
         mPlayerChipsView = (ChipSetView) result.findViewById(R.id.playerChipsView);
+        mBtnBet = (Button) result.findViewById(R.id.buttonOk);
 
         // When a player's chip is clicked, it is added to the bet
         mPlayerChipsView.setOnChipClickListener(new ChipSetView.OnChipClickListener() {
@@ -122,7 +129,7 @@ public class Round2 extends Fragment {
             }
         });
 
-        result.findViewById(R.id.buttonOk).setOnClickListener(new View.OnClickListener() {
+        mBtnBet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 placeBet();
@@ -147,6 +154,7 @@ public class Round2 extends Fragment {
         if (args != null) {
             mHand = args.getParcelable(ARG_HAND);
             mTotalBet = args.getInt(ARG_TOTAL_BET);
+            mIndividualBet = args.getInt(ARG_INDIVIDUAL_BET, 0);
 
             // Must copy the sets for the "fold" action to work
             mPlayerBet = new ChipSet(args.<ChipSet>getParcelable(ARG_PLAYER_BET));
@@ -188,6 +196,8 @@ public class Round2 extends Fragment {
         if (mTotalBetView != null) {
             mTotalBetView.setText(Integer.toString(mTotalBet));
         }
+
+        mBtnBet.setEnabled(mPlayerBet.getValue() >= mIndividualBet);
     }
 
 }
