@@ -4,18 +4,41 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.Space;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import br.ufrgs.inf.dicelydone.model.Chip;
 import br.ufrgs.inf.dicelydone.model.ChipSet;
 
 /**
- * A graphical component for showing sets of betting chips
+ * A graphical component for showing sets of betting chips.
+ *
+ * <p>
+ * Shows both the total value of all chips and the number of chips for each type.
+ * The individual chips shown may be clicked, firing events that may be listened
+ * to with {@link #setOnChipClickListener(OnChipClickListener)}.
+ *
  */
 public class ChipSetView extends GridLayout {
+
+    public interface OnChipClickListener {
+
+        /**
+         * Called when the user clicked one of the displayed chips
+         *
+         * @param view The view whose chips were clicked
+         * @param type The type of chip that was clicked
+         */
+        void onChipClick(ChipSetView view, Chip type);
+
+    }
+
+    private ArrayList<OnChipClickListener> mChipClickListeners = new ArrayList<>();
 
     private TextView mLblVal;
     private TextView[] mChipNums;
@@ -66,6 +89,10 @@ public class ChipSetView extends GridLayout {
         }
     }
 
+    public void setOnChipClickListener(OnChipClickListener listener) {
+        mChipClickListeners.add(listener);
+    }
+
     private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         setRowCount(2);
         setColumnCount(2 + Chip.values().length);
@@ -96,16 +123,21 @@ public class ChipSetView extends GridLayout {
         for (Chip c : Chip.values()) {
             int col = 2 + c.getIndex();
 
+            OnClickListener listener = new OnClickListener_Chip(c);
+
             // Create the chip image
-            // TODO use some actual image
+            // TODO use some proper image
             TextView chip = new TextView(context);
             chip.setText(Integer.toString(c.getValue()));
             chip.setTextSize(28);
             chip.setGravity(Gravity.CENTER);
             //chip.setClipToOutline(true); // NEEDS API 21
+            //chip.setOnClickListener(listener);
 
             ImageView imageView = new ImageView(context);
             imageView.setImageResource(R.drawable.abc_switch_thumb_material);
+            imageView.setOnClickListener(listener);
+
 
             params = new LayoutParams(spec(1), spec(col));
             params.width = res.getDimensionPixelSize(R.dimen.bettingchip_size);
@@ -127,6 +159,25 @@ public class ChipSetView extends GridLayout {
 
         mChips = new ChipSet();
         onValueChanged();
+    }
+
+    private void fireChipClick(Chip type) {
+        for (OnChipClickListener listener : mChipClickListeners) {
+            listener.onChipClick(this, type);
+        }
+    }
+
+    private class OnClickListener_Chip implements OnClickListener {
+        private final Chip c;
+
+        public OnClickListener_Chip(Chip c) {
+            this.c = c;
+        }
+
+        @Override
+        public void onClick(View v) {
+            fireChipClick(c);
+        }
     }
 
 }
