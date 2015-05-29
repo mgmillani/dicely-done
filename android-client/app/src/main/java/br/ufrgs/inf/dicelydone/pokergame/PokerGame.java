@@ -13,7 +13,6 @@ import java.util.TimerTask;
 import br.ufrgs.inf.dicelydone.R;
 import br.ufrgs.inf.dicelydone.model.Chip;
 import br.ufrgs.inf.dicelydone.model.ChipSet;
-import br.ufrgs.inf.dicelydone.model.Die;
 import br.ufrgs.inf.dicelydone.model.Hand;
 
 
@@ -133,8 +132,7 @@ public class PokerGame extends AppCompatActivity {
                 PokerGame.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mHand.clear();
-                        randomizeHand(5);
+                        mHand = Hand.random(5, mRand);
                         replaceFragment(openWaitingScreen());
                     }
                 });
@@ -167,17 +165,6 @@ public class PokerGame extends AppCompatActivity {
         args.putParcelable(WaitingScreen.ARG_PLAYER_BET, mPlayerBet);
         args.putParcelable(WaitingScreen.ARG_CHIPS, mPlayerChips);
         return args;
-    }
-
-    /**
-     * Adds random dice to the current hand.
-     *
-     * @param numDice Number of dice to add.
-     */
-    private void randomizeHand(int numDice) {
-        for (int i = 0; i < numDice; i++) {
-            mHand.add(Die.byVal(mRand.nextInt(6) + 1));
-        }
     }
 
 }

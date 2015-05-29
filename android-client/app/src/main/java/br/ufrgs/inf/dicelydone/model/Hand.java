@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Contains the set of (at most five) dice that a player has.
@@ -18,7 +19,7 @@ public class Hand implements Parcelable {
     private List<Die> dice;
 
     /**
-     * Creates a hand with the given (at most 5) dice.
+     * Creates a hand with the given dice (at most 5).
      *
      * @throws IllegalArgumentException when given more than 5 dice.
      */
@@ -27,7 +28,7 @@ public class Hand implements Parcelable {
     }
 
     /**
-     * Creates a hand with the given (at most 5) dice.
+     * Creates a hand with the given dice (at most 5).
      *
      * @throws IllegalArgumentException when given more than 5 dice.
      */
@@ -37,6 +38,28 @@ public class Hand implements Parcelable {
         }
         this.dice = new LinkedList<>(dice);
         Collections.sort(this.dice);
+    }
+
+    /**
+     * Creates a random hand with the given number of dice (at most 5) .
+     *
+     * @throws IllegalArgumentException when given a size larger than 5
+     */
+    public static Hand random(int size, Random generator) {
+        if (size > 5) {
+            throw new IllegalArgumentException("Cannot create hand with more than 5 dice.");
+        }
+
+        Hand created = new Hand();
+        for (int i=0; i<size; i++) {
+            created.add(Die.random(generator));
+        }
+        return created;
+    }
+
+    /** Creates a random hand with a random number of dice. */
+    public static Hand random(Random generator) {
+        return random(generator.nextInt(6), generator);
     }
 
     /** Number of dice present in the hand. */

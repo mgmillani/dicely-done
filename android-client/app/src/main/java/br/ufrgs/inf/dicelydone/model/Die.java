@@ -3,6 +3,8 @@ package br.ufrgs.inf.dicelydone.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Random;
+
 /**
  * Possible values resulting from throwing a die.
  */
@@ -37,6 +39,11 @@ public enum Die implements Parcelable {
         default:
             throw new IllegalArgumentException("Dice values must be between one and six, inclusive.");
         }
+    }
+
+    /** Creates a die with a random value. */
+    public static Die random(Random generator) {
+        return byVal(generator.nextInt(6)+1);
     }
 
     /** Get the numeric value (between 1 and 6) */
