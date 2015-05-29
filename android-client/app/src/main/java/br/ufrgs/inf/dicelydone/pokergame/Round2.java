@@ -1,5 +1,6 @@
 package br.ufrgs.inf.dicelydone.pokergame;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,16 +19,37 @@ import br.ufrgs.inf.dicelydone.model.Hand;
  * Fragment for the round 2, where players place their bets.
  *
  * <p>
+ * Activities using this fragment MUST implement {@link Round2.EventHandler}
+ *
+ * <p>
  * Displays the player's dice, chips and bet, as well
  * as the overall bet. Allows the player to move chips
- * from his stash to the bet and vice versa.
+ * from his stash to the bet and vice versa. Also allows
+ * the player to place his bet or to fold.
  */
 public class Round2 extends Fragment {
+
+    public interface EventHandler {
+        /**
+         * Called when the player places a bet.
+         *
+         * @param playerStash Chips remaining in possession of the player.
+         * @param playerBet Chips the player has used for betting.
+         */
+        void onBetPlaced(ChipSet playerStash, ChipSet playerBet);
+
+        /**
+         * Called when the player folds.
+         */
+        void onFolded();
+    }
 
     public static final String ARG_HAND = PokerGame.ARG_HAND;
     public static final String ARG_CHIPS = PokerGame.ARG_CHIPS;
     public static final String ARG_PLAYER_BET = PokerGame.ARG_PLAYER_BET;
     public static final String ARG_TOTAL_BET = PokerGame.ARG_TOTAL_BET;
+
+    private EventHandler mCallback;
 
     private HandView mHandView;
     private ChipSetView mPlayerChipsView;
@@ -100,6 +122,20 @@ public class Round2 extends Fragment {
             }
         });
 
+        result.findViewById(R.id.buttonOk).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                placeBet();
+            }
+        });
+
+        result.findViewById(R.id.buttonCancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fold();
+            }
+        });
+
         return result;
     }
 
@@ -111,11 +147,37 @@ public class Round2 extends Fragment {
         if (args != null) {
             mHand = args.getParcelable(ARG_HAND);
             mTotalBet = args.getInt(ARG_TOTAL_BET);
-            mPlayerBet = args.getParcelable(ARG_PLAYER_BET);
-            mPlayerChips = args.getParcelable(ARG_CHIPS);
+
+            // Must copy the sets for the "fold" action to work
+            mPlayerBet = new ChipSet(args.<ChipSet>getParcelable(ARG_PLAYER_BET));
+            mPlayerChips = new ChipSet(args.<ChipSet>getParcelable(ARG_CHIPS));
         }
 
         updateView();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            mCallback = (EventHandler) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement Round2.EventHandler");
+        }
+    }
+
+    private void placeBet() {
+        if (mCallback == null) return;
+
+        mCallback.onBetPlaced(mPlayerChips, mPlayerBet);
+    }
+
+    private void fold() {
+        if (mCallback == null) return;
+
+        mCallback.onFolded();
     }
 
     private void updateView() {

@@ -17,8 +17,7 @@ import br.ufrgs.inf.dicelydone.model.Hand;
 
 
 public class PokerGame extends AppCompatActivity
-    implements Round1.EventHandler
-{
+    implements Round1.EventHandler, Round2.EventHandler {
     /**
      * This argument must be an instance of {@link Hand} containing the player's dice.
      */
@@ -65,6 +64,23 @@ public class PokerGame extends AppCompatActivity
                 });
             }
         }, 3000);
+    }
+
+    @Override
+    public void onBetPlaced(ChipSet playerStash, ChipSet playerBet) {
+        mPlayerChips = playerStash;
+
+        mPlayerBet = playerBet;
+        mTotalBet += playerBet.getValue();
+
+        replaceFragment(openWaitingScreen());
+    }
+
+    @Override
+    public void onFolded() {
+        mHand = new Hand();
+
+        replaceFragment(openWaitingScreen());
     }
 
     @Override
