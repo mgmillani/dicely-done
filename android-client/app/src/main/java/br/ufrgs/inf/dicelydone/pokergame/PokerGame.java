@@ -45,6 +45,52 @@ public class PokerGame extends AppCompatActivity
     private ChipSet mPlayerChips;
 
     private Random mRand;
+    private Timer mT;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_poker_game);
+
+        mRand = new Random(System.currentTimeMillis());
+        mT = new Timer();
+        initGame();
+
+        if (findViewById(R.id.pokergame_fragment_container) != null) {
+
+            // Don't create fragments when being restored to avoid overlapping fragments
+            if (savedInstanceState != null) {
+                return;
+            }
+
+            getFragmentManager().beginTransaction()
+                    .add(R.id.pokergame_fragment_container, openWaitingScreen()).commit();
+
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_poker_game, menu);
+        return true;
+    }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+        case R.id.action_restart:
+            initGame();
+            replaceFragment(openWaitingScreen());
+            return true;
+
+        default:
+            return super.onOptionsItemSelected(item);
+        }
+
+    }
 
     @Override
     public void onDiceRolled(Hand hand) {
@@ -52,18 +98,12 @@ public class PokerGame extends AppCompatActivity
         replaceFragment(openWaitingScreen());
 
         // Wait three seconds then open round 2
-        Timer t = new Timer();
-        t.schedule(new TimerTask() {
+        delayed(3000, new Runnable() {
             @Override
             public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        replaceFragment(openRound2());
-                    }
-                });
+                replaceFragment(openRound2());
             }
-        }, 3000);
+        });
     }
 
     @Override
@@ -83,61 +123,6 @@ public class PokerGame extends AppCompatActivity
         replaceFragment(openWaitingScreen());
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_poker_game);
-
-        mRand = new Random(System.currentTimeMillis());
-        initGame();
-
-        if (findViewById(R.id.pokergame_fragment_container) != null) {
-
-            // Don't create fragments when being restored to avoid overlapping fragments
-            if (savedInstanceState != null) {
-                return;
-            }
-
-            getFragmentManager().beginTransaction()
-                    .add(R.id.pokergame_fragment_container, openWaitingScreen()).commit();
-
-        }
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_poker_game, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-        case R.id.action_test_round_1:
-            replaceFragment(openRound1());
-            return true;
-
-        case R.id.action_test_round_2:
-            replaceFragment(openRound2());
-            return true;
-
-        case R.id.action_test_waiting_screen:
-            replaceFragment(openWaitingScreen());
-            return true;
-
-        case R.id.action_restart:
-            initGame();
-            replaceFragment(openWaitingScreen());
-            return true;
-
-        default:
-            return super.onOptionsItemSelected(item);
-        }
-
-    }
-
     private void initGame() {
         mHand = new Hand();
         mTotalBet = 0;
@@ -147,6 +132,23 @@ public class PokerGame extends AppCompatActivity
         for (Chip c : Chip.values()) {
             mPlayerChips.addChips(c, 10);
         }
+
+        // Wait for three seconds, then open round 1
+        delayed(3000, new Runnable() {
+            @Override
+            public void run() {
+                replaceFragment(openRound1());
+            }
+        });
+    }
+
+    private void delayed(long delay, final Runnable task) {
+        mT.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(task);
+            }
+        }, delay);
     }
 
     private void replaceFragment(Fragment frag) {
