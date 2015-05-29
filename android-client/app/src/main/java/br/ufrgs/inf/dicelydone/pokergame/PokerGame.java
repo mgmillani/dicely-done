@@ -16,7 +16,9 @@ import br.ufrgs.inf.dicelydone.model.ChipSet;
 import br.ufrgs.inf.dicelydone.model.Hand;
 
 
-public class PokerGame extends AppCompatActivity {
+public class PokerGame extends AppCompatActivity
+    implements Round1.EventHandler
+{
     /**
      * This argument must be an instance of {@link Hand} containing the player's dice.
      */
@@ -38,14 +40,32 @@ public class PokerGame extends AppCompatActivity {
     public static final String ARG_TOTAL_BET = "br.ufrgs.inf.dicelydone.TOTAL_BET";
 
 
-    private Hand mHand;
     private int mTotalBet;
+    private Hand mHand;
     private ChipSet mPlayerBet;
     private ChipSet mPlayerChips;
 
-    private int mRound=0;
-
     private Random mRand;
+
+    @Override
+    public void onDiceRolled(Hand hand) {
+        mHand = hand;
+        replaceFragment(openWaitingScreen());
+
+        // Wait three seconds then open round 2
+        Timer t = new Timer();
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        replaceFragment(openRound2());
+                    }
+                });
+            }
+        }, 3000);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,21 +143,6 @@ public class PokerGame extends AppCompatActivity {
         // Create the fragment for round 1
         Round1 fragment = new Round1();
         fragment.setArguments(null);
-
-        // Wait two seconds then randomize the dice and go wait.
-        Timer t = new Timer();
-        t.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                PokerGame.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mHand = Hand.random(5, mRand);
-                        replaceFragment(openWaitingScreen());
-                    }
-                });
-            }
-        }, 2000);
 
         return fragment;
     }
