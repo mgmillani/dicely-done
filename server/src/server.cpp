@@ -1,15 +1,19 @@
 #include <iostream>
 #include <stdio.h>
+#include <chrono>
 
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <opencv2/opencv.hpp>
 
 #include "icedice.hpp"
+#include "hand.hpp"
 
+#include "magic.h"
 #include "debug.h"
 
 using namespace cv;
+using namespace std::chrono;
 
 char window[] = "Faces";
 
@@ -26,10 +30,6 @@ typedef struct
 	t_face f;
 	int trust;
 }t_dface;
-
-void CircleMethod( int t, void* info );
-void SquareMethod(int t, void* infoP);
-
 
 void processNewFaces(std::vector<t_face> &newFaces, std::vector<t_dface> &faces, int maxDist)
 {
@@ -85,7 +85,12 @@ void processNewFaces(std::vector<t_face> &newFaces, std::vector<t_dface> &faces,
 /** @function main */
 int main(int argc, char** argv)
 {
-
+	time_point<steady_clock> t0;
+	t0 = steady_clock::now();
+	t_hand validHand;
+	t_hand maybeHand;
+	maybeHand.len = 0;
+	t_hand viewHand;
 	VideoCapture cap(1);
 	if(!cap.isOpened())
 	{
@@ -103,22 +108,37 @@ int main(int argc, char** argv)
 		
 		processNewFaces(newFaces, faces, frame.rows/80);
 		
-		ERR("Faces:%d\n", faces.size());
+		//ERR("Faces:%ld\n", faces.size());
+		int j=0;
 		for(size_t i=0 ; i<faces.size() ; i++)
 		{
 			t_dface dface = faces[i];
 			t_face face = dface.f;
 			Point center(face.center[0], face.center[1]);
 			int v = face.value;
-			if(dface.trust > increment)
+			if(dface.trust > increment*2)
 			{
-				ERR("  Value:%d   %d\n",v, dface.trust);
+				//ERR("  Value:%d   %d\n",v, dface.trust);
 				circle(frame, center, 20, Scalar(255 * (v&1) ,255 * (v&2), 255 * (v&4)), 3, 8, 0);
+				if(j < HAND_SIZE)
+					viewHand.values[j++] = v;
 			}
 		}
 		
+		viewHand.len = j;
+		
+		// checks if the valid hand changed
+		if(updateHands(&validHand, &maybeHand, &viewHand, &t0))
+		{
+			for(int i=0 ; i<validHand.len ; i++)
+			{
+				ERR("%d,", validHand.values[i]);
+			}
+			ERR("\n");
+		}
+		
 		imshow(window, frame);
-		if((char)waitKey(30) == 'q' ) break;
+		if((char)waitKey(10) == 'q' ) break;
 	}
 
   return 0;
