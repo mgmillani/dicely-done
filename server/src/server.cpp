@@ -8,6 +8,7 @@
 
 #include "icedice.hpp"
 #include "hand.hpp"
+#include "game.hpp"
 
 #include "magic.h"
 #include "debug.h"
@@ -85,12 +86,7 @@ void processNewFaces(std::vector<t_face> &newFaces, std::vector<t_dface> &faces,
 /** @function main */
 int main(int argc, char** argv)
 {
-	time_point<steady_clock> t0;
-	t0 = steady_clock::now();
-	t_hand validHand;
-	t_hand maybeHand;
-	maybeHand.len = 0;
-	t_hand viewHand;
+	
 	VideoCapture cap(1);
 	if(!cap.isOpened())
 	{
@@ -100,41 +96,69 @@ int main(int argc, char** argv)
 	
 	namedWindow( window, CV_WINDOW_AUTOSIZE );
 	std::vector<t_dface> faces;
+	time_point<steady_clock> t0;
+	t0 = steady_clock::now();
+	t_hand validHand;
+	validHand.len = 0;
+	t_hand maybeHand;
+	maybeHand.len = 0;
+	t_hand viewHand;
+	
+	Game game;
+	game.join("Geralt");
+	game.join("Zoltan");	
+	int p = 0;
 	while(1)
 	{
 		Mat frame;
 		cap >> frame;
-		std::vector<t_face> newFaces = findFaces(&frame);
 		
-		processNewFaces(newFaces, faces, frame.rows/80);
-		
-		//ERR("Faces:%ld\n", faces.size());
-		int j=0;
-		for(size_t i=0 ; i<faces.size() ; i++)
+		std::vector<t_face> newFaces;
+		int j;
+		switch(game.needed)
 		{
-			t_dface dface = faces[i];
-			t_face face = dface.f;
-			Point center(face.center[0], face.center[1]);
-			int v = face.value;
-			if(dface.trust > increment*2)
-			{
-				//ERR("  Value:%d   %d\n",v, dface.trust);
-				circle(frame, center, 20, Scalar(255 * (v&1) ,255 * (v&2), 255 * (v&4)), 3, 8, 0);
-				if(j < HAND_SIZE)
-					viewHand.values[j++] = v;
-			}
-		}
+			
+			case Game::Info::HAND:
+				
+				newFaces = findFaces(&frame);
+				processNewFaces(newFaces, faces, frame.rows/80);
 		
-		viewHand.len = j;
+				j=0;
+				for(size_t i=0 ; i<faces.size() ; i++)
+				{
+					t_dface dface = faces[i];
+					t_face face = dface.f;
+					Point center(face.center[0], face.center[1]);
+					int v = face.value;
+					if(dface.trust > increment*2)
+					{
+						//ERR("  Value:%d   %d\n",v, dface.trust);
+						circle(frame, center, 20, Scalar(255 * (v&1) ,255 * (v&2), 255 * (v&4)), 3, 8, 0);
+						if(j < HAND_SIZE)
+							viewHand.values[j++] = v;
+					}
+				}
 		
-		// checks if the valid hand changed
-		if(updateHands(&validHand, &maybeHand, &viewHand, &t0))
-		{
-			for(int i=0 ; i<validHand.len ; i++)
-			{
-				ERR("%d,", validHand.values[i]);
-			}
-			ERR("\n");
+				viewHand.len = j;
+		
+				// checks if the valid hand changed
+				if(updateHands(&validHand, &maybeHand, &viewHand, &t0))
+				{
+					for(int i=0 ; i<validHand.len ; i++)
+					{
+						ERR("%d,", validHand.values[i]);
+					}
+					ERR("\n");
+					game.giveHand(validHand);
+				}
+			
+				break;
+			case Game::Info::BET:
+				game.giveBet(10);
+				break;
+			case Game::Info::ACK:
+				game.giveAck();
+				break;
 		}
 		
 		imshow(window, frame);

@@ -19,7 +19,7 @@ bool sameHand(t_hand *first, t_hand *second)
 		{
 			if(first->values[i] == second->values[k])
 			{
-				// marks a value as already used by moving it to its corresponding position
+				// marks a value as already used by moving it to its corresponding position in first
 				SWAP(second->values[i], second->values[k]);
 				found = true;
 			}
@@ -74,3 +74,4 @@ bool updateHands(t_hand *valid, t_hand *maybe, t_hand *view, time_point<steady_c
 	
 	return false;
 }
+
