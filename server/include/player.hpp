@@ -6,6 +6,7 @@
 typedef unsigned int t_score;
 
 #include "hand.hpp"
+#include "game.hpp"
 
 class Player
 {
@@ -17,6 +18,12 @@ public:
 	bool active;
 	t_score score;
 	t_score bet;
+	Game::Rank rank; // rank of the player's hand.
+	
+	/**
+	 * compares rank
+	 */
+	bool operator<(const Player &p);
 };
 
 #endif
