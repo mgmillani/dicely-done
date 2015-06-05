@@ -23,7 +23,7 @@ A mensagem `join <name>` registra o nome do jogador no servidor.
 
     Client                      Server
     --------------------------------------------------------------
-                                startgame
+                                startgame <startbet>
     ack
 
                                *dice <player> <d1> <d2> <d3> <d4> <d5>
@@ -56,11 +56,11 @@ A mensagem `join <name>` registra o nome do jogador no servidor.
                                +dice <d1> <d2> <d3> <d4> <d5>
 
                                 endgame <winner> <amount won>
-
-                                startgame
+    (ack | quit)
+                                startgame <startbet>
                                 ...
 
-A mensagem `startgame` indica que um jogo foi iniciado.
+A mensagem `startgame <startbet>` indica que um jogo foi iniciado e cada jogador começará apostando <startbet>.
 
 A mensagem `startturn <round> ...` indica que o turno de um jogador foi iniciado, na rodada passada. Além disso, nas rodadas de aposta (2 e 3), o valor mínimo da aposta é passado.
 
