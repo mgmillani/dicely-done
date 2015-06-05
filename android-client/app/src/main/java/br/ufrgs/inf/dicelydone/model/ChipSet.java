@@ -37,6 +37,13 @@ public class ChipSet implements Parcelable {
         return mNumChips[type.getIndex()];
     }
 
+    /** Adds the given chips to this set. */
+    public void add(@NonNull ChipSet chips) {
+        for (Chip c : Chip.values()) {
+            addChips(c, chips.getChips(c));
+        }
+    }
+
     /**
      * Adds the given number of chips of the given type.
      *

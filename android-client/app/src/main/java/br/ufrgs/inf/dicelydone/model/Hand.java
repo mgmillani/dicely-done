@@ -104,4 +104,22 @@ public class Hand implements Parcelable {
             return new Hand[size];
         }
     };
+
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+
+        boolean first = true;
+        for (Die d : dice) {
+            if (first) {
+                first = false;
+            } else {
+                b.append(' ');
+            }
+
+            b.append(d.getValue());
+        }
+
+        return b.toString();
+    }
 }

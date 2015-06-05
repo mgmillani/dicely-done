@@ -3,9 +3,9 @@ package br.ufrgs.inf.dicelydone.pokergame;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.Random;
 import java.util.Timer;
@@ -14,11 +14,13 @@ import java.util.TimerTask;
 import br.ufrgs.inf.dicelydone.R;
 import br.ufrgs.inf.dicelydone.model.Chip;
 import br.ufrgs.inf.dicelydone.model.ChipSet;
+import br.ufrgs.inf.dicelydone.model.GameControl;
 import br.ufrgs.inf.dicelydone.model.Hand;
+import br.ufrgs.inf.dicelydone.model.MockGame;
 
 
 public class PokerGame extends AppCompatActivity
-    implements Round1.EventHandler, Round2.EventHandler {
+    implements GameControl.Handler, Round1.EventHandler, Round2.EventHandler {
 
     /**
      * This argument must be an instance of {@link Hand} containing the player's dice.
@@ -48,6 +50,7 @@ public class PokerGame extends AppCompatActivity
     private static final String TAG = "PokerGame";
 
 
+    private int mPlayerNum;
     private int mTotalBet;
     private int mIndividualBet;
     private Hand mHand;
@@ -57,6 +60,8 @@ public class PokerGame extends AppCompatActivity
     private Random mRand;
     private Timer mT;
 
+    private GameControl mGameCtrl;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +69,9 @@ public class PokerGame extends AppCompatActivity
 
         mRand = new Random(System.currentTimeMillis());
         mT = new Timer();
+        mGameCtrl = new MockGame(this);
+        mGameCtrl.addHandler(this);
+
         initGame();
 
         if (findViewById(R.id.pokergame_fragment_container) != null) {
@@ -85,8 +93,6 @@ public class PokerGame extends AppCompatActivity
         return true;
     }
 
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -102,40 +108,6 @@ public class PokerGame extends AppCompatActivity
 
     }
 
-    @Override
-    public void onDiceRolled(Hand hand) {
-        mHand = hand;
-        replaceFragment(openWaitingScreen());
-
-        // Wait three seconds then open round 2
-        delayed(3000, new Runnable() {
-            @Override
-            public void run() {
-                simulateRound2();
-                replaceFragment(openRound2());
-            }
-        });
-    }
-
-    @Override
-    public void onBetPlaced(ChipSet playerStash, ChipSet playerBet) {
-        mPlayerChips = playerStash;
-
-        mPlayerBet = playerBet;
-        mTotalBet += playerBet.getValue();
-
-        mIndividualBet = playerBet.getValue();
-
-        replaceFragment(openWaitingScreen());
-    }
-
-    @Override
-    public void onFolded() {
-        mHand = new Hand();
-
-        replaceFragment(openWaitingScreen());
-    }
-
     private void initGame() {
         mHand = new Hand();
         mTotalBet = 0;
@@ -147,13 +119,7 @@ public class PokerGame extends AppCompatActivity
             mPlayerChips.addChips(c, 10);
         }
 
-        // Wait for three seconds, then open round 1
-        delayed(3000, new Runnable() {
-            @Override
-            public void run() {
-                replaceFragment(openRound1());
-            }
-        });
+        mGameCtrl.join("Foo");
     }
 
     private void delayed(long delay, final Runnable task) {
@@ -205,31 +171,98 @@ public class PokerGame extends AppCompatActivity
         return args;
     }
 
-    private void simulateRound2() {
-        // Randomly choose the amount of players and their bets
-        int nPlayers = mRand.nextInt(6);
-        Log.v(TAG, "Simulating " + nPlayers + " players");
+    @Override
+    public void onJoined(int playerNum) {
+        mPlayerNum = playerNum;
+        Toast.makeText(this, R.string.toast_joined_server, Toast.LENGTH_LONG).show();
+    }
 
-        for (int i=0; i<nPlayers; i++) {
-            if (mRand.nextInt(3) < 2) { // 1/3 chance of folding
-                int raise = mRand.nextInt(40);
-                mIndividualBet += raise;
-                mTotalBet += mIndividualBet;
-                Log.v(TAG, "Player " + (i+1) + " raised " + raise + " to " + mIndividualBet + ", total " + mTotalBet);
-            } else {
-                Log.v(TAG, "Player " + (i+1) + " folded.");
-            }
-        }
+    @Override
+    public void onStartGame() {
+        replaceFragment(openWaitingScreen());
+    }
 
-        // Create the minimum bet for the player
-        // (Greedy strategy: start with the most valuable chips)
-        for (int i=Chip.values().length-1; i >= 0; i--) {
-            Chip c = Chip.values()[i];
-
-            int remaining = mIndividualBet - mPlayerBet.getValue();
-            int taken = mPlayerChips.takeChips(c, remaining/c.getValue());
-            mPlayerBet.addChips(c, taken);
+    @Override
+    public void onStartRollTurn(int turn) {
+        if (turn == 1) {
+            replaceFragment(openRound1());
+        } else {
+            Toast.makeText(this, "Round 4 started", Toast.LENGTH_LONG).show();
         }
     }
 
+    @Override
+    public void onStartBetTurn(int turn, int minBet) {
+        mIndividualBet = minBet;
+
+        for (int i=Chip.values().length-1; i >= 0; i--) {
+            Chip c = Chip.values()[i];
+
+            int taken = mPlayerChips.takeChips(c, minBet/c.getValue());
+            mPlayerBet.addChips(c, taken);
+            minBet -= taken * c.getValue();
+        }
+
+        if (turn == 2) {
+            replaceFragment(openRound2());
+        } else if (turn == 3) {
+            Toast.makeText(this, "Round 3 started", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onDiceRolled(int player, Hand hand) {
+        if (player != mPlayerNum) return;
+
+        mHand = hand;
+        replaceFragment(openWaitingScreen());
+    }
+
+    @Override
+    public void onBetPlaced(int player, int totalBet) {
+        mTotalBet = totalBet;
+        replaceFragment(openWaitingScreen());
+    }
+
+    @Override
+    public void onGameEnded(int winner, int valueWon) {
+        mPlayerBet = new ChipSet();
+        mTotalBet = 0;
+
+        if (winner != mPlayerNum) {
+            Toast.makeText(this, "You lost...", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        ChipSet chipsWon = new ChipSet();
+        for (int i=Chip.values().length-1; i >= 0; i--) {
+            Chip c = Chip.values()[i];
+
+            chipsWon.addChips(c, valueWon/c.getValue());
+            valueWon = valueWon%c.getValue();
+        }
+
+        mPlayerChips.add(chipsWon);
+        Toast.makeText(this, "You won!", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void rollDice() {
+        mGameCtrl.roll();
+        replaceFragment(openWaitingScreen());
+    }
+
+    @Override
+    public void onBetPlaced(ChipSet playerStash, ChipSet playerBet) {
+        mPlayerChips = playerStash;
+        mPlayerBet = playerBet;
+
+        mGameCtrl.bet(playerBet);
+        replaceFragment(openWaitingScreen());
+    }
+
+    @Override
+    public void onFolded() {
+        mGameCtrl.fold();
+    }
 }

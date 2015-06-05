@@ -7,12 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import br.ufrgs.inf.dicelydone.R;
-import br.ufrgs.inf.dicelydone.model.Hand;
 
 /**
  * Fragment for the first round, where players roll their dice.
@@ -34,11 +32,9 @@ public class Round1 extends Fragment {
      */
     public interface EventHandler {
         /**
-         * Called when the dice have been rolled.
-         *
-         * @param hand The values obtained from the dice roll.
+         * Called when the dice must be rolled
          */
-        void onDiceRolled(Hand hand);
+        void rollDice();
     }
 
     private boolean mMustRandomize = false;
@@ -67,7 +63,7 @@ public class Round1 extends Fragment {
                     @Override
                     public void run() {
                         if (isResumed()) {
-                            randomizeDice();
+                            mCallback.rollDice();
                         } else {
                             mMustRandomize = true;
                         }
@@ -82,7 +78,7 @@ public class Round1 extends Fragment {
         super.onResume();
 
         if (mMustRandomize) {
-            randomizeDice();
+            mCallback.rollDice();
         }
     }
 
@@ -96,13 +92,6 @@ public class Round1 extends Fragment {
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement Round1.EventHandler");
-        }
-    }
-
-    private void randomizeDice() {
-        if (mCallback != null) {
-            Random generator = new Random(System.currentTimeMillis());
-            mCallback.onDiceRolled(Hand.random(5, generator));
         }
     }
 

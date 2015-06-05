@@ -12,4 +12,6 @@
     <string name="instruction_bet">Place your bet</string>
     <string name="instruction_throw_dice">Roll your dice</string>
 
+    <string name="toast_joined_server">Connected to the server</string>
+
 </resources>
