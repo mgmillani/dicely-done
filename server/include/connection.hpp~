@@ -1,0 +1,16 @@
+#ifndef CONNECTION_HPP_
+#define CONNECTION_HPP_
+
+#include "player.hpp"
+
+class Connection
+{
+	Connection(int port);
+	void join(char *name);
+	void ack();
+	void bet(t_score val);
+	void reroll(int *dice, int n);
+	void quit();
+}
+
+#endif
