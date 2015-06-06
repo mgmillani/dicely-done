@@ -2,7 +2,7 @@
 #define HAND_HPP_
 
 #define HAND_SIZE 5
-#define MIN_DTs 1
+#define MIN_DTs 0.5
 
 typedef struct s_hand
 {
