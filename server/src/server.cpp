@@ -9,6 +9,7 @@
 #include "icedice.hpp"
 #include "hand.hpp"
 #include "game.hpp"
+#include "connection.hpp"
 
 #include "magic.h"
 #include "debug.h"
@@ -78,12 +79,14 @@ void processNewFaces(std::vector<t_face> &newFaces, std::vector<t_dface> &faces,
 	{
 		t_dface df;
 		df.f = newFaces[i];
-		df.trust = increment;
-		faces.push_back(df);
+		if(df.f.value >= 1 && df.f.value <= 6)
+		{
+			df.trust = increment;
+			faces.push_back(df);
+		}
 	}
 }
 
-/** @function main */
 int main(int argc, char** argv)
 {
 	
@@ -104,10 +107,13 @@ int main(int argc, char** argv)
 	maybeHand.len = 0;
 	t_hand viewHand;
 	
-	Game game;
-	game.join("Geralt");
-	game.join("Zoltan");	
-	int p = 0;
+	RemoteGame game;
+	Connection conn(1337, &game);
+	
+	conn.join("Geralt");
+	conn.join("Zoltan");
+
+	int n=2;
 	while(1)
 	{
 		Mat frame;
@@ -115,10 +121,14 @@ int main(int argc, char** argv)
 		
 		std::vector<t_face> newFaces;
 		int j;
+		
+		conn.receiveMessages();
+		
 		switch(game.needed)
 		{
 			
 			case Game::Info::HAND:
+			case Game::Info::HAND_ACK:
 				
 				newFaces = findFaces(&frame);
 				processNewFaces(newFaces, faces, frame.rows/80);
@@ -130,6 +140,10 @@ int main(int argc, char** argv)
 					t_face face = dface.f;
 					Point center(face.center[0], face.center[1]);
 					int v = face.value;
+					if(v == 0)
+					{
+						TRACE("wtf?");
+					}
 					if(dface.trust > increment*2)
 					{
 						//ERR("  Value:%d   %d\n",v, dface.trust);
@@ -144,17 +158,18 @@ int main(int argc, char** argv)
 				// checks if the valid hand changed
 				if(updateHands(&validHand, &maybeHand, &viewHand, &t0))
 				{
-					for(int i=0 ; i<validHand.len ; i++)
-					{
-						ERR("%d,", validHand.values[i]);
-					}
-					ERR("\n");
-					game.giveHand(validHand);
+					if(game.needed == Game::Info::HAND && validHand.len > 0)
+						game.giveHand(validHand);	
+					else if(validHand.len == 0)
+						game.giveHandAck();
 				}
+				
 			
 				break;
 			case Game::Info::BET:
-				game.giveBet(10);
+				ERR("n:%d\n",n);
+				game.giveBet(n);
+				n = (n+1)%10;
 				break;
 			case Game::Info::ACK:
 				game.giveAck();
