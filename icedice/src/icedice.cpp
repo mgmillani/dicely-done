@@ -11,9 +11,8 @@ std::vector<t_face> findFaces(Mat *image)
 {
 	Mat canny;
 	// Convert image to gray
-	GaussianBlur( *image, canny, Size(3, 3), 20, 20 );
+	GaussianBlur( *image, canny, Size(3, 3), 2, 2 );
 	//canny = *image;
-	
 	reduceChannelRange(canny, 0xf0);
 	cvtColor( canny, canny, CV_BGR2GRAY );
 	
