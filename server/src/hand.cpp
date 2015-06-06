@@ -12,9 +12,10 @@ bool sameHand(t_hand *first, t_hand *second)
 	if(first->len != second->len)
 		return false;
 
-	for(int i=0 ; i<first->len ; i++)
+	bool found = true;
+	for(int i=0 ; i<first->len && found ; i++)
 	{
-		bool found = false;
+		found = false;
 		for(int k=i ; k<second->len && !found ; k++)
 		{
 			if(first->values[i] == second->values[k])
@@ -55,7 +56,7 @@ bool updateHands(t_hand *valid, t_hand *maybe, t_hand *view, time_point<steady_c
 		time_point<steady_clock> t1 = steady_clock::now();			
 		duration<double> elapsed_sec = t1 - *t0;
 		double dt = elapsed_sec.count();
-		if(dt > MIN_DTs && maybe->len > 0)
+		if(dt > MIN_DTs)
 		{
 			// resets the timer
 			*t0 = steady_clock::now();
