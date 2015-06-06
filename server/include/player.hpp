@@ -15,7 +15,6 @@ public:
 
 	t_hand hand;
 	std::string name;
-	bool active;
 	t_score score;
 	t_score bet;
 	Game::Rank rank; // rank of the player's hand.
