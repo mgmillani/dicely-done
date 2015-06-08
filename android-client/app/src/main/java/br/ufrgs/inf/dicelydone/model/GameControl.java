@@ -32,9 +32,9 @@ public abstract class GameControl {
         mContext.runOnUiThread(task);
     }
 
-    protected void fireJoined(int playerNum) {
+    protected void fireJoined() {
         for (Handler h: mHandlers) {
-            h.onJoined(playerNum);
+            h.onJoined();
         }
     }
 
@@ -56,28 +56,34 @@ public abstract class GameControl {
         }
     }
 
-    protected void fireDiceRolled(int player, Hand rolled) {
+    protected void fireDiceRolled(String player, Hand rolled) {
         for (Handler h: mHandlers) {
             h.onDiceRolled(player, rolled);
         }
     }
 
-    protected void fireBetPlaced(int player, int totalBet, int individualBet) {
+    protected void fireBetPlaced(String player, int totalBet, int individualBet) {
         for (Handler h: mHandlers) {
             h.onBetPlaced(player, totalBet, individualBet);
         }
     }
 
-    protected void fireGameEnded(int winner, int valueWon) {
+    protected void fireGameEnded(String winner, int valueWon) {
         for (Handler h: mHandlers) {
             h.onGameEnded(winner, valueWon);
+        }
+    }
+
+    protected void fireFolded(String player) {
+        for (Handler h: mHandlers) {
+            h.onFolded(player);
         }
     }
 
 
     public interface Handler {
 
-        void onJoined(int playerNum);
+        void onJoined();
 
         void onStartGame();
 
@@ -85,11 +91,13 @@ public abstract class GameControl {
 
         void onStartBetTurn(int turn, int minBet);
 
-        void onDiceRolled(int player, Hand rolled);
+        void onDiceRolled(String player, Hand rolled);
 
-        void onBetPlaced(int player, int totalBet, int individualBet);
+        void onBetPlaced(String player, int totalBet, int individualBet);
 
-        void onGameEnded(int winner, int valueWon);
+        void onFolded(String player);
+
+        void onGameEnded(String winner, int prize);
 
     }
 

@@ -258,7 +258,7 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
     }
 
     @Override
-    public void onJoined(int playerNum) {
+    public void onJoined() {
         // Nothing needs to be done
     }
 
@@ -281,19 +281,24 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
     }
 
     @Override
-    public void onDiceRolled(int player, Hand rolled) {
+    public void onDiceRolled(String player, Hand rolled) {
         // Nothing needs to be done
     }
 
     @Override
-    public void onBetPlaced(int player, int totalBet, int individualBet) {
+    public void onFolded(String player) {
+        // Nothing needs to be done
+    }
+
+    @Override
+    public void onBetPlaced(String player, int totalBet, int individualBet) {
         mTotalBet = totalBet;
         mIndividualBet = individualBet;
         updateView();
     }
 
     @Override
-    public void onGameEnded(int winner, int valueWon) {
+    public void onGameEnded(String winner, int valueWon) {
         // TODO handle end of game
     }
 

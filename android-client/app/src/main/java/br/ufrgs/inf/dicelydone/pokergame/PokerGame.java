@@ -27,7 +27,7 @@ public class PokerGame extends AppCompatActivity
     private static final String TAG = "PokerGame";
 
 
-    private int mPlayerNum;
+    private String mPlayer = "Baz";
     private Hand mHand;
 
     private MockGame mGameCtrl;
@@ -54,8 +54,6 @@ public class PokerGame extends AppCompatActivity
                 return;
             }
 
-            Bundle args = assembleParams();
-
             getFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, openWaitingScreen())
                     .add(R.id.chipinfo_container, mChipInfo)
@@ -64,7 +62,7 @@ public class PokerGame extends AppCompatActivity
         }
 
         mChipInfo.initGame();
-        mGameCtrl.join("Foo");
+        mGameCtrl.join(mPlayer);
     }
 
     @Override
@@ -107,14 +105,6 @@ public class PokerGame extends AppCompatActivity
         return fragment;
     }
 
-    private Fragment openBettingRound(boolean canRaise) {
-        BettingRound fragment = new BettingRound();
-        Bundle args = assembleParams();
-        fragment.setArguments(args);
-
-        return fragment;
-    }
-
     private Fragment openWaitingScreen() {
         // Create the fragment for the waiting screen
         WaitingScreen fragment = new WaitingScreen();
@@ -130,19 +120,15 @@ public class PokerGame extends AppCompatActivity
     }
 
     @Override
-    public void onJoined(int playerNum) {
-        mPlayerNum = playerNum;
+    public void onJoined() {
         Toast.makeText(this, R.string.toast_joined_server, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onStartGame() {
-        Bundle args = assembleParams();
-
         getFragmentManager().beginTransaction()
                 .disallowAddToBackStack()
                 .replace(R.id.fragment_container, openWaitingScreen())
-                //.add(R.id.pokergame_fragment_container, createChipInfo())
                 .commit();
     }
 
@@ -175,8 +161,8 @@ public class PokerGame extends AppCompatActivity
     }
 
     @Override
-    public void onDiceRolled(int player, Hand hand) {
-        if (player != mPlayerNum) return;
+    public void onDiceRolled(String player, Hand hand) {
+        if (!player.equals(mPlayer)) return;
 
         mHand = hand;
 
@@ -187,16 +173,23 @@ public class PokerGame extends AppCompatActivity
     }
 
     @Override
-    public void onBetPlaced(int player, int totalBet, int individualBet) {
-        if (player != mPlayerNum) {
+    public void onFolded(String player) {
+        if (!player.equals(mPlayer)) {
+            Toast.makeText(this, player + " folded.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onBetPlaced(String player, int totalBet, int individualBet) {
+        if (!player.equals(mPlayer)) {
             replaceFragment(openWaitingScreen());
             Toast.makeText(this, "Player " + player + " placed a bet.", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
-    public void onGameEnded(int winner, int valueWon) {
-        if (winner != mPlayerNum) {
+    public void onGameEnded(String winner, int valueWon) {
+        if (!winner.equals(mPlayer)) {
             Toast.makeText(this, "You lost...", Toast.LENGTH_LONG).show();
             return;
         }

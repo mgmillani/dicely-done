@@ -17,6 +17,9 @@ public class MockGame extends GameControl {
     private boolean mGameStarted = false;
 
     private int mPlayerOrder;
+
+    private String mMainPlayer;
+    private String[] mPlayers = new String[] { "Foo", "Bar", "??" };
     private int mCurrentPlayer;
     private int mRound = 0;
 
@@ -36,10 +39,12 @@ public class MockGame extends GameControl {
     @Override
     public void join(String playerName) {
 
-        mPlayerOrder = mRand.nextInt(NUM_PLAYERS);
+        mPlayerOrder = 2;//mRand.nextInt(NUM_PLAYERS);
+        mMainPlayer = playerName;
+        mPlayers[mPlayerOrder] = playerName;
         mJoined = true;
-        fireJoined(mPlayerOrder);
-        Log.i(TAG, "Joined the game as player " + mPlayerOrder);
+        fireJoined();
+        Log.i(TAG, "Joined the game as player " + mMainPlayer);
 
         restart();
     }
@@ -53,7 +58,7 @@ public class MockGame extends GameControl {
         delayed(3000, new Runnable() {
             @Override
             public void run() {
-                fireDiceRolled(mPlayerOrder, hand);
+                fireDiceRolled(mMainPlayer, hand);
 
                 mRound = 2;
                 mCurrentPlayer = 0;
@@ -67,29 +72,21 @@ public class MockGame extends GameControl {
         mSingleBet = new ChipSet(bet);
         mTotalBet.add(bet);
 
-        fireBetPlaced(mCurrentPlayer, mTotalBet.getValue(), mSingleBet.getValue());
-        Log.i(TAG, "Player " + mCurrentPlayer + " placed bet of " + bet.getValue());
+        fireBetPlaced(mPlayers[mCurrentPlayer], mTotalBet.getValue(), mSingleBet.getValue());
+        Log.i(TAG, "Player " + mPlayers[mCurrentPlayer] + " placed bet of " + bet.getValue());
 
+        mCurrentPlayer++;
         if (mRound == 2) {
-            mCurrentPlayer++;
             simulateRound2();
-
         } else if (mRound == 3) {
-            delayed(3000, new Runnable() {
-                @Override
-                public void run() {
-                    mRound = 4;
-                    mCurrentPlayer = mPlayerOrder;
-                    fireStartRollTurn(4);
-                }
-            });
-
+            simulateRound3();
         }
     }
 
     @Override
     public void fold() {
-        Log.i(TAG, "Player " + mPlayerOrder + " folded.");
+        Log.i(TAG, "Player " + mMainPlayer + " folded.");
+        fireFolded(mMainPlayer);
         restart();
     }
 
@@ -101,7 +98,7 @@ public class MockGame extends GameControl {
         delayed(1500, new Runnable() {
             @Override
             public void run() {
-                fireDiceRolled(mPlayerOrder, kept);
+                fireDiceRolled(mMainPlayer, kept);
                 mRound = 5;
                 simulateConclusion();
             }
@@ -124,8 +121,8 @@ public class MockGame extends GameControl {
             }
 
             mTotalBet.add(mSingleBet);
-            fireBetPlaced(mCurrentPlayer, mTotalBet.getValue(), mSingleBet.getValue());
-            Log.i(TAG, "Player " + mCurrentPlayer + " placed bet of " + mSingleBet.getValue());
+            fireBetPlaced(mPlayers[mCurrentPlayer], mTotalBet.getValue(), mSingleBet.getValue());
+            Log.i(TAG, "Player " + mPlayers[mCurrentPlayer] + " placed bet of " + mSingleBet.getValue());
 
             delayed(1500, new Runnable() {
                 @Override
@@ -143,8 +140,36 @@ public class MockGame extends GameControl {
     }
 
     private void simulateRound3() {
-        mCurrentPlayer = mPlayerOrder;
-        fireStartBetTurn(3, mSingleBet.getValue());
+        if (mCurrentPlayer == mPlayerOrder) {
+            fireStartBetTurn(3, mSingleBet.getValue());
+
+        } else if (mCurrentPlayer < NUM_PLAYERS) {
+            delayed(1500, new Runnable() {
+                @Override
+                public void run() {
+                    if (mRand.nextInt(3) < 1) {
+                        fireFolded(mPlayers[mCurrentPlayer]);
+                    }
+                    mCurrentPlayer++;
+                    simulateRound3();
+                }
+            });
+
+        } else {
+            simulateRound4();
+        }
+    }
+
+    private void simulateRound4() {
+        mRound = 4;
+
+        delayed(1000, new Runnable() {
+            @Override
+            public void run() {
+                mCurrentPlayer = mPlayerOrder;
+                fireStartRollTurn(4);
+            }
+        });
     }
 
     private void simulateConclusion() {
@@ -154,7 +179,7 @@ public class MockGame extends GameControl {
         delayed(3000, new Runnable() {
             @Override
             public void run() {
-                fireGameEnded(winner, mTotalBet.getValue());
+                fireGameEnded(mPlayers[winner], mTotalBet.getValue());
                 restart();
             }
         });
