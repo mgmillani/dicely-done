@@ -17,18 +17,19 @@ import br.ufrgs.inf.dicelydone.model.ChipSet;
 import br.ufrgs.inf.dicelydone.model.Hand;
 
 /**
- * Fragment for the round 2, where players place their bets.
+ * Fragment for the betting rounds, where players place their bets.
  *
  * <p>
- * Activities using this fragment MUST implement {@link Round2.EventHandler}
+ * Activities using this fragment MUST implement {@link BettingRound.EventHandler}
  *
  * <p>
  * Displays the player's dice, chips and bet, as well
  * as the overall bet. Allows the player to move chips
- * from his stash to the bet and vice versa. Also allows
- * the player to place his bet or to fold.
+ * from his stash to the bet and vice versa, when given
+ * true for {@link #ARG_CAN_RAISE}. Also allows the
+ * player to place his bet or fold.
  */
-public class Round2 extends Fragment {
+public class BettingRound extends Fragment {
 
     public interface EventHandler {
         /**
@@ -50,6 +51,7 @@ public class Round2 extends Fragment {
     public static final String ARG_PLAYER_BET = PokerGame.ARG_PLAYER_BET;
     public static final String ARG_TOTAL_BET = PokerGame.ARG_TOTAL_BET;
     public static final String ARG_INDIVIDUAL_BET = PokerGame.ARG_INDIVIDUAL_BET;
+    public static final String ARG_CAN_RAISE = "br.ufrgs.inf.dicelydone.CAN_RAISE";
 
     private EventHandler mCallback;
 
@@ -65,7 +67,7 @@ public class Round2 extends Fragment {
     private int mTotalBet;
     private int mIndividualBet;
 
-    public Round2() {
+    public BettingRound() {
         // Required empty constructor
     }
 
@@ -159,6 +161,10 @@ public class Round2 extends Fragment {
             // Must copy the sets for the "fold" action to work
             mPlayerBet = new ChipSet(args.<ChipSet>getParcelable(ARG_PLAYER_BET));
             mPlayerChips = new ChipSet(args.<ChipSet>getParcelable(ARG_CHIPS));
+
+            boolean canRaise = args.getBoolean(ARG_CAN_RAISE);
+            mPlayerBetView.setEnabled(canRaise);
+            mPlayerChipsView.setEnabled(canRaise);
         }
 
         updateView();
@@ -172,7 +178,7 @@ public class Round2 extends Fragment {
             mCallback = (EventHandler) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement Round2.EventHandler");
+                    + " must implement BettingRound.EventHandler");
         }
     }
 

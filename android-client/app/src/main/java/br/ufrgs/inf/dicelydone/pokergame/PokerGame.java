@@ -20,7 +20,7 @@ import br.ufrgs.inf.dicelydone.model.MockGame;
 
 
 public class PokerGame extends AppCompatActivity
-    implements GameControl.Handler, Round1.EventHandler, Round2.EventHandler {
+    implements GameControl.Handler, Round1.EventHandler, BettingRound.EventHandler {
 
     /**
      * This argument must be an instance of {@link Hand} containing the player's dice.
@@ -138,17 +138,19 @@ public class PokerGame extends AppCompatActivity
     }
 
     private Fragment openRound1() {
-        // Create the fragment for round 1
         Round1 fragment = new Round1();
         fragment.setArguments(null);
 
         return fragment;
     }
 
-    private Fragment openRound2() {
-        // Create the fragment for round 2
-        Round2 fragment = new Round2();
-        fragment.setArguments(assembleParams());
+    private Fragment openBettingRound(boolean canRaise) {
+        BettingRound fragment = new BettingRound();
+
+        Bundle args = assembleParams();
+        args.putBoolean(BettingRound.ARG_CAN_RAISE, canRaise);
+
+        fragment.setArguments(args);
 
         return fragment;
     }
@@ -203,11 +205,7 @@ public class PokerGame extends AppCompatActivity
             minBet -= taken * c.getValue();
         }
 
-        if (turn == 2) {
-            replaceFragment(openRound2());
-        } else if (turn == 3) {
-            Toast.makeText(this, "Round 3 started", Toast.LENGTH_LONG).show();
-        }
+        replaceFragment(openBettingRound(turn == 2));
     }
 
     @Override

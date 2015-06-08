@@ -176,7 +176,9 @@ public class ChipSetView extends GridLayout {
 
         @Override
         public void onClick(View v) {
-            fireChipClick(c);
+            if (isEnabled()) {
+                fireChipClick(c);
+            }
         }
     }
 
