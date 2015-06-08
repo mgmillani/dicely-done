@@ -257,7 +257,7 @@ void Game::giveAck()
 			this->players.pop_front();
 			this->activePlayers = this->players;
 			// start from first player
-			this->currentPlayer = this->players.begin();
+			this->currentPlayer = this->activePlayers.begin();
 			// go back to the first round
 			this->round = Round::INITIAL;
 			this->updateNeeded();
