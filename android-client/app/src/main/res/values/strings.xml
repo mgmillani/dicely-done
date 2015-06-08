@@ -3,8 +3,9 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
-    <string name="bet_total">Total Bet:</string>
+    <string name="bet_minimum">Least Bet:</string>
     <string name="bet_player">Your Bet:</string>
+    <string name="bet_total">Total Bet:</string>
 
     <string name="chips_player">Your Chips:</string>
 

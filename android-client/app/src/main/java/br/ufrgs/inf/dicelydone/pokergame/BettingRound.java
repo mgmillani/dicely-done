@@ -59,6 +59,7 @@ public class BettingRound extends Fragment {
     private ChipSetView mPlayerChipsView;
     private ChipSetView mPlayerBetView;
     private TextView mTotalBetView;
+    private TextView mMinBetView;
     private Button mBtnBet;
 
     private Hand mHand;
@@ -97,10 +98,11 @@ public class BettingRound extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View result = inflater.inflate(R.layout.fragment_round_2, container, false);
+        View result = inflater.inflate(R.layout.fragment_betting_round, container, false);
 
         mHandView = (HandView) result.findViewById(R.id.handView);
         mTotalBetView = (TextView) result.findViewById(R.id.totalBetView);
+        mMinBetView = (TextView) result.findViewById(R.id.minBetView);
         mPlayerBetView = (ChipSetView) result.findViewById(R.id.playerBetView);
         mPlayerChipsView = (ChipSetView) result.findViewById(R.id.playerChipsView);
         mBtnBet = (Button) result.findViewById(R.id.buttonOk);
@@ -201,6 +203,9 @@ public class BettingRound extends Fragment {
 
         if (mTotalBetView != null) {
             mTotalBetView.setText(Integer.toString(mTotalBet));
+        }
+        if (mMinBetView != null) {
+            mMinBetView.setText(Integer.toString(mIndividualBet));
         }
 
         mBtnBet.setEnabled(mPlayerBet.getValue() >= mIndividualBet);

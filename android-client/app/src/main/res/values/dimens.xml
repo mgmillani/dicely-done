@@ -9,6 +9,8 @@
     <dimen name="chipsetview_totalval_width">60dp</dimen>
     <dimen name="chipsetview_spacer_width">5dp</dimen>
 
+    <dimen name="fragment_betting_round_spacer_width">15dp</dimen>
+
     <dimen name="text_size_instructions">30sp</dimen>
     <dimen name="text_size_label">18sp</dimen>
     <dimen name="text_size_chipsumval">30sp</dimen>
