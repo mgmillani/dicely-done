@@ -95,7 +95,7 @@ public class ChipSet implements Parcelable {
         dest.writeIntArray(mNumChips);
     }
 
-    public static final Parcelable.Creator<ChipSet> CREATE = new Parcelable.Creator<ChipSet>() {
+    public static final Parcelable.Creator<ChipSet> CREATOR = new Parcelable.Creator<ChipSet>() {
         @Override
         public ChipSet createFromParcel(Parcel source) {
             ChipSet result = new ChipSet();

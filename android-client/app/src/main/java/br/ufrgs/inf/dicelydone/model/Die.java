@@ -61,7 +61,7 @@ public enum Die implements Parcelable {
         parcel.writeInt(val);
     }
 
-    public static final Parcelable.Creator<Die> CREATE = new Parcelable.Creator<Die>() {
+    public static final Parcelable.Creator<Die> CREATOR = new Parcelable.Creator<Die>() {
         @Override
         public Die createFromParcel(Parcel in) {
             return byVal(in.readInt());

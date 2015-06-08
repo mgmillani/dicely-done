@@ -93,10 +93,10 @@ public class Hand implements Parcelable {
         parcel.writeTypedList(dice);
     }
 
-    public static final Parcelable.Creator<Hand> CREATE = new Parcelable.Creator<Hand>() {
+    public static final Parcelable.Creator<Hand> CREATOR = new Parcelable.Creator<Hand>() {
         @Override
         public Hand createFromParcel(Parcel in) {
-            return new Hand(in.createTypedArrayList(Die.CREATE));
+            return new Hand(in.createTypedArrayList(Die.CREATOR));
         }
 
         @Override

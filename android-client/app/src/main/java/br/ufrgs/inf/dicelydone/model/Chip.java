@@ -32,7 +32,7 @@ public enum Chip implements Parcelable {
         dest.writeInt(index);
     }
 
-    private static final Parcelable.Creator<Chip> CREATE = new Parcelable.Creator<Chip>() {
+    private static final Parcelable.Creator<Chip> CREATOR = new Parcelable.Creator<Chip>() {
         @Override
         public Chip createFromParcel(Parcel source) {
             return values()[source.readInt()];
