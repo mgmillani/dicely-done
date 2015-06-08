@@ -71,9 +71,9 @@ void processNewFaces(std::vector<t_face> &newFaces, std::vector<t_dface> &faces,
 		{
 			faces[j].trust = maxTrust;
 		}
-			
+
 	}
-		
+
 	// add new faces
 	for(size_t i=0 ; i<newFaces.size() ; i++)
 	{
@@ -89,14 +89,14 @@ void processNewFaces(std::vector<t_face> &newFaces, std::vector<t_dface> &faces,
 
 int main(int argc, char** argv)
 {
-	
-	VideoCapture cap(1);
+
+	VideoCapture cap(argc > 1 ? atoi(argv[1]) : 1);
 	if(!cap.isOpened())
 	{
 		TRACE("Failed to open camera");
 		return -1;
 	}
-	
+
 	namedWindow( window, CV_WINDOW_AUTOSIZE );
 	std::vector<t_dface> faces;
 	time_point<steady_clock> t0;
@@ -106,10 +106,10 @@ int main(int argc, char** argv)
 	t_hand maybeHand;
 	maybeHand.len = 0;
 	t_hand viewHand;
-	
+
 	RemoteGame game;
 	Connection conn(1337, &game);
-	
+
 	conn.join("Geralt");
 	conn.join("Zoltan");
 
@@ -118,21 +118,21 @@ int main(int argc, char** argv)
 	{
 		Mat frame;
 		cap >> frame;
-		
+
 		std::vector<t_face> newFaces;
 		int j;
-		
+
 		conn.receiveMessages();
-		
+
 		switch(game.needed)
 		{
-			
+
 			case Game::Info::HAND:
 			case Game::Info::HAND_ACK:
-				
+
 				newFaces = findFaces(&frame);
 				processNewFaces(newFaces, faces, frame.rows/80);
-		
+
 				j=0;
 				for(size_t i=0 ; i<faces.size() ; i++)
 				{
@@ -152,9 +152,9 @@ int main(int argc, char** argv)
 							viewHand.values[j++] = v;
 					}
 				}
-		
+
 				viewHand.len = j;
-		
+
 				// checks if the valid hand changed
 				if(updateHands(&validHand, &maybeHand, &viewHand, &t0))
 				{
@@ -163,8 +163,8 @@ int main(int argc, char** argv)
 					else if(validHand.len == 0 && game.needed == Game::Info::HAND_ACK)
 						game.giveHandAck();
 				}
-				
-			
+
+
 				break;
 			case Game::Info::BET:
 				game.giveBet(n);
@@ -174,7 +174,7 @@ int main(int argc, char** argv)
 				game.giveAck();
 				break;
 		}
-		
+
 		imshow(window, frame);
 		if((char)waitKey(10) == 'q' ) break;
 	}
