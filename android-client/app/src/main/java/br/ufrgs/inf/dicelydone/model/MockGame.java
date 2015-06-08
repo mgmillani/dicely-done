@@ -67,7 +67,7 @@ public class MockGame extends GameControl {
         mSingleBet = new ChipSet(bet);
         mTotalBet.add(bet);
 
-        fireBetPlaced(mCurrentPlayer, mTotalBet.getValue());
+        fireBetPlaced(mCurrentPlayer, mTotalBet.getValue(), mSingleBet.getValue());
         Log.i(TAG, "Player " + mCurrentPlayer + " placed bet of " + bet.getValue());
 
         if (mRound == 2) {
@@ -124,7 +124,7 @@ public class MockGame extends GameControl {
             }
 
             mTotalBet.add(mSingleBet);
-            fireBetPlaced(mCurrentPlayer, mTotalBet.getValue());
+            fireBetPlaced(mCurrentPlayer, mTotalBet.getValue(), mSingleBet.getValue());
             Log.i(TAG, "Player " + mCurrentPlayer + " placed bet of " + mSingleBet.getValue());
 
             delayed(1500, new Runnable() {

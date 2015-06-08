@@ -9,10 +9,30 @@
         android:id="@+id/scrollView"
         android:layout_gravity="center" >
 
-        <FrameLayout
+        <LinearLayout
             android:id="@+id/pokergame_fragment_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:orientation="vertical" >
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/handinfo_container" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/fragment_container" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/chipinfo_container" />
+
+        </LinearLayout>
+
 
     </ScrollView>
 

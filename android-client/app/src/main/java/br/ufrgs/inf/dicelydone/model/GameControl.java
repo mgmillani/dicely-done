@@ -62,9 +62,9 @@ public abstract class GameControl {
         }
     }
 
-    protected void fireBetPlaced(int player, int totalBet) {
+    protected void fireBetPlaced(int player, int totalBet, int individualBet) {
         for (Handler h: mHandlers) {
-            h.onBetPlaced(player, totalBet);
+            h.onBetPlaced(player, totalBet, individualBet);
         }
     }
 
@@ -87,7 +87,7 @@ public abstract class GameControl {
 
         void onDiceRolled(int player, Hand rolled);
 
-        void onBetPlaced(int player, int totalBet);
+        void onBetPlaced(int player, int totalBet, int individualBet);
 
         void onGameEnded(int winner, int valueWon);
 

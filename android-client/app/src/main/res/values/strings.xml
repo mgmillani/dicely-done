@@ -9,10 +9,15 @@
 
     <string name="chips_player">Your Chips:</string>
 
-    <string name="instruction_wait">Wait for your turn</string>
     <string name="instruction_bet">Place your bet</string>
     <string name="instruction_throw_dice">Roll your dice</string>
+    <string name="instruction_wait">Wait for your turn</string>
+
+    <string name="label_hand">Your Hand:</string>
+    <string name="label_join">Join Game</string>
+    <string name="label_nickname">Nickname</string>
 
     <string name="toast_joined_server">Connected to the server</string>
+    <string name="title_activity_waiting">WaitingActivity</string>
 
 </resources>

@@ -1,6 +1,7 @@
 package br.ufrgs.inf.dicelydone.pokergame;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -20,7 +21,7 @@ import br.ufrgs.inf.dicelydone.model.MockGame;
 
 
 public class PokerGame extends AppCompatActivity
-    implements GameControl.Handler, Round1.EventHandler, BettingRound.EventHandler {
+    implements GameControl.Handler, Round1.EventHandler, BettingRound.EventHandler, ChipInfoFragment.EventHandler {
 
     /**
      * This argument must be an instance of {@link Hand} containing the player's dice.
@@ -60,7 +61,9 @@ public class PokerGame extends AppCompatActivity
     private Random mRand;
     private Timer mT;
 
-    private GameControl mGameCtrl;
+    private MockGame mGameCtrl;
+
+    private ChipInfoFragment mChipInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +75,9 @@ public class PokerGame extends AppCompatActivity
         mGameCtrl = new MockGame(this);
         mGameCtrl.addHandler(this);
 
+        mChipInfo = new ChipInfoFragment();
+        mChipInfo.setGameControl(mGameCtrl);
+
         initGame();
 
         if (findViewById(R.id.pokergame_fragment_container) != null) {
@@ -81,10 +87,16 @@ public class PokerGame extends AppCompatActivity
                 return;
             }
 
+            Bundle args = assembleParams();
+
             getFragmentManager().beginTransaction()
-                    .add(R.id.pokergame_fragment_container, openWaitingScreen()).commit();
+                    .add(R.id.fragment_container, openWaitingScreen())
+                    .add(R.id.chipinfo_container, mChipInfo)
+                    .commit();
 
         }
+
+        mGameCtrl.join("Foo");
     }
 
     @Override
@@ -100,6 +112,7 @@ public class PokerGame extends AppCompatActivity
         case R.id.action_restart:
             initGame();
             replaceFragment(openWaitingScreen());
+            mGameCtrl.join("Foo");
             return true;
 
         default:
@@ -118,8 +131,6 @@ public class PokerGame extends AppCompatActivity
         for (Chip c : Chip.values()) {
             mPlayerChips.addChips(c, 10);
         }
-
-        mGameCtrl.join("Foo");
     }
 
     private void delayed(long delay, final Runnable task) {
@@ -133,7 +144,8 @@ public class PokerGame extends AppCompatActivity
 
     private void replaceFragment(Fragment frag) {
         getFragmentManager().beginTransaction()
-                .replace(R.id.pokergame_fragment_container, frag)
+                .disallowAddToBackStack()
+                .replace(R.id.fragment_container, frag)
                 .commit();
     }
 
@@ -146,10 +158,7 @@ public class PokerGame extends AppCompatActivity
 
     private Fragment openBettingRound(boolean canRaise) {
         BettingRound fragment = new BettingRound();
-
         Bundle args = assembleParams();
-        args.putBoolean(BettingRound.ARG_CAN_RAISE, canRaise);
-
         fragment.setArguments(args);
 
         return fragment;
@@ -181,16 +190,28 @@ public class PokerGame extends AppCompatActivity
 
     @Override
     public void onStartGame() {
-        replaceFragment(openWaitingScreen());
+        Bundle args = assembleParams();
+
+        getFragmentManager().beginTransaction()
+                .disallowAddToBackStack()
+                .replace(R.id.fragment_container, openWaitingScreen())
+                //.add(R.id.pokergame_fragment_container, createChipInfo())
+                .commit();
     }
 
     @Override
     public void onStartRollTurn(int turn) {
+        FragmentTransaction t = getFragmentManager().beginTransaction();
+
+        t.hide(mChipInfo);
+
         if (turn == 1) {
-            replaceFragment(openRound1());
+            t.replace(R.id.fragment_container, openRound1());
         } else {
             Toast.makeText(this, "Round 4 started", Toast.LENGTH_LONG).show();
         }
+
+        t.commit();
     }
 
     @Override
@@ -205,7 +226,15 @@ public class PokerGame extends AppCompatActivity
             minBet -= taken * c.getValue();
         }
 
-        replaceFragment(openBettingRound(turn == 2));
+        Fragment roundFragment = new BettingRound();
+        roundFragment.setArguments(assembleParams());
+
+        getFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, roundFragment, "BettingRound")
+                .show(mChipInfo)
+                .commit();
+
+        mChipInfo.setReadOnly(turn != 2);
     }
 
     @Override
@@ -213,13 +242,19 @@ public class PokerGame extends AppCompatActivity
         if (player != mPlayerNum) return;
 
         mHand = hand;
-        replaceFragment(openWaitingScreen());
+
+        getFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, openWaitingScreen())
+                .show(mChipInfo)
+                .commit();
     }
 
     @Override
-    public void onBetPlaced(int player, int totalBet) {
+    public void onBetPlaced(int player, int totalBet, int individualBet) {
         mTotalBet = totalBet;
-        replaceFragment(openWaitingScreen());
+        if (player != mPlayerNum) {
+            replaceFragment(openWaitingScreen());
+        }
     }
 
     @Override
@@ -247,20 +282,47 @@ public class PokerGame extends AppCompatActivity
     @Override
     public void rollDice() {
         mGameCtrl.roll();
-        replaceFragment(openWaitingScreen());
     }
 
     @Override
-    public void onBetPlaced(ChipSet playerStash, ChipSet playerBet) {
-        mPlayerChips = playerStash;
-        mPlayerBet = playerBet;
+    public void onBetPlaced() {
+        mPlayerChips = mChipInfo.getPlayerStash();
+        mPlayerBet = mChipInfo.getPlayerBet();
 
-        mGameCtrl.bet(playerBet);
+        mGameCtrl.bet(mChipInfo.getPlayerBet());
         replaceFragment(openWaitingScreen());
     }
 
     @Override
     public void onFolded() {
         mGameCtrl.fold();
+    }
+
+    @Override
+    public void onBetAndStashChanged(ChipSet stash, ChipSet bet) {
+        BettingRound fragment;
+        try {
+            fragment = (BettingRound) getFragmentManager().findFragmentById(R.id.fragment_container);
+        } catch (ClassCastException e) {
+            fragment = null;
+        }
+
+        if (fragment != null) {
+            fragment.setBetEnabled(bet.getValue() >= mChipInfo.getIndividualBet());
+        }
+    }
+
+    private Fragment createChipInfo() {
+        ChipInfoFragment fragment = new ChipInfoFragment();
+        fragment.setGameControl(mGameCtrl);
+
+        Bundle args =  new Bundle();
+        args.putParcelable(ChipInfoFragment.ARG_STASH, mPlayerChips);
+        args.putParcelable(ChipInfoFragment.ARG_PLAYER_BET, mPlayerBet);
+        args.putInt(ChipInfoFragment.ARG_INDIVIDUAL_BET, mIndividualBet);
+        args.putInt(ChipInfoFragment.ARG_TOTAL_BET, mTotalBet);
+
+        fragment.setArguments(args);
+        return fragment;
     }
 }
