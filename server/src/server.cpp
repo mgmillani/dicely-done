@@ -158,18 +158,17 @@ int main(int argc, char** argv)
 				// checks if the valid hand changed
 				if(updateHands(&validHand, &maybeHand, &viewHand, &t0))
 				{
-					if(game.needed == Game::Info::HAND && validHand.len > 0)
+					if(validHand.len > 0)
 						game.giveHand(validHand);	
-					else if(validHand.len == 0)
+					else if(validHand.len == 0 && game.needed == Game::Info::HAND_ACK)
 						game.giveHandAck();
 				}
 				
 			
 				break;
 			case Game::Info::BET:
-				ERR("n:%d\n",n);
 				game.giveBet(n);
-				n = (n+1)%10;
+				n = (n+1)%5;
 				break;
 			case Game::Info::ACK:
 				game.giveAck();
