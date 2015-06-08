@@ -104,6 +104,17 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
         return mTotalBet;
     }
 
+    public void initGame() {
+        mTotalBet = 0;
+        mIndividualBet = 0;
+        mPlayerBet = new ChipSet();
+        mPlayerStash = new ChipSet();
+
+        for (Chip c : Chip.values()) {
+            mPlayerStash.addChips(c, 10);
+        }
+    }
+
     public void setReadOnly(boolean readOnly) {
         if (!isAdded()) return;
 
