@@ -2,13 +2,14 @@
 #define CONNECTION_HPP_
 
 #include <list>
+#include <random>
 
 #include "player.hpp"
 
 class Connection
 {
 public:
-	Connection(int port, RemoteGame *game);
+	Connection(int port, MultiGame *game);
 	void receiveMessages();
 	void join(const char *name);
 	void ack();
@@ -16,8 +17,10 @@ public:
 	void reroll(int *dice, int n);
 	void quit();
 	
-	RemoteGame *game;
+	MultiGame *game;
 	int port;
+	std::default_random_engine generator;
+	std::uniform_int_distribution<int> distribution;
 	// TODO: change this to include address
 	Player *sender; // the player who sent the last message
 	std::list<Player*> players;
