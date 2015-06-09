@@ -96,7 +96,7 @@ public class GameSimulation extends  GameControl {
                 break;
 
             case BET:
-                if (mRand.nextInt(3) < 1) {
+                if (mRand.nextInt(5) < 1) {
                     mGame.fold();
                     fireFolded(needed.player);
 
