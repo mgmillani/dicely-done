@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <chrono>
 
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/opencv.hpp>
+//#include <gtkmm.h>
 
 #include "icedice.hpp"
 #include "hand.hpp"
@@ -90,12 +91,16 @@ void processNewFaces(std::vector<t_face> &newFaces, std::vector<t_dface> &faces,
 int main(int argc, char** argv)
 {
 
+	//Gtk::Main kit(argc, argv);
+
 	VideoCapture cap(argc > 1 ? atoi(argv[1]) : 1);
 	if(!cap.isOpened())
 	{
 		TRACE("Failed to open camera");
 		return -1;
 	}
+
+	
 
 	namedWindow( window, CV_WINDOW_AUTOSIZE );
 	std::vector<t_dface> faces;
@@ -107,7 +112,11 @@ int main(int argc, char** argv)
 	maybeHand.len = 0;
 	t_hand viewHand;
 
-	RemoteGame game;
+	RemoteGame remoteGame;
+	LocalGame localGame;
+	MultiGame game;
+	game.add(&remoteGame);
+	//game.add(&localGame);	
 	Connection conn(1337, &game);
 
 	conn.join("Geralt");
@@ -124,7 +133,7 @@ int main(int argc, char** argv)
 
 		conn.receiveMessages();
 
-		switch(game.needed)
+		switch(game.getNeeded())
 		{
 
 			case Game::Info::HAND:
@@ -147,7 +156,7 @@ int main(int argc, char** argv)
 					if(dface.trust > increment*2)
 					{
 						//ERR("  Value:%d   %d\n",v, dface.trust);
-						circle(frame, center, 20, Scalar(255 * (v&1) ,255 * (v&2), 255 * (v&4)), 3, 8, 0);
+						circle(frame, center, 5, Scalar(255 * (v&1) ,255 * (v&2), 255 * (v&4)), 2, 8, 0);
 						if(j < HAND_SIZE)
 							viewHand.values[j++] = v;
 					}
@@ -159,8 +168,10 @@ int main(int argc, char** argv)
 				if(updateHands(&validHand, &maybeHand, &viewHand, &t0))
 				{
 					if(validHand.len > 0)
+					{
 						game.giveHand(validHand);	
-					else if(validHand.len == 0 && game.needed == Game::Info::HAND_ACK)
+					}
+					else if(validHand.len == 0 && game.getNeeded() == Game::Info::HAND_ACK)
 						game.giveHandAck();
 				}
 
@@ -176,8 +187,11 @@ int main(int argc, char** argv)
 		}
 
 		imshow(window, frame);
+		//gtk_main_iteration_do(FALSE);
 		if((char)waitKey(10) == 'q' ) break;
 	}
+
+	//gtk_main_quit();
 
   return 0;
 }

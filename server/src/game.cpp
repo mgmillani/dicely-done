@@ -160,6 +160,9 @@ void Game::giveHand(t_hand hand)
 		case Round::INITIAL:
 			if(hand.len == 5)
 			{
+				for(int i=0 ; i <hand.len ; i++)
+					if(hand.values[i] == 0)
+						return;
 				p->hand = hand;
 				this->informHand(p);
 				this->needed = Game::Info::HAND_ACK;
@@ -169,6 +172,9 @@ void Game::giveHand(t_hand hand)
 			if(hand.len == 5)
 			{
 				p->hand = hand;
+				for(int i=0 ; i <hand.len ; i++)
+					if(hand.values[i] == 0)
+						return;
 				this->informHand(p);
 				this->needed = Game::Info::HAND_ACK;
 			}
@@ -250,7 +256,7 @@ void Game::giveAck()
 			// resets player bets
 			for(list<Player*>::iterator it = this->players.begin() ; it!=this->players.end() ; it++)
 			{
-				(*it)->bet = 0;
+				(*it)->bet = this->minBet;
 			}
 			// rotate player order
 			this->players.push_back(*this->players.begin());
@@ -338,6 +344,11 @@ void Game::nextRound()
 	this->informRound();
 }
 
+Game::Info Game::getNeeded()
+{
+	return this->needed;
+}
+
 void Game::informStart()
 {
 	printf("startgame\n");
@@ -394,6 +405,148 @@ void Game::informQuit(Player *p)
 }
 
 void Game::informJoin(Player *p)
+{
+	printf("join %s\n", p->name.c_str());
+}
+
+/**
+ * ========================
+ * Game with multiple games
+ * ======================== 
+ */
+
+void MultiGame::add(Game *game)
+{
+	this->games.push_back(game);
+}
+
+void MultiGame::join(std::string player)
+{
+	for(list<Game*>::iterator it = this->games.begin() ; it!=this->games.end() ; it++)
+	{
+		(*it)->join(player);
+	}
+}
+void MultiGame::quit(std::string player)
+{
+	for(list<Game*>::iterator it = this->games.begin() ; it!=this->games.end() ; it++)
+	{
+		(*it)->quit(player);
+	}
+}
+void MultiGame::giveHand(t_hand hand)
+{
+	for(list<Game*>::iterator it = this->games.begin() ; it!=this->games.end() ; it++)
+	{
+		(*it)->giveHand(hand);
+	}
+}
+void MultiGame::giveHandAck()
+{
+	for(list<Game*>::iterator it = this->games.begin() ; it!=this->games.end() ; it++)
+	{
+		(*it)->giveHandAck();
+	}
+}
+void MultiGame::giveBet(t_score bet)
+{
+	for(list<Game*>::iterator it = this->games.begin() ; it!=this->games.end() ; it++)
+	{
+		(*it)->giveBet(bet);
+	}
+}
+void MultiGame::giveFold()
+{
+	for(list<Game*>::iterator it = this->games.begin() ; it!=this->games.end() ; it++)
+	{
+		(*it)->giveFold();
+	}
+}
+void MultiGame::giveAck()
+{
+	for(list<Game*>::iterator it = this->games.begin() ; it!=this->games.end() ; it++)
+	{
+		(*it)->giveAck();
+	}
+}
+Game::Info MultiGame::getNeeded()
+{
+	Game *g = *(this->games.begin());
+	return g->getNeeded();
+}
+
+/**
+ * ==========================
+ * Local Game with GTK window
+ * ==========================
+ */
+ 
+LocalGame::LocalGame() : Game::Game()
+{
+	/*this->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	gtk_window_set_title(GTK_WINDOW(window), "Center");
+	gtk_window_set_default_size(GTK_WINDOW(window), 230, 150);
+	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+	gtk_widget_show(window);
+	g_signal_connect_swapped(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);*/
+} 
+
+void LocalGame::informStart()
+{
+	
+}
+void LocalGame::informPlayer()
+{
+	
+}
+
+void LocalGame::informRound()
+{
+	
+	switch(this->round)
+	{
+		case Round::INITIAL: 
+		case Round::RECAST:  
+			printf("startturn %d\n", (int)this->round);
+			break;
+		case Round::RESULT: break;
+		case Round::BET:     
+		case Round::MATCH:   printf("startturn %d %u\n", (int)this->round, this->playerBet); break;
+		
+	}
+}
+
+void LocalGame::informWinner()
+{
+	printf("endgame %s %d\n", (*this->winner)->name.c_str(), this->pot);
+}
+
+void LocalGame::informHand(Player *p)
+{
+	printf("dice %s ", p->name.c_str());
+	for(int i=0 ; i<p->hand.len ; i++)
+	{
+		printf("%d ", p->hand.values[i]);
+	}
+	printf("\n");
+}
+
+void LocalGame::informBet(Player *p)
+{
+	printf("betplaced %s %d %d\n", p->name.c_str(), p->bet, this->pot);
+}
+
+void LocalGame::informFold(Player *p)
+{
+	printf("folded %s\n", p->name.c_str());
+}
+
+void LocalGame::informQuit(Player *p)
+{
+	printf("quit %s\n", p->name.c_str());
+}
+
+void LocalGame::informJoin(Player *p)
 {
 	printf("join %s\n", p->name.c_str());
 }
