@@ -193,6 +193,9 @@ public class MockGame extends GameControl {
                 mGameStarted = true;
                 mRound = 1;
 
+                mTotalBet = new ChipSet();
+                mSingleBet = new ChipSet();
+
                 delayed(1000, new Runnable() {
                     @Override
                     public void run() {

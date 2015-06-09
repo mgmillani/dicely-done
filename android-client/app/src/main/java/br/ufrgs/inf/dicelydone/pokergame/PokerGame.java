@@ -1,7 +1,6 @@
 package br.ufrgs.inf.dicelydone.pokergame;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
@@ -15,7 +14,7 @@ import br.ufrgs.inf.dicelydone.model.MockGame;
 
 
 public class PokerGame extends AppCompatActivity
-    implements GameControl.Handler, Round1.EventHandler, BettingRound.EventHandler, ChipInfoFragment.EventHandler {
+    implements GameControl.Handler, RollingRound.EventHandler, BettingRound.EventHandler, ChipInfoFragment.EventHandler {
 
     /**
      * This argument must be an instance of {@link Hand} containing the player's dice.
@@ -26,6 +25,7 @@ public class PokerGame extends AppCompatActivity
 
 
     private String mPlayer = "Baz";
+    private int mRound = 0;
 
     private MockGame mGameCtrl;
 
@@ -41,6 +41,7 @@ public class PokerGame extends AppCompatActivity
         mGameCtrl.addHandler(this);
 
         mChipInfo = new ChipInfoFragment();
+        mChipInfo.setPlayer(mPlayer);
         mChipInfo.setGameControl(mGameCtrl);
 
         mHandInfo = new HandInfoFragment();
@@ -50,7 +51,7 @@ public class PokerGame extends AppCompatActivity
         if (savedInstanceState == null) {
 
             getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, openWaitingScreen())
+                    .add(R.id.fragment_container, new WaitingScreen())
                     .add(R.id.chipinfo_container, mChipInfo)
                     .add(R.id.handinfo_container, mHandInfo)
                     .hide(mHandInfo)
@@ -62,26 +63,6 @@ public class PokerGame extends AppCompatActivity
         mGameCtrl.join(mPlayer);
     }
 
-    private void replaceFragment(Fragment frag) {
-        getFragmentManager().beginTransaction()
-                .disallowAddToBackStack()
-                .replace(R.id.fragment_container, frag)
-                .commit();
-    }
-
-    private Fragment openRound1() {
-        Round1 fragment = new Round1();
-        fragment.setArguments(null);
-
-        return fragment;
-    }
-
-    private Fragment openWaitingScreen() {
-        // Create the fragment for the waiting screen
-        WaitingScreen fragment = new WaitingScreen();
-        return fragment;
-    }
-
     @Override
     public void onJoined() {
         Toast.makeText(this, R.string.toast_joined_server, Toast.LENGTH_LONG).show();
@@ -90,29 +71,31 @@ public class PokerGame extends AppCompatActivity
     @Override
     public void onStartGame() {
         getFragmentManager().beginTransaction()
-                .disallowAddToBackStack()
-                .replace(R.id.fragment_container, openWaitingScreen())
+                .replace(R.id.fragment_container, new WaitingScreen())
                 .hide(mHandInfo)
                 .commit();
     }
 
     @Override
     public void onStartRollTurn(int turn) {
-        FragmentTransaction t = getFragmentManager().beginTransaction();
+        mRound = turn;
 
-        t.hide(mChipInfo);
+        Fragment fragment = new RollingRound();
 
-        if (turn == 1) {
-            t.replace(R.id.fragment_container, openRound1());
-        } else {
-            Toast.makeText(this, "Round 4 started", Toast.LENGTH_LONG).show();
-        }
+        Bundle args = new Bundle();
+        args.putInt(RollingRound.ARG_ROUND, turn);
+        fragment.setArguments(args);
 
-        t.commit();
+        getFragmentManager().beginTransaction()
+                .hide(mChipInfo)
+                .replace(R.id.fragment_container, fragment)
+                .commit();
     }
 
     @Override
     public void onStartBetTurn(int turn, int minBet) {
+        mRound = turn;
+
         Fragment roundFragment = new BettingRound();
 
         getFragmentManager().beginTransaction()
@@ -128,7 +111,7 @@ public class PokerGame extends AppCompatActivity
         if (!player.equals(mPlayer)) return;
 
         getFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, openWaitingScreen())
+                .replace(R.id.fragment_container, new WaitingScreen())
                 .show(mChipInfo)
                 .show(mHandInfo)
                 .commit();
@@ -164,17 +147,28 @@ public class PokerGame extends AppCompatActivity
             valueWon = valueWon%c.getValue();
         }
         Toast.makeText(this, "You won!", Toast.LENGTH_LONG).show();
+
+        getFragmentManager().beginTransaction()
+                .hide(mHandInfo)
+                .commit();
     }
 
     @Override
     public void rollDice() {
-        mGameCtrl.roll();
+        if (mRound == 1) {
+            mGameCtrl.roll();
+        } else if (mRound == 4) {
+            mGameCtrl.reroll(new Hand()); // TODO actually choose the dice
+        }
     }
 
     @Override
     public void onBetPlaced() {
         mGameCtrl.bet(mChipInfo.getPlayerBet());
-        replaceFragment(openWaitingScreen());
+
+        getFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, new WaitingScreen())
+                .commit();
     }
 
     @Override

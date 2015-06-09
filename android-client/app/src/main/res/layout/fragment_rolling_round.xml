@@ -13,6 +13,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="@dimen/text_margin_left"
         android:textAppearance="@style/PokerGame.TextAppearance.Instructions"
-        android:text="@string/instruction_throw_dice" />
+        android:text="@string/instruction_roll_dice"
+        android:id="@+id/instructionsView" />
 
 </RelativeLayout>

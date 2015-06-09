@@ -17,15 +17,20 @@ public class ChipSet implements Parcelable {
      */
     public ChipSet() {
         mNumChips = new int[Chip.values().length];
-        for (Chip c : Chip.values()) {
-            mNumChips[c.getIndex()] = 0;
-        }
+        clear();
         recalculateValue();
     }
 
     public ChipSet(ChipSet set) {
         mNumChips = set.mNumChips.clone();
         mVal = set.mVal;
+    }
+
+    public void clear() {
+        for (Chip c : Chip.values()) {
+            mNumChips[c.getIndex()] = 0;
+        }
+        recalculateValue();
     }
 
     /**
@@ -74,6 +79,37 @@ public class ChipSet implements Parcelable {
         mVal -= type.getValue() * taken;
 
         return taken;
+    }
+
+    public void add(int value) {
+        ChipSet source = new ChipSet();
+        for (Chip c : Chip.values()) {
+            source.addChips(c, 10);
+        }
+
+        while (value > 0) {
+            ChipSet set = new ChipSet(source);
+            value -= set.giveUpTo(value, this);
+        }
+    }
+
+    /**
+     * @return Value actually transfered.
+     */
+    public int giveUpTo(int value, ChipSet receiver) {
+        int toAdd = value;
+
+        for (int i=Chip.values().length-1; i >= 0; i--) {
+            if (toAdd <= 0) break;
+
+            Chip c = Chip.values()[i];
+
+            int taken = takeChips(c, toAdd/c.getValue());
+            receiver.addChips(c, taken);
+            toAdd -= taken * c.getValue();
+        }
+
+        return value - toAdd;
     }
 
     private void recalculateValue() {
