@@ -257,6 +257,8 @@ void Game::giveAck()
 			for(list<Player*>::iterator it = this->players.begin() ; it!=this->players.end() ; it++)
 			{
 				(*it)->bet = this->minBet;
+				pot += this->minBet;
+				this->playerBet = this->minBet;
 			}
 			// rotate player order
 			this->players.push_back(*this->players.begin());
