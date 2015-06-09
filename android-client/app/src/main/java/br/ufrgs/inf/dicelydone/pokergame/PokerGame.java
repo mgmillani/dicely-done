@@ -23,7 +23,7 @@ public class PokerGame extends AppCompatActivity
     private static final String TAG = "PokerGame";
 
 
-    private String mPlayer = "Baz";
+    private String mPlayer = "Geralt";
     private int mRound = 0;
     private boolean mFolded = false;
 

@@ -20,7 +20,8 @@ public class GameSimulation extends  GameControl {
         super(context);
 
         mGame = new Game();
-        mGame.join("Geralt");
+        mGame.join("Dandelion");
+        mGame.join("Zoltan");
 
         mT = new Timer();
         mRand = new Random(System.currentTimeMillis());
