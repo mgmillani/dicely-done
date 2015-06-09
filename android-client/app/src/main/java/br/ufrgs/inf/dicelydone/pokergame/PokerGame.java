@@ -9,8 +9,8 @@ import br.ufrgs.inf.dicelydone.R;
 import br.ufrgs.inf.dicelydone.model.Chip;
 import br.ufrgs.inf.dicelydone.model.ChipSet;
 import br.ufrgs.inf.dicelydone.model.GameControl;
+import br.ufrgs.inf.dicelydone.model.GameSimulation;
 import br.ufrgs.inf.dicelydone.model.Hand;
-import br.ufrgs.inf.dicelydone.model.MockGame;
 
 
 public class PokerGame extends AppCompatActivity
@@ -27,7 +27,7 @@ public class PokerGame extends AppCompatActivity
     private String mPlayer = "Baz";
     private int mRound = 0;
 
-    private MockGame mGameCtrl;
+    private GameSimulation mGameCtrl;
 
     private ChipInfoFragment mChipInfo;
     private HandInfoFragment mHandInfo;
@@ -37,7 +37,7 @@ public class PokerGame extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_poker_game);
 
-        mGameCtrl = new MockGame(this);
+        mGameCtrl = new GameSimulation(this);
         mGameCtrl.addHandler(this);
 
         mChipInfo = new ChipInfoFragment();
