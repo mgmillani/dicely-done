@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import br.ufrgs.inf.dicelydone.R;
-import br.ufrgs.inf.dicelydone.model.Chip;
 import br.ufrgs.inf.dicelydone.model.ChipSet;
 import br.ufrgs.inf.dicelydone.model.GameControl;
 import br.ufrgs.inf.dicelydone.model.GameSimulation;
@@ -26,6 +25,7 @@ public class PokerGame extends AppCompatActivity
 
     private String mPlayer = "Baz";
     private int mRound = 0;
+    private boolean mFolded = false;
 
     private GameSimulation mGameCtrl;
 
@@ -70,14 +70,21 @@ public class PokerGame extends AppCompatActivity
 
     @Override
     public void onStartGame() {
+        mFolded = false;
+
+        Toast.makeText(this, "Game started.", Toast.LENGTH_LONG).show();
+
         getFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, new WaitingScreen())
                 .hide(mHandInfo)
+                .show(mChipInfo)
                 .commit();
     }
 
     @Override
     public void onStartRollTurn(int turn) {
+        if (mFolded) return;
+
         mRound = turn;
 
         Fragment fragment = new RollingRound();
@@ -94,6 +101,8 @@ public class PokerGame extends AppCompatActivity
 
     @Override
     public void onStartBetTurn(int turn, int minBet) {
+        if (mFolded) return;
+
         mRound = turn;
 
         Fragment roundFragment = new BettingRound();
@@ -121,32 +130,33 @@ public class PokerGame extends AppCompatActivity
     public void onFolded(String player) {
         if (!player.equals(mPlayer)) {
             Toast.makeText(this, player + " folded.", Toast.LENGTH_SHORT).show();
+
+        } else {
+            mFolded = true;
+
+            getFragmentManager().beginTransaction()
+                    .hide(mChipInfo)
+                    .hide(mHandInfo)
+                    .replace(R.id.fragment_container, new WaitingScreen())
+                    .commit();
         }
     }
 
     @Override
     public void onBetPlaced(String player, int totalBet, int individualBet) {
         if (!player.equals(mPlayer)) {
-            //replaceFragment(openWaitingScreen());
-            Toast.makeText(this, "Player " + player + " placed a bet.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, player + " placed a bet.", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void onGameEnded(String winner, int valueWon) {
-        if (!winner.equals(mPlayer)) {
+        if (winner.equals(mPlayer)) {
+            Toast.makeText(this, "You won!", Toast.LENGTH_LONG).show();
+
+        } else {
             Toast.makeText(this, "You lost...", Toast.LENGTH_LONG).show();
-            return;
         }
-
-        ChipSet chipsWon = new ChipSet();
-        for (int i=Chip.values().length-1; i >= 0; i--) {
-            Chip c = Chip.values()[i];
-
-            chipsWon.addChips(c, valueWon/c.getValue());
-            valueWon = valueWon%c.getValue();
-        }
-        Toast.makeText(this, "You won!", Toast.LENGTH_LONG).show();
 
         getFragmentManager().beginTransaction()
                 .hide(mHandInfo)

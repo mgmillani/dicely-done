@@ -77,6 +77,8 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
 
     private ChipSet mPlayerStash;
     private ChipSet mPlayerBet;
+    private ChipSet mAddedBet;
+
     private int mTotalBet;
     private int mIndividualBet;
     private String mPlayer;
@@ -200,6 +202,8 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
                 int taken = mPlayerStash.takeChips(type, 1);
                 if (taken > 0) {
                     mPlayerBet.addChips(type, taken);
+                    mAddedBet.addChips(type, taken);
+
                     mTotalBet += type.getValue() * taken;
                     updateView();
                     mCallback.onBetAndStashChanged(mPlayerStash, mPlayerBet);
@@ -214,6 +218,8 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
                 int taken = mPlayerBet.takeChips(type, 1);
                 if (taken > 0) {
                     mPlayerStash.addChips(type, taken);
+                    mAddedBet.addChips(type, -taken);
+
                     mTotalBet -= type.getValue() * taken;
                     updateView();
                     mCallback.onBetAndStashChanged(mPlayerStash, mPlayerBet);
@@ -274,6 +280,8 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
     @Override
     public void onStartGame() {
         // Nothing needs to be done
+        mTotalBet = 0;
+        mIndividualBet = 0;
     }
 
     @Override
@@ -284,8 +292,24 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
     @Override
     public void onStartBetTurn(int turn, int minBet) {
         setReadOnly(turn != 2);
+        mAddedBet = new ChipSet();
+
+        int addedBet = minBet - mPlayerBet.getValue();
         mIndividualBet = minBet;
-        mPlayerStash.giveUpTo(minBet - mPlayerBet.getValue(), mPlayerBet);
+        mTotalBet += addedBet;
+
+        // Increase the player's bet to the minimum value
+        int toAdd = minBet - mPlayerBet.getValue();
+        for (int i = Chip.values().length-1; i >= 0 && toAdd > 0; i--) {
+            Chip c = Chip.values()[i];
+
+            int taken = mPlayerStash.takeChips(c, toAdd / c.getValue());
+            mPlayerBet.addChips(c, taken);
+            mAddedBet.addChips(c, taken);
+
+            toAdd -= taken * c.getValue();
+        }
+
         updateView();
     }
 
@@ -296,13 +320,20 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
 
     @Override
     public void onFolded(String player) {
-        // Nothing needs to be done
+        if (mPlayer.equals(player)) {
+
+            // Undo the temporary bet
+            for (Chip c : Chip.values()) {
+                mPlayerStash.addChips(c, mAddedBet.getChips(c));
+            }
+
+            mPlayerBet.clear();
+            mAddedBet.clear();
+        }
     }
 
     @Override
     public void onBetPlaced(String player, int totalBet, int individualBet) {
-        if (mPlayer.equals(player)) return;
-
         mTotalBet = totalBet;
         mIndividualBet = individualBet;
         updateView();
