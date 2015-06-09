@@ -28,6 +28,10 @@ public abstract class GameControl {
         mHandlers.add(h);
     }
 
+    public void removeHandler(Handler h) {
+        mHandlers.remove(mHandlers.indexOf(h));
+    }
+
     protected void runOnUiThread(Runnable task) {
         mContext.runOnUiThread(task);
     }
