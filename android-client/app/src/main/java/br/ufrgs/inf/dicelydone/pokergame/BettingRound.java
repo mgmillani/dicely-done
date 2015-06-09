@@ -40,14 +40,8 @@ public class BettingRound extends Fragment {
         void onFolded();
     }
 
-    public static final String ARG_HAND = PokerGame.ARG_HAND;
-
     private EventHandler mCallback;
-
-    private HandView mHandView;
     private Button mBtnBet;
-
-    private Hand mHand;
 
     public BettingRound() {
         // Required empty constructor
@@ -58,28 +52,10 @@ public class BettingRound extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (savedInstanceState != null) {
-            mHand = savedInstanceState.getParcelable(ARG_HAND);
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putParcelable(ARG_HAND, mHand);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View result = inflater.inflate(R.layout.fragment_betting_round, container, false);
 
-        mHandView = (HandView) result.findViewById(R.id.handView);
         mBtnBet = (Button) result.findViewById(R.id.buttonOk);
-
         mBtnBet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,13 +76,6 @@ public class BettingRound extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
-        Bundle args = getArguments();
-        if (args != null) {
-            mHand = args.getParcelable(ARG_HAND);
-        }
-
-        updateView();
     }
 
     @Override
@@ -131,10 +100,6 @@ public class BettingRound extends Fragment {
         if (mCallback == null) return;
 
         mCallback.onFolded();
-    }
-
-    private void updateView() {
-        mHandView.setHand(mHand);
     }
 
 }

@@ -4,8 +4,6 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 import br.ufrgs.inf.dicelydone.R;
@@ -28,11 +26,11 @@ public class PokerGame extends AppCompatActivity
 
 
     private String mPlayer = "Baz";
-    private Hand mHand;
 
     private MockGame mGameCtrl;
 
     private ChipInfoFragment mChipInfo;
+    private HandInfoFragment mHandInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,50 +43,23 @@ public class PokerGame extends AppCompatActivity
         mChipInfo = new ChipInfoFragment();
         mChipInfo.setGameControl(mGameCtrl);
 
-        initGame();
+        mHandInfo = new HandInfoFragment();
+        mHandInfo.setPlayer(mPlayer);
+        mHandInfo.setGameControl(mGameCtrl);
 
-        if (findViewById(R.id.pokergame_fragment_container) != null) {
-
-            // Don't create fragments when being restored to avoid overlapping fragments
-            if (savedInstanceState != null) {
-                return;
-            }
+        if (savedInstanceState == null) {
 
             getFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, openWaitingScreen())
                     .add(R.id.chipinfo_container, mChipInfo)
+                    .add(R.id.handinfo_container, mHandInfo)
+                    .hide(mHandInfo)
                     .commit();
 
         }
 
         mChipInfo.initGame();
         mGameCtrl.join(mPlayer);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_poker_game, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-        case R.id.action_restart:
-            initGame();
-            replaceFragment(openWaitingScreen());
-            mGameCtrl.join("Foo");
-            return true;
-
-        default:
-            return super.onOptionsItemSelected(item);
-        }
-
-    }
-
-    private void initGame() {
-        mHand = new Hand();
     }
 
     private void replaceFragment(Fragment frag) {
@@ -108,15 +79,7 @@ public class PokerGame extends AppCompatActivity
     private Fragment openWaitingScreen() {
         // Create the fragment for the waiting screen
         WaitingScreen fragment = new WaitingScreen();
-        fragment.setArguments(assembleParams());
-
         return fragment;
-    }
-
-    private Bundle assembleParams() {
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_HAND, mHand);
-        return args;
     }
 
     @Override
@@ -129,6 +92,7 @@ public class PokerGame extends AppCompatActivity
         getFragmentManager().beginTransaction()
                 .disallowAddToBackStack()
                 .replace(R.id.fragment_container, openWaitingScreen())
+                .hide(mHandInfo)
                 .commit();
     }
 
@@ -150,7 +114,6 @@ public class PokerGame extends AppCompatActivity
     @Override
     public void onStartBetTurn(int turn, int minBet) {
         Fragment roundFragment = new BettingRound();
-        roundFragment.setArguments(assembleParams());
 
         getFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, roundFragment, "BettingRound")
@@ -164,11 +127,10 @@ public class PokerGame extends AppCompatActivity
     public void onDiceRolled(String player, Hand hand) {
         if (!player.equals(mPlayer)) return;
 
-        mHand = hand;
-
         getFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, openWaitingScreen())
                 .show(mChipInfo)
+                .show(mHandInfo)
                 .commit();
     }
 
@@ -182,7 +144,7 @@ public class PokerGame extends AppCompatActivity
     @Override
     public void onBetPlaced(String player, int totalBet, int individualBet) {
         if (!player.equals(mPlayer)) {
-            replaceFragment(openWaitingScreen());
+            //replaceFragment(openWaitingScreen());
             Toast.makeText(this, "Player " + player + " placed a bet.", Toast.LENGTH_SHORT).show();
         }
     }
