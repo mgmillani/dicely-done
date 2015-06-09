@@ -78,8 +78,6 @@ public class Game {
 
     public void join(String player) {
         mPlayers.add(player);
-        mData.put(player, new PlayerData(0, new Hand()));
-
         Log.v(TAG, player + " joined");
     }
 
@@ -175,6 +173,11 @@ public class Game {
             case CAST:
                 mActivePlayers = new LinkedList<>(mPlayers);
                 mPlayerIt = mActivePlayers.iterator();
+
+                mData.clear();
+                for (String player : mPlayers) {
+                    mData.put(player, new PlayerData(0, new Hand()));
+                }
                 break;
 
             case RESULT:
