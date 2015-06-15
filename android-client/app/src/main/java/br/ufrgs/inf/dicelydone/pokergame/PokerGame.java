@@ -15,10 +15,7 @@ import br.ufrgs.inf.dicelydone.model.Hand;
 public class PokerGame extends AppCompatActivity
     implements GameControl.Handler, RollingRound.EventHandler, BettingRound.EventHandler, ChipInfoFragment.EventHandler {
 
-    /**
-     * This argument must be an instance of {@link Hand} containing the player's dice.
-     */
-    public static final String ARG_HAND = "br.ufrgs.inf.dicelydone.HAND";
+    public static final String EXTRA_NICKNAME = "br.ufrgs.inf.dicelydone.NICKNAME";
 
     private static final String TAG = "PokerGame";
 
@@ -37,29 +34,32 @@ public class PokerGame extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_poker_game);
 
+        // TODO deal with savedInstanceState
+
+        Bundle args = getIntent().getExtras();
+        if (args != null) {
+            mPlayer = args.getString(EXTRA_NICKNAME, mPlayer);
+        }
+
         mGameCtrl = new GameSimulation(this);
         mGameCtrl.addHandler(this);
 
         mChipInfo = new ChipInfoFragment();
-        mChipInfo.setPlayer(mPlayer);
         mChipInfo.setGameControl(mGameCtrl);
+        mChipInfo.setPlayer(mPlayer);
+        mChipInfo.initGame();
 
         mHandInfo = new HandInfoFragment();
-        mHandInfo.setPlayer(mPlayer);
         mHandInfo.setGameControl(mGameCtrl);
+        mHandInfo.setPlayer(mPlayer);
 
-        if (savedInstanceState == null) {
+        getFragmentManager().beginTransaction()
+                .add(R.id.fragment_container, new WaitingScreen())
+                .add(R.id.chipinfo_container, mChipInfo)
+                .add(R.id.handinfo_container, mHandInfo)
+                .hide(mHandInfo)
+                .commit();
 
-            getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, new WaitingScreen())
-                    .add(R.id.chipinfo_container, mChipInfo)
-                    .add(R.id.handinfo_container, mHandInfo)
-                    .hide(mHandInfo)
-                    .commit();
-
-        }
-
-        mChipInfo.initGame();
         mGameCtrl.join(mPlayer);
     }
 
