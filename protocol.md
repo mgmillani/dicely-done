@@ -57,7 +57,7 @@ A mensagem `join <name>` registra o nome do jogador no servidor.
                                 startgame <startbet>
                                 ...
 
-A mensagem `startgame <startbet>` indica que um jogo foi iniciado e cada jogador começará apostando <startbet>.
+A mensagem `startgame <startbet>` indica que um jogo foi iniciado e cada jogador começará apostando `<startbet>`.
 
 A mensagem `startturn <round> ...` indica que o turno de um jogador foi iniciado, na rodada passada. Além disso, nas rodadas de aposta (2 e 3), o valor mínimo da aposta é passado.
 
