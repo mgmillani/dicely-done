@@ -14,6 +14,7 @@ public:
 	Player(std::string name, t_score score);
 
 	t_hand hand;
+	int socket;
 	std::string name;
 	t_score score;
 	t_score bet;
