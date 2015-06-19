@@ -1,0 +1,26 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="PokerGame.TextAppearance.Instructions" parent="@android:style/Widget.TextView">
+        <item name="android:textSize">@dimen/text_size_instructions</item>
+        <item name="android:textColor">@color/bright_foreground_material_light</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="PokerGame.TextAppearance.Label" parent="@android:style/Widget.TextView">
+        <item name="android:textSize">@dimen/text_size_label</item>
+        <item name="android:textColor">@color/dim_foreground_material_light</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="PokerGame.TextAppearance.ChipSumVal" parent="@android:style/Widget.TextView">
+        <item name="android:textSize">@dimen/text_size_chipsumval</item>
+        <item name="android:textColor">@color/bright_foreground_material_light</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+</resources>

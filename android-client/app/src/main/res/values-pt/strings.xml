@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="bet_minimum">Aposta Mínima:</string>
+    <string name="bet_player">Sua Aposta:</string>
+    <string name="bet_total">Aposta Total:</string>
+
+    <string name="chips_player">Suas fichas:</string>
+
+    <string name="instruction_bet">Aposte</string>
+    <string name="instruction_roll_dice">Jogue os dados</string>
+    <string name="instruction_reroll_dice">Jogue alguns dados novamente</string>
+    <string name="instruction_wait">Espere a sua vez</string>
+
+    <string name="label_hand">Sua Mão:</string>
+    <string name="label_join">Entrar no Jogo</string>
+    <string name="label_nickname">Nickname</string>
+
+    <string name="toast_joined_server">Conectado ao servidor</string>
+
+</resources>

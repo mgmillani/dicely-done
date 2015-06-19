@@ -1,5 +1,7 @@
 # Sugestão de protocolo para o Dicely Done
 
+O protocolo deve ser implementado sobre TCP.
+
 #### Notação
 
 As mensagens entre `[]` são para a versão totalmente virtual.
@@ -24,11 +26,9 @@ A mensagem `join <name>` registra o nome do jogador no servidor.
     Client                      Server
     --------------------------------------------------------------
                                 startgame <startbet>
-    ack
 
                                *dice <player> <d1> <d2> <d3> <d4> <d5>
                                 startturn 1
-    ack
     [roll]
                                +dice <d1> <d2> <d3> <d4> <d5>
 
@@ -36,14 +36,12 @@ A mensagem `join <name>` registra o nome do jogador no servidor.
                                 | folded <player>
                                 | endgame <winner> <amount won> )
                                 startturn 2 <minbet>
-    ack
     bet <val>
                                +( betplaced <player> <singlebet> <totalbet>
                                 | folded <player>
                                 | endgame <winner> <amount won> )
 
                                 startturn 3 <bet>
-    ack
     bet <val>
                                +( betplaced <player> <singlebet> <totalbet>
                                 | folded <player>
@@ -51,20 +49,17 @@ A mensagem `join <name>` registra o nome do jogador no servidor.
 
                                *dice <player> <d1> <d2> <d3> <d4> <d5>
                                 startturn 4
-    ack
     [reroll <d1> ... <dn>]
                                +dice <d1> <d2> <d3> <d4> <d5>
 
                                 endgame <winner> <amount won>
-    (ack | quit)
+    (restart | quit)
                                 startgame <startbet>
                                 ...
 
-A mensagem `startgame <startbet>` indica que um jogo foi iniciado e cada jogador começará apostando <startbet>.
+A mensagem `startgame <startbet>` indica que um jogo foi iniciado e cada jogador começará apostando `<startbet>`.
 
 A mensagem `startturn <round> ...` indica que o turno de um jogador foi iniciado, na rodada passada. Além disso, nas rodadas de aposta (2 e 3), o valor mínimo da aposta é passado.
-
-A mensagem `ack` é usada para confirmar a conexão do cliente, enviada como resposta ao `startturn`. O servidor pode detectar a ausência de um cliente caso não receba essa mensagem em até X segundos. O comportamento do sistema no caso de desconexão é descrito na seção Desconectando o Cliente. TODO definir timeout para o `ack`.
 
 A mensagem `dice <player> <d1> ... <d5>` informa os jogadores sobre os dados obtidos pelo jogador passado. Cada valor `<di>` vai de 1 a 6.
 
@@ -82,6 +77,10 @@ A mensagem `victory <c1> <c5> <c10>` contém o número de fichas de cada tipo
 que o jogador venceu ao fim do jogo.
 
 A mensagem `endgame <winner> <amount won>` informa aos clientes qual jogador venceu e quanto ganhou. A única mensagem válida após essa é `startgame`. Normalmente ocorre após a rodada 4, porém pode ocorrer antes caso todos os jogadores (exceto um) desistam.
+
+A mensagem `restart` informa ao servidor que o jogador está pronto para começar uma nova partida.
+
+A mensagem `quit` informa ao servidor que o jogador sairá do jogo. Pode ser enviada a qualquer momento.
 
 ## Desistência:
 
