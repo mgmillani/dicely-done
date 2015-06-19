@@ -100,8 +100,6 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-	
-
 	namedWindow( window, CV_WINDOW_AUTOSIZE );
 	std::vector<t_dface> faces;
 	time_point<steady_clock> t0;
@@ -119,8 +117,8 @@ int main(int argc, char** argv)
 	//game.add(&localGame);	
 	Connection conn(1337, &game);
 
-	conn.join("Geralt");
-	conn.join("Zoltan");
+	/*conn.join("Geralt");
+		conn.join("Zoltan");*/
 
 	int n=2;
 	while(1)
@@ -149,10 +147,6 @@ int main(int argc, char** argv)
 					t_face face = dface.f;
 					Point center(face.center[0], face.center[1]);
 					int v = face.value;
-					if(v == 0)
-					{
-						TRACE("wtf?");
-					}
 					if(dface.trust > increment*2)
 					{
 						//ERR("  Value:%d   %d\n",v, dface.trust);
@@ -178,11 +172,11 @@ int main(int argc, char** argv)
 
 				break;
 			case Game::Info::BET:
-				game.giveBet(n);
-				n = (n+1)%5;
+				//game.giveBet(n);
+				//n = (n+1)%5;
 				break;
 			case Game::Info::ACK:
-				game.giveAck();
+				//game.giveAck();
 				break;
 		}
 
