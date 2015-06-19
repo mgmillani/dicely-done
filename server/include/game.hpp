@@ -31,6 +31,7 @@ public:
 	, HIGHEST
 	};
 	Game();
+	Game(t_score minBet, t_score startScore );
 	
 	bool join(std::string player);
 	bool join(Player *player);
@@ -102,6 +103,8 @@ public:
 
 class RemoteGame : public Game
 {
+public:
+	RemoteGame(t_score minBet, t_score startScore );
 	void broadcast(std::string msg);
 	/**
 	 * let the game begin!
@@ -146,6 +149,7 @@ class RemoteGame : public Game
 class MultiGame : public Game
 {
 public:
+	MultiGame(t_score minBet, t_score startScore );
 	void add(Game *game);
 	std::list<Game*> games;
 	
@@ -168,6 +172,7 @@ public:
 class LocalGame : public Game
 {
 public:
+	LocalGame(t_score minBet, t_score startScore );
 	LocalGame();
 /**
  * let the game begin!

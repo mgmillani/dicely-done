@@ -122,6 +122,16 @@ Game::Game()
 	this->startScore = 45;
 }
 
+Game::Game(t_score minBet, t_score startScore)
+{
+	this->round = Game::Round::INITIAL;
+	this->needed = Game::Info::NOTHING;
+	this->pot = 0;
+	this->minBet = minBet;
+	this->playerBet = minBet;
+	this->startScore = startScore;
+}
+
 bool Game::join(Player *player)
 {
 	for(list<Player*>::iterator it = this->players.begin() ; it!=players.end() ; it++)
@@ -130,7 +140,7 @@ bool Game::join(Player *player)
 		if(p->name.compare(player->name) == 0)
 			return false;
 	}
-	
+	player->score = this->startScore;
 	this->players.push_back(player);
 	if(this->round == Round::INITIAL)
 		this->activePlayers.push_back(player);
@@ -229,7 +239,7 @@ void Game::giveBet(t_score bet)
 			if(p->bet + bet > this->playerBet)
 				break;
 		case Round::BET:
-			if(p->bet + bet >= this->playerBet)
+			if(p->bet + bet >= this->playerBet && p->score >= bet)
 			{
 				p->score -= bet;
 				p->bet += bet;
@@ -255,6 +265,8 @@ void Game::giveFold()
 		case Round::BET:
 			this->activePlayers.erase(this->currentPlayer);
 			this->informFold(p);			
+			if(this->activePlayers.size() == 1)
+				this->round = Round::RECAST; // will be sent to final round after nextPlayer()
 			this->nextPlayer();
 			break;
 	}
@@ -475,6 +487,16 @@ void Game::informJoin(Player *p)
  * ======================== 
  */
 
+MultiGame::MultiGame(t_score minBet, t_score startScore)
+{
+	this->round = Game::Round::INITIAL;
+	this->needed = Game::Info::NOTHING;
+	this->pot = 0;
+	this->minBet = minBet;
+	this->playerBet = minBet;
+	this->startScore = startScore;
+}
+
 void MultiGame::add(Game *game)
 {
 	this->games.push_back(game);
@@ -575,6 +597,16 @@ Game::Info MultiGame::getNeeded()
  * ==========================
  */
  
+LocalGame::LocalGame(t_score minBet, t_score startScore)
+{
+	this->round = Game::Round::INITIAL;
+	this->needed = Game::Info::NOTHING;
+	this->pot = 0;
+	this->minBet = minBet;
+	this->playerBet = minBet;
+	this->startScore = startScore;
+} 
+ 
 LocalGame::LocalGame() : Game::Game()
 {
 	/*this->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -650,6 +682,16 @@ void LocalGame::informJoin(Player *p)
 /***************
  * REMOTE GAME *
  ***************/
+
+RemoteGame::RemoteGame(t_score minBet, t_score startScore)
+{
+	this->round = Game::Round::INITIAL;
+	this->needed = Game::Info::NOTHING;
+	this->pot = 0;
+	this->minBet = minBet;
+	this->playerBet = minBet;
+	this->startScore = startScore;
+}
 
 void RemoteGame::broadcast(string msg)
 {
