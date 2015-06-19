@@ -11,14 +11,20 @@ class Connection
 public:
 	Connection(int port, MultiGame *game);
 	void receiveMessages();
-	void join(const char *name);
-	void ack();
-	void bet(t_score val);
-	void reroll(int *dice, int n);
-	void quit();
+	void join(Player *player);
+	void ack(Player *player);
+	void bet(Player *player, t_score val);
+	void restart(Player *player);
+	void reroll(Player *player, t_hand h);
+	void roll(Player *player);
+	void quit(Player *player);
+	void setupSocket();
+	int doTcp(char *buffer, size_t bufferLen);
+	void newConnections();
 	
 	MultiGame *game;
-	int port;
+	int tcpPort;
+	int tcpSocket;
 	std::default_random_engine generator;
 	std::uniform_int_distribution<int> distribution;
 	// TODO: change this to include address
