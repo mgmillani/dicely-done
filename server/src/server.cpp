@@ -152,13 +152,12 @@ int main(int argc, char** argv)
 	{
 		printf("usage:\n%s [OPTIONS]\n\n", argv[0]);
 		printf("Options:\n");
-		printf("--camera <num=1>        sets camera to be used.\n");
-		printf("--port <num=1337>       sets port to be used.\n");
-		printf("--start-score <num=10>  sets starting score of each player.\n");
-		printf("--minimum-bet <num=1>   sets minimum bet before each round.\n");
+		printf(" --camera <num=1>        sets camera to be used.\n");
+		printf(" --port <num=1337>       sets port to be used.\n");
+		printf(" --start-score <num=10>  sets starting score of each player.\n");
+		printf(" --minimum-bet <num=1>   sets minimum bet before each round.\n");
+		exit(1);
 	}
-
-	ERR("cam: %d\n", cam);
 
 	VideoCapture cap(cam);
 	if(!cap.isOpened())
