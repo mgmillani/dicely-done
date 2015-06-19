@@ -21,9 +21,10 @@
 
 #define MSG_SIZE 64
 
-Connection::Connection(int port, MultiGame *game)
+Connection::Connection(int port, MultiGame *game, bool verbose)
 {
 	
+	this->verbose = verbose;
 	this->generator.seed(time(NULL));
 	this->tcpPort = port;
 	this->game = game;
@@ -79,17 +80,24 @@ void Connection::newConnections()
 	int newSocket = accept(this->tcpSocket, NULL, NULL);
 	if(newSocket < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
 	{
+		//TRACE("Error: %s (%d)\n", strerror(errno), errno);
 		return;
 	}
 	if(fcntl(newSocket, F_SETFL, O_NONBLOCK) == -1)
 	{
-		ERR("Error: %s (%d)\n", strerror(errno), errno);
+		TRACE("Error: %s (%d)\n", strerror(errno), errno);
 		return;
 	}
 	
 	Player *p = new Player("",0);
 	p->socket = newSocket;
 	this->players.push_back(p);
+	
+	if(this->verbose)
+	{
+		ERR("new client on socket %d\n", p->socket);
+	}
+	
 }
 
 void Connection::receiveMessages()
@@ -101,7 +109,7 @@ void Connection::receiveMessages()
 		Player *player = *it;
 		this->sender = player;
 		int socket = player->socket;
-		ssize_t s = recv(socket, buffer, sizeof(buffer), 0);
+		ssize_t s = recv(socket, buffer, sizeof(buffer)-1, 0);
 		typedef enum e_state {S_TYPE, S_BET, S_REROLL, S_JOIN, S_SKIP} e_state;
 		e_state state = S_TYPE;
 		t_hand hand;
@@ -109,6 +117,11 @@ void Connection::receiveMessages()
 		while( s > 0 )
 		{
 			buffer[s] = '\0';
+			if(this->verbose)
+			{
+				ERR("Player <%s> on socket %d sent '%s'\n", player->name.c_str(), player->socket, buffer);
+			}
+			
 			char *word = strtok(buffer, " \n\t\r");
 			do
 			{
@@ -159,6 +172,10 @@ void Connection::receiveMessages()
 		}
 		if(s==0)
 		{
+			if(this->verbose)
+			{
+				ERR("Player <%s> on socket %d disconnected\n", player->name.c_str(), player->socket);
+			}
 			it = this->players.erase(it);
 			close(player->socket);
 			delete player;			

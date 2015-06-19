@@ -9,7 +9,7 @@
 class Connection
 {
 public:
-	Connection(int port, MultiGame *game);
+	Connection(int port, MultiGame *game, bool verbose);
 	void receiveMessages();
 	void join(Player *player);
 	void ack(Player *player);
@@ -25,6 +25,7 @@ public:
 	MultiGame *game;
 	int tcpPort;
 	int tcpSocket;
+	bool verbose;
 	std::default_random_engine generator;
 	std::uniform_int_distribution<int> distribution;
 	// TODO: change this to include address

@@ -99,6 +99,7 @@ int main(int argc, char** argv)
 	t_score minBet = 1;
 	t_score startScore = 10;
 	bool help = false;
+	bool verbose = false;
 	for(int i=1 ; i< argc ; i++)
 	{
 		if       (strcmp(argv[i], "--camera") == 0)
@@ -141,6 +142,10 @@ int main(int argc, char** argv)
 			}
 			port = atoi(argv[i]);
 		}
+		else if (strcmp(argv[i], "--verbose") == 0)
+		{
+			verbose = true;
+		}
 		else
 		{
 			help = true;
@@ -181,7 +186,7 @@ int main(int argc, char** argv)
 	MultiGame game(minBet, startScore);
 	game.add(&remoteGame);
 	//game.add(&localGame);	
-	Connection conn(port, &game);
+	Connection conn(port, &game, verbose);
 
 	/*conn.join("Geralt");
 		conn.join("Zoltan");*/
