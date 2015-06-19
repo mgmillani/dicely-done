@@ -67,7 +67,7 @@ A mensagem `roll` informa o servidor de que os dados devem ser sorteados. _Apena
 
 A mensagem `reroll <d1> ... <dn>` informa o servidor de que `5-n` dados devem ser sorteados, completando a mão com os `0 < n <= 5` dados passados. _Apenas na versão totalmente virtual_.
 
-A mensagem `bet <val>` contém o valor apostado pelo jogador. O valor enviado contém o valor apostado anteriormente, isto é, deve ser usado como aposta total do jogador e não somado à aposta anterior.
+A mensagem `bet <val>` contém o valor apostado pelo jogador. O valor enviado contém o quanto o jogador aumentou a aposta e deve ser somado a sua aposta anterior.
 
 A mensagem `betplaced <player> <singlebet> <totalbet>` informa os jogadores de que o jogador `<player>` apostou, desde o início do jogo `<singlebet>`, e que a soma das apostas dos jogadores é `<totalbet>`.
 
