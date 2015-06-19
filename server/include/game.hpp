@@ -32,17 +32,21 @@ public:
 	};
 	Game();
 	
-	void join(std::string player);
+	bool join(std::string player);
+	bool join(Player *player);
 	void quit(std::string player);
 	void giveHand(t_hand hand);
 	void giveHandAck();
 	void giveBet(t_score bet);	
 	void giveFold();
 	void updateNeeded();
+	void restart();
 	void giveAck();
+	void giveAck(Player *player);
 	void decideWinner();
 	void nextPlayer();
 	void nextRound();
+	bool isPlayerTurn(Player *player);
 	Game::Info getNeeded();
 	/**
 	 * notification functions. Used to signalize someone of what is going on
@@ -50,39 +54,39 @@ public:
 	/**
 	 * let the game begin!
 	 */
-	void informStart();
+	virtual void informStart();
 	/**
 	 * who is the current player
 	 */
-	void informPlayer();
+	virtual void informPlayer();
 	/**
 	 * what is the current round
 	 */
-	void informRound();
+	virtual void informRound();
 	/**
 	 * which is the hand of the given player
 	 */
-	void informHand(Player *p);
+	virtual void informHand(Player *p);
 	/**
 	 * total bet of the given player
 	 */
-	void informBet(Player *p);
+	virtual void informBet(Player *p);
 	/**
 	 * given player gave up
 	 */
-	void informFold(Player *p);
+	virtual void informFold(Player *p);
 	/**
 	 * given player left the game
 	 */
-	void informQuit(Player *p);
+	virtual void informQuit(Player *p);
 	/**
 	 * given player has joined
 	 */
-	void informJoin(Player *p);
+	virtual void informJoin(Player *p);
 	/**
 	 * who won the game
 	 */
-	void informWinner();
+	virtual void informWinner();
 	
 	std::list<Player*> players;
 	std::list<Player*> activePlayers;
@@ -98,9 +102,43 @@ public:
 
 class RemoteGame : public Game
 {
-	void informPlayer();
-	void informRound();
-	void informWinner();
+	void broadcast(std::string msg);
+	/**
+	 * let the game begin!
+	 */
+	virtual void informStart();
+	/**
+	 * who is the current player
+	 */
+	virtual void informPlayer();
+	/**
+	 * what is the current round
+	 */
+	virtual void informRound();
+	/**
+	 * which is the hand of the given player
+	 */
+	virtual void informHand(Player *p);
+	/**
+	 * total bet of the given player
+	 */
+	virtual void informBet(Player *p);
+	/**
+	 * given player gave up
+	 */
+	virtual void informFold(Player *p);
+	/**
+	 * given player left the game
+	 */
+	virtual void informQuit(Player *p);
+	/**
+	 * given player has joined
+	 */
+	virtual void informJoin(Player *p);
+	/**
+	 * who won the game
+	 */
+	virtual void informWinner();
 };
 
 // hack to show Gtk window parallel to a running server
@@ -111,13 +149,17 @@ public:
 	void add(Game *game);
 	std::list<Game*> games;
 	
-	void join(std::string player);
+	bool join(std::string player);
+	bool join(Player *player);
 	void quit(std::string player);
 	void giveHand(t_hand hand);
 	void giveHandAck();
 	void giveBet(t_score bet);	
 	void giveFold();
 	void giveAck();
+	void restart();
+	void giveAck(Player *player);
+	bool isPlayerTurn(Player *player);
 	Game::Info getNeeded();
 };
 

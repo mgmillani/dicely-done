@@ -1,5 +1,13 @@
-#include <stdlib.h>
+#include <sstream>
 #include <list>
+
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/fcntl.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 
 #include "game.hpp"
 #include "player.hpp"
@@ -8,6 +16,9 @@
 #include "debug.h"
 
 using namespace std;
+
+const string gStartGame = "startgame";
+const string gStartTurn = "startturn";
 
 bool comparePlayerHand(Player *first, Player *second)
 {
@@ -110,13 +121,19 @@ Game::Game()
 	this->playerBet = minBet;
 	this->startScore = 45;
 }
-	
-void Game::join(string player)
+
+bool Game::join(Player *player)
 {
-	Player *p = new Player(player, this->startScore);
-	this->players.push_back(p);
+	for(list<Player*>::iterator it = this->players.begin() ; it!=players.end() ; it++)
+	{
+		Player *p = *it;
+		if(p->name.compare(player->name) == 0)
+			return false;
+	}
+	
+	this->players.push_back(player);
 	if(this->round == Round::INITIAL)
-		this->activePlayers.push_back(p);
+		this->activePlayers.push_back(player);
 	if(this->players.size() == 1)
 	{
 		this->currentPlayer = this->activePlayers.begin();
@@ -124,8 +141,20 @@ void Game::join(string player)
 		this->informPlayer();
 	}
 	this->pot += this->minBet;
-	p->bet = this->minBet;
-	this->informJoin(p);
+	player->bet = this->minBet;
+	this->informJoin(player);
+	return true;
+}
+	
+bool Game::join(string player)
+{
+	Player *p = new Player(player, this->startScore);
+	if(!this->join(p))
+	{
+		delete p;
+		return false;
+	}
+	return true;
 }
 
 void Game::quit(string player)
@@ -245,36 +274,59 @@ void Game::giveHandAck()
 	}
 }
 
+void Game::giveAck(Player *player)
+{
+	if(this->round == Round::RESULT)
+	{
+		// checks if the player is already active
+		bool found = false;
+		for(list<Player*>::iterator it = this->activePlayers.begin() ; it!=this->activePlayers.end() && !found ; it++)
+		{
+			found = player->name.compare((*it)->name) == 0;				
+		}
+		if(!found)			
+		{
+			this->activePlayers.push_back(player);
+		}
+	}
+	
+	// if everyone agreed to restart
+	if(this->activePlayers.size() == this->players.size())
+	{
+		this->restart();
+	}
+}
+
 void Game::giveAck()
 {
-	switch(this->round)
+	if(this->round == Round::RESULT)
 	{
-
-		case Round::RESULT:
-			// clears the pot
-			this->pot = 0;
-			// resets player bets
-			for(list<Player*>::iterator it = this->players.begin() ; it!=this->players.end() ; it++)
-			{
-				(*it)->bet = this->minBet;
-				pot += this->minBet;
-				this->playerBet = this->minBet;
-			}
-			// rotate player order
-			this->players.push_back(*this->players.begin());
-			this->players.pop_front();
-			this->activePlayers = this->players;
-			// start from first player
-			this->currentPlayer = this->activePlayers.begin();
-			// go back to the first round
-			this->round = Round::INITIAL;
-			this->updateNeeded();
-			this->informPlayer();
-			this->informRound();
-			break;
-		default:
-			break;
+		this->restart();
 	}
+}
+
+void Game::restart()
+{
+	// clears the pot
+	this->pot = 0;
+	// resets player bets
+	for(list<Player*>::iterator it = this->players.begin() ; it!=this->players.end() ; it++)
+	{
+		(*it)->bet = this->minBet;
+		pot += this->minBet;
+		this->playerBet = this->minBet;
+	}
+	// rotate player order
+	this->players.push_back(*this->players.begin());
+	this->players.pop_front();
+	this->activePlayers = this->players;
+	// start from first player
+	this->currentPlayer = this->activePlayers.begin();
+	// go back to the first round
+	this->round = Round::INITIAL;
+	this->updateNeeded();
+	this->informPlayer();
+	this->informRound();
 }
 	
 void Game::updateNeeded()
@@ -335,6 +387,7 @@ void Game::nextRound()
 			// winner gets the pot
 			Player *p = *this->winner;
 			p->score += this->pot;
+			this->activePlayers.clear();
 			this->informWinner();
 		}
 			break;
@@ -349,6 +402,11 @@ void Game::nextRound()
 Game::Info Game::getNeeded()
 {
 	return this->needed;
+}
+
+bool Game::isPlayerTurn(Player *player)
+{
+	return player->name.compare((*this->currentPlayer)->name) == 0;
 }
 
 void Game::informStart()
@@ -422,18 +480,45 @@ void MultiGame::add(Game *game)
 	this->games.push_back(game);
 }
 
-void MultiGame::join(std::string player)
+bool MultiGame::isPlayerTurn(Player *player)
 {
+	list<Game*>::iterator it = this->games.begin();
+	Game *g = *it;
+	return g->isPlayerTurn(player);
+}
+
+bool MultiGame::join(std::string player)
+{
+	bool retval = true;
 	for(list<Game*>::iterator it = this->games.begin() ; it!=this->games.end() ; it++)
 	{
-		(*it)->join(player);
+		retval = (*it)->join(player);
 	}
+	return retval;
 }
+
+bool MultiGame::join(Player *player)
+{
+	bool retval = true;
+	for(list<Game*>::iterator it = this->games.begin() ; it!=this->games.end() ; it++)
+	{
+		retval = (*it)->join(player);
+	}
+	return retval;
+}
+
 void MultiGame::quit(std::string player)
 {
 	for(list<Game*>::iterator it = this->games.begin() ; it!=this->games.end() ; it++)
 	{
 		(*it)->quit(player);
+	}
+}
+void MultiGame::restart()
+{
+	for(list<Game*>::iterator it = this->games.begin() ; it!=this->games.end() ; it++)
+	{
+		(*it)->restart();
 	}
 }
 void MultiGame::giveHand(t_hand hand)
@@ -469,6 +554,13 @@ void MultiGame::giveAck()
 	for(list<Game*>::iterator it = this->games.begin() ; it!=this->games.end() ; it++)
 	{
 		(*it)->giveAck();
+	}
+}
+void MultiGame::giveAck(Player *player)
+{
+	for(list<Game*>::iterator it = this->games.begin() ; it!=this->games.end() ; it++)
+	{
+		(*it)->giveAck(player);
 	}
 }
 Game::Info MultiGame::getNeeded()
@@ -551,4 +643,126 @@ void LocalGame::informQuit(Player *p)
 void LocalGame::informJoin(Player *p)
 {
 	printf("join %s\n", p->name.c_str());
+}
+
+
+
+/***************
+ * REMOTE GAME *
+ ***************/
+
+void RemoteGame::broadcast(string msg)
+{
+	for(list<Player*>::iterator it = this->players.begin() ; it!=this->players.end() ; it++)
+	{
+		Player *player = *it;
+		send(player->socket, msg.c_str(), msg.size(), 0);
+	}
+}
+
+void RemoteGame::informStart()
+{
+	char msg[] = "startgame";
+	for(list<Player*>::iterator it = this->players.begin() ; it!=this->players.end() ; it++)
+	{
+		Player *player = *it;
+		send(player->socket, msg, sizeof(msg), 0);
+	}
+
+}
+void RemoteGame::informPlayer()
+{
+	Player *p = *this->currentPlayer;
+	stringstream msg;
+	msg << "startturn";
+	msg << " " << (int)this->round;
+	string msgStr;
+	switch(this->round)
+	{
+		case Round::INITIAL:
+		case Round::RECAST:
+			msg << "\n";
+			msgStr = msg.str();
+			send(p->socket, msgStr.c_str(), msgStr.size(), 0);
+			break;
+		case Round::RESULT: break;
+		case Round::BET:
+		case Round::MATCH:
+			msg << " " << this->playerBet << "\n";
+			msgStr = msg.str();
+			send(p->socket, msgStr.c_str(), msgStr.size(), 0);
+			break;
+	}
+}
+
+void RemoteGame::informRound()
+{
+	this->informPlayer();
+/*
+	stringstream msg;
+	msg << "startturn";
+	msg << " " << (int)this->round;
+	switch(this->round)
+	{
+		case Round::INITIAL: 
+		case Round::RECAST:
+			msg << "\n";
+			this->broadcast(msg.str());
+			break;
+		case Round::RESULT: break;
+		case Round::BET:     
+		case Round::MATCH:
+			msg << " " << this->playerBet << "\n";
+			this->broadcast(msg.str());
+			break;
+	}
+*/
+}
+
+void RemoteGame::informWinner()
+{
+	stringstream ss;
+	ss << "endgame " << (*this->winner)->name << " " << this->pot << "\n";
+	this->broadcast(ss.str());
+}
+
+void RemoteGame::informHand(Player *p)
+{
+	stringstream ss;
+	ss << "dice " << p->name;	
+	for(int i=0 ; i<p->hand.len ; i++)
+	{
+		ss << " " << p->hand.values[i];
+	}
+	
+	ss << "\n";
+	this->broadcast(ss.str());
+}
+
+void RemoteGame::informBet(Player *p)
+{
+	stringstream ss;
+	ss << "betplaced " << p->name << " " << p->bet << " " << this->pot << "\n";
+	this->broadcast(ss.str());
+}
+
+void RemoteGame::informFold(Player *p)
+{
+	stringstream ss;
+	ss << "folded " << p->name << "\n";
+	this->broadcast(ss.str());
+}
+
+void RemoteGame::informQuit(Player *p)
+{
+	stringstream ss;
+	ss << "quit " << p->name << "\n";
+	this->broadcast(ss.str());
+}
+
+void RemoteGame::informJoin(Player *p)
+{
+	stringstream ss;
+	ss << "join " << p->name << "\n";
+	this->broadcast(ss.str());
 }
