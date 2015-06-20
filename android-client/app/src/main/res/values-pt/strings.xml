@@ -13,6 +13,8 @@
     <string name="error_connect_failed">Não conectou com o servidor.</string>
     <string name="error_disconnect">Perdeu conexão com servidor.</string>
     <string name="error_nick_required">Digite um nome.</string>
+    <string name="error_nick_whitespace">Não pode conter espaços.</string>
+
 
     <string name="instruction_bet">Aposte</string>
     <string name="instruction_roll_dice">Jogue os dados</string>

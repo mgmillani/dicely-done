@@ -13,6 +13,7 @@
     <string name="error_connect_failed">Failed connecting to the server.</string>
     <string name="error_disconnect">Lost connection to the server.</string>
     <string name="error_nick_required">You need a nickname to play.</string>
+    <string name="error_nick_whitespace">Cannot contain whitespace.</string>
 
     <string name="instruction_bet">Place your bet</string>
     <string name="instruction_roll_dice">Roll your dice</string>

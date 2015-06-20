@@ -83,6 +83,11 @@ public class StartGameActivity extends AppCompatActivity {
             return;
         }
 
+        if (nick.indexOf(' ') != -1 || nick.indexOf('\t') != -1) {
+            mNickEdit.setError(getString(R.string.error_nick_whitespace));
+            return;
+        }
+
         Intent intent = new Intent(StartGameActivity.this, PokerGame.class);
         intent.putExtra(PokerGame.EXTRA_NICKNAME, nick);
 
