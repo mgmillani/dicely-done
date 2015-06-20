@@ -38,7 +38,8 @@ public class StartGameActivity extends AppCompatActivity {
             mSrvPortEdit.setText(savedInstanceState.getCharSequence("SRV_PORT"));
         }
 
-        mNickEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+        TextView.OnEditorActionListener actionListener = new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == R.id.start_game || actionId == EditorInfo.IME_NULL) {
@@ -47,7 +48,9 @@ public class StartGameActivity extends AppCompatActivity {
                 }
                 return false;
             }
-        });
+        };
+        mNickEdit.setOnEditorActionListener(actionListener);
+        mSrvPortEdit.setOnEditorActionListener(actionListener);
 
         mCbSimulate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

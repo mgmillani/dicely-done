@@ -53,13 +53,15 @@
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/nickEdit"
+        android:layout_alignBaseline="@+id/serverAddrEdit"
+        android:layout_below="@+id/serverAddrEdit"
         android:inputType="number"
         android:ems="10"
         android:id="@+id/serverPortEdit"
         android:hint="@string/label_server_port"
-        android:imeOptions="actionNext"
-        android:layout_alignBaseline="@+id/serverAddrEdit"
-        android:layout_below="@+id/serverAddrEdit" />
+        android:imeActionId="@+id/start_game"
+        android:imeActionLabel="@string/action_start"
+        android:imeOptions="actionUnspecified" />
 
     <TextView
         android:layout_width="wrap_content"
