@@ -29,7 +29,7 @@ bool comparePlayerHand(Player *first, Player *second)
 		second->rank = getRank(second);
 	if(first->rank != second->rank)
 		return first->rank < second->rank;
-	
+
 	// if they have the same rank, we need to use some undraw criterion.
 	return true;
 }
@@ -107,10 +107,10 @@ Game::Rank getRank(const Player *p)
 	{
 		return Game::Rank::FULL_HOUSE;
 	}
-	
+
 	// nothing
 	return Game::Rank::HIGHEST;
-	
+
 }
 
 Game::Game()
@@ -143,6 +143,7 @@ bool Game::join(Player *player)
 	}
 	player->score = this->startScore;
 	this->players.push_back(player);
+	this->informJoin(player);
 	if(this->round == Round::INITIAL)
 	{
 		this->activePlayers.push_back(player);
@@ -156,10 +157,9 @@ bool Game::join(Player *player)
 	}
 	this->pot += this->minBet;
 	player->bet = this->minBet;
-	this->informJoin(player);
 	return true;
 }
-	
+
 bool Game::join(string player)
 {
 	Player *p = new Player(player, this->startScore);
@@ -188,10 +188,10 @@ void Game::quit(string player)
 		if(p->name.compare(player) == 0)
 		{
 			this->informQuit(p);
-			players.erase(it);			
+			players.erase(it);
 			delete p;
 			return;
-		}		
+		}
 	}
 }
 
@@ -235,7 +235,7 @@ void Game::giveBet(t_score bet)
 	{
 		case Round::INITIAL:
 			break;
-		case Round::RECAST:				
+		case Round::RECAST:
 			break;
 		case Round::RESULT:
 			break;
@@ -277,7 +277,7 @@ void Game::giveFold()
 				this->finish();
 				this->informRound();
 			}
-			
+
 			break;
 	}
 }
@@ -304,14 +304,14 @@ void Game::giveAck(Player *player)
 		bool found = false;
 		for(list<Player*>::iterator it = this->activePlayers.begin() ; it!=this->activePlayers.end() && !found ; it++)
 		{
-			found = player->name.compare((*it)->name) == 0;				
+			found = player->name.compare((*it)->name) == 0;
 		}
-		if(!found)			
+		if(!found)
 		{
 			this->activePlayers.push_back(player);
 		}
 	}
-	
+
 	// if everyone agreed to restart
 	if(this->activePlayers.size() == this->players.size())
 	{
@@ -350,9 +350,9 @@ void Game::restart()
 	this->informStart();
 	this->informPlayer();
 	this->informRound();
-	
+
 }
-	
+
 void Game::updateNeeded()
 {
 	switch(this->round)
@@ -388,8 +388,8 @@ void Game::decideWinner()
 
 void Game::nextPlayer()
 {
-	this->currentPlayer++;	
-	
+	this->currentPlayer++;
+
 	if(this->currentPlayer == this->activePlayers.end())
 	{
 		this->nextRound();
@@ -452,17 +452,17 @@ void Game::informPlayer()
 
 void Game::informRound()
 {
-	
+
 	switch(this->round)
 	{
-		case Round::INITIAL: 
-		case Round::RECAST:  
+		case Round::INITIAL:
+		case Round::RECAST:
 			printf("startturn %d\n", (int)this->round);
 			break;
 		case Round::RESULT: break;
-		case Round::BET:     
+		case Round::BET:
 		case Round::MATCH:   printf("startturn %d %u\n", (int)this->round, this->playerBet); break;
-		
+
 	}
 }
 
@@ -504,7 +504,7 @@ void Game::informJoin(Player *p)
 /**
  * ========================
  * Game with multiple games
- * ======================== 
+ * ========================
  */
 
 MultiGame::MultiGame(t_score minBet, t_score startScore)
@@ -616,7 +616,7 @@ Game::Info MultiGame::getNeeded()
  * Local Game with GTK window
  * ==========================
  */
- 
+
 LocalGame::LocalGame(t_score minBet, t_score startScore)
 {
 	this->round = Game::Round::INITIAL;
@@ -625,8 +625,8 @@ LocalGame::LocalGame(t_score minBet, t_score startScore)
 	this->minBet = minBet;
 	this->playerBet = minBet;
 	this->startScore = startScore;
-} 
- 
+}
+
 LocalGame::LocalGame() : Game::Game()
 {
 	/*this->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -635,30 +635,30 @@ LocalGame::LocalGame() : Game::Game()
 	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 	gtk_widget_show(window);
 	g_signal_connect_swapped(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);*/
-} 
+}
 
 void LocalGame::informStart()
 {
-	
+
 }
 void LocalGame::informPlayer()
 {
-	
+
 }
 
 void LocalGame::informRound()
 {
-	
+
 	switch(this->round)
 	{
-		case Round::INITIAL: 
-		case Round::RECAST:  
+		case Round::INITIAL:
+		case Round::RECAST:
 			printf("startturn %d\n", (int)this->round);
 			break;
 		case Round::RESULT: break;
-		case Round::BET:     
+		case Round::BET:
 		case Round::MATCH:   printf("startturn %d %u\n", (int)this->round, this->playerBet); break;
-		
+
 	}
 }
 
@@ -779,13 +779,13 @@ void RemoteGame::informRound()
 	msg << " " << (int)this->round;
 	switch(this->round)
 	{
-		case Round::INITIAL: 
+		case Round::INITIAL:
 		case Round::RECAST:
 			msg << "\n";
 			this->broadcast(msg.str());
 			break;
 		case Round::RESULT: break;
-		case Round::BET:     
+		case Round::BET:
 		case Round::MATCH:
 			msg << " " << this->playerBet << "\n";
 			this->broadcast(msg.str());
@@ -804,12 +804,12 @@ void RemoteGame::informWinner()
 void RemoteGame::informHand(Player *p)
 {
 	stringstream ss;
-	ss << "dice " << p->name;	
+	ss << "dice " << p->name;
 	for(int i=0 ; i<p->hand.len ; i++)
 	{
 		ss << " " << p->hand.values[i];
 	}
-	
+
 	ss << "\n";
 	this->broadcast(ss.str());
 }
@@ -838,6 +838,6 @@ void RemoteGame::informQuit(Player *p)
 void RemoteGame::informJoin(Player *p)
 {
 	stringstream ss;
-	ss << "join " << p->name << "\n";
+	ss << "joined " << p->name << "\n";
 	this->broadcast(ss.str());
 }
