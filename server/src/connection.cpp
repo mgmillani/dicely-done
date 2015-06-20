@@ -123,56 +123,59 @@ void Connection::receiveMessages()
 			}
 			
 			char *word = strtok(buffer, " \n\t\r");
-			do
+			if(word != NULL)
 			{
-				switch(state)
+				do
 				{
-					// reads the type of the message
-					case S_TYPE:
-						if     (strcmp(word, "bet") == 0)
-							state = S_BET;
-						else if(strcmp(word, "reroll") == 0)
-							state = S_REROLL;
-						else if(strcmp(word, "restart") == 0)
-						{
-							state = S_SKIP;
-							this->restart(player);
-						}
-						else if(strcmp(word, "quit") == 0)
-						{
-							state = S_SKIP;
-							this->quit(player);
-						}
-						else if(strcmp(word, "join") == 0)
-							state = S_JOIN;
-						else if(strcmp(word, "roll") == 0)
-						{
-							state = S_SKIP;
-							this->roll(player);
-						}
-						else if(strcmp(word, "fold") == 0)
-						{
-							state = S_SKIP;
-							this->fold(player);
-						}
-						break;
-					// reads the name of the player
-					case S_JOIN:
-						player->name = std::string(word);
-						this->join(player);
-						break;
-					// reads dice
-					case S_REROLL:
-						hand.values[hand.len] = atoi(word);
-						hand.len++;
-						break;
-					case S_BET:
-						this->bet(player, atoi(word));
-						break;
-					case S_SKIP:
-						break;						
-				}
-			}while(NULL != (word = strtok(NULL, " \n\t\r")) && state != S_SKIP );
+					switch(state)
+					{
+						// reads the type of the message
+						case S_TYPE:
+							if     (strcmp(word, "bet") == 0)
+								state = S_BET;
+							else if(strcmp(word, "reroll") == 0)
+								state = S_REROLL;
+							else if(strcmp(word, "restart") == 0)
+							{
+								state = S_SKIP;
+								this->restart(player);
+							}
+							else if(strcmp(word, "quit") == 0)
+							{
+								state = S_SKIP;
+								this->quit(player);
+							}
+							else if(strcmp(word, "join") == 0)
+								state = S_JOIN;
+							else if(strcmp(word, "roll") == 0)
+							{
+								state = S_SKIP;
+								this->roll(player);
+							}
+							else if(strcmp(word, "fold") == 0)
+							{
+								state = S_SKIP;
+								this->fold(player);
+							}
+							break;
+							// reads the name of the player
+						case S_JOIN:
+							player->name = std::string(word);
+							this->join(player);
+							break;
+							// reads dice
+						case S_REROLL:
+							hand.values[hand.len] = atoi(word);
+							hand.len++;
+							break;
+						case S_BET:
+							this->bet(player, atoi(word));
+							break;
+						case S_SKIP:
+							break;						
+					}
+				}while(NULL != (word = strtok(NULL, " \n\t\r")) && state != S_SKIP );
+			}
 			s = recv(socket, buffer, sizeof(buffer), 0);
 		}
 		if(s==0)
