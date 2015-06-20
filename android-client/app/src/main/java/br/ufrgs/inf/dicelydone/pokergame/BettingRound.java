@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import br.ufrgs.inf.dicelydone.R;
 
@@ -21,6 +22,8 @@ import br.ufrgs.inf.dicelydone.R;
  */
 public class BettingRound extends Fragment {
 
+    public static final String ARG_MESSAGE = "br.ufrgs.inf.dicelydone.MESSAGE";
+
     public interface EventHandler {
         /**
          * Called when the player places a bet.
@@ -33,6 +36,7 @@ public class BettingRound extends Fragment {
         void onFolded();
     }
 
+    private TextView mLbl;
     private EventHandler mCallback;
     private Button mBtnBet;
 
@@ -47,6 +51,8 @@ public class BettingRound extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View result = inflater.inflate(R.layout.fragment_betting_round, container, false);
+
+        mLbl = (TextView) result.findViewById(R.id.instructionsView);
 
         mBtnBet = (Button) result.findViewById(R.id.buttonOk);
         mBtnBet.setOnClickListener(new View.OnClickListener() {
@@ -64,6 +70,16 @@ public class BettingRound extends Fragment {
         });
 
         return result;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        Bundle args = getArguments();
+        if (args != null && args.containsKey(ARG_MESSAGE)) {
+            mLbl.setText(args.getCharSequence(ARG_MESSAGE));
+        }
     }
 
     @Override

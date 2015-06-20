@@ -151,7 +151,12 @@ public class PokerGame extends AppCompatActivity
                 }
 
                 if (mRound == 2 || mRound == 3) {
+                    int instruction = (mRound == 2) ? R.string.instruction_bet : R.string.instruction_call;
                     Fragment roundFragment = new BettingRound();
+
+                    Bundle args = new Bundle();
+                    args.putString(BettingRound.ARG_MESSAGE, getString(instruction));
+                    roundFragment.setArguments(args);
 
                     getFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, roundFragment, "BettingRound")

@@ -19,6 +19,7 @@
 
 
     <string name="instruction_bet">Aposte</string>
+    <string name="instruction_call">Equipare a aposta</string>
     <string name="instruction_roll_dice">Jogue os dados</string>
     <string name="instruction_roll_shake">Sacuda para jogar os dados</string>
     <string name="instruction_reroll_dice">Jogue alguns dados novamente</string>

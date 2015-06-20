@@ -18,6 +18,7 @@
     <string name="error_nick_whitespace">Cannot contain whitespace.</string>
 
     <string name="instruction_bet">Place your bet</string>
+    <string name="instruction_call">Call it or fold</string>
     <string name="instruction_roll_dice">Roll your dice</string>
     <string name="instruction_roll_shake">Shake to roll dice</string>
     <string name="instruction_reroll_dice">Roll some dice again</string>
