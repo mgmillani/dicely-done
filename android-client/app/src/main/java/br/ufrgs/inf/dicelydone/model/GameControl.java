@@ -1,10 +1,13 @@
 package br.ufrgs.inf.dicelydone.model;
 
 import android.app.Activity;
+import android.util.Log;
 
 import java.util.ArrayList;
 
 public abstract class GameControl {
+
+    private static String TAG = "GameControl";
 
     public interface Handler {
         void handleMessage(InMessage message);
@@ -20,6 +23,11 @@ public abstract class GameControl {
         @Override
         public Type getType() {
             return Type.JOINED;
+        }
+
+        @Override
+        public String toString() {
+            return "JoinedMessage{}";
         }
     }
 
@@ -37,6 +45,13 @@ public abstract class GameControl {
 
         public int getInitialBet() {
             return initialBet;
+        }
+
+        @Override
+        public String toString() {
+            return "StartGameMessage{" +
+                    "initialBet=" + initialBet +
+                    '}';
         }
     }
 
@@ -65,6 +80,14 @@ public abstract class GameControl {
         public int getMinBet() {
             return minBet;
         }
+
+        @Override
+        public String toString() {
+            return "StartTurnMessage{" +
+                    "round=" + round +
+                    ", minBet=" + minBet +
+                    '}';
+        }
     }
 
     public static class DiceMessage extends InMessage {
@@ -87,6 +110,14 @@ public abstract class GameControl {
 
         public Hand getDice() {
             return dice;
+        }
+
+        @Override
+        public String toString() {
+            return "DiceMessage{" +
+                    "player='" + player + '\'' +
+                    ", dice=" + dice +
+                    '}';
         }
     }
 
@@ -117,6 +148,15 @@ public abstract class GameControl {
         public int getTotalBet() {
             return totalBet;
         }
+
+        @Override
+        public String toString() {
+            return "BetPlacedMessage{" +
+                    "player='" + player + '\'' +
+                    ", individualBet=" + individualBet +
+                    ", totalBet=" + totalBet +
+                    '}';
+        }
     }
 
     public static class FoldedMessage extends InMessage {
@@ -133,6 +173,13 @@ public abstract class GameControl {
 
         public String getPlayer() {
             return player;
+        }
+
+        @Override
+        public String toString() {
+            return "FoldedMessage{" +
+                    "player='" + player + '\'' +
+                    '}';
         }
     }
 
@@ -157,6 +204,14 @@ public abstract class GameControl {
         public int getPrize() {
             return prize;
         }
+
+        @Override
+        public String toString() {
+            return "EndGameMessage{" +
+                    "winner='" + winner + '\'' +
+                    ", prize=" + prize +
+                    '}';
+        }
     }
 
     public static class DisconnectedMessage extends InMessage {
@@ -174,12 +229,24 @@ public abstract class GameControl {
         public String getPlayer() {
             return player;
         }
+
+        @Override
+        public String toString() {
+            return "DisconnectedMessage{" +
+                    "player='" + player + '\'' +
+                    '}';
+        }
     }
 
     public static class CloseMessage extends InMessage {
         @Override
         public Type getType() {
             return Type.CLOSE;
+        }
+
+        @Override
+        public String toString() {
+            return "CloseMessage{}";
         }
     }
 
@@ -215,6 +282,7 @@ public abstract class GameControl {
     }
 
     protected void fireMessage(InMessage message) {
+        Log.v(TAG, "firing message " + message);
         for (Handler h : mHandlers) {
             h.handleMessage(message);
         }
