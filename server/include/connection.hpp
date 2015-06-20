@@ -17,6 +17,7 @@ public:
 	void restart(Player *player);
 	void reroll(Player *player, t_hand h);
 	void roll(Player *player);
+	void fold(Player *player);
 	void quit(Player *player);
 	void setupSocket();
 	int doTcp(char *buffer, size_t bufferLen);

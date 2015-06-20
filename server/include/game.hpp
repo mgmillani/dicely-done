@@ -40,6 +40,7 @@ public:
 	void giveHandAck();
 	void giveBet(t_score bet);	
 	void giveFold();
+	void finish();
 	void updateNeeded();
 	void restart();
 	void giveAck();
@@ -56,6 +57,7 @@ public:
 	 * let the game begin!
 	 */
 	virtual void informStart();
+	virtual void informStart(Player *player);
 	/**
 	 * who is the current player
 	 */
@@ -110,6 +112,7 @@ public:
 	 * let the game begin!
 	 */
 	virtual void informStart();
+	virtual void informStart(Player *player);
 	/**
 	 * who is the current player
 	 */

@@ -1,5 +1,6 @@
 #include <sstream>
 #include <list>
+#include <iterator>
 
 #include <stdlib.h>
 #include <sys/types.h>
@@ -143,7 +144,10 @@ bool Game::join(Player *player)
 	player->score = this->startScore;
 	this->players.push_back(player);
 	if(this->round == Round::INITIAL)
+	{
 		this->activePlayers.push_back(player);
+		this->informStart(player);
+	}
 	if(this->players.size() == 1)
 	{
 		this->currentPlayer = this->activePlayers.begin();
@@ -261,13 +265,19 @@ void Game::giveFold()
 		case Round::RECAST:
 		case Round::RESULT:
 			break;
-		case Round::MATCH:			
+		case Round::MATCH:
 		case Round::BET:
-			this->activePlayers.erase(this->currentPlayer);
-			this->informFold(p);			
-			if(this->activePlayers.size() == 1)
-				this->round = Round::RECAST; // will be sent to final round after nextPlayer()
+			list<Player *>::iterator folder = this->currentPlayer;
+			this->informFold(p);
 			this->nextPlayer();
+			this->activePlayers.erase(folder);
+			if(this->activePlayers.size() == 1)
+			{
+				this->round = Round::RESULT;
+				this->finish();
+				this->informRound();
+			}
+			
 			break;
 	}
 }
@@ -337,8 +347,10 @@ void Game::restart()
 	// go back to the first round
 	this->round = Round::INITIAL;
 	this->updateNeeded();
+	this->informStart();
 	this->informPlayer();
 	this->informRound();
+	
 }
 	
 void Game::updateNeeded()
@@ -387,24 +399,27 @@ void Game::nextPlayer()
 	this->informPlayer();
 }
 
+void Game::finish()
+{
+	this->round = Round::RESULT;
+	//calculates the winner
+	this->decideWinner();
+	// winner gets the pot
+	Player *p = *this->winner;
+	p->score += this->pot;
+	this->informWinner();
+	this->activePlayers.clear();
+	this->updateNeeded();
+}
+
 void Game::nextRound()
 {
 	switch(this->round)
 	{
-		case Round::INITIAL: this->round = Round::BET; break;
-		case Round::RECAST:  this->round = Round::RESULT;
-		{
-			//calculates the winner
-			this->decideWinner();
-			// winner gets the pot
-			Player *p = *this->winner;
-			p->score += this->pot;
-			this->activePlayers.clear();
-			this->informWinner();
-		}
-			break;
-		case Round::BET:     this->round = Round::MATCH; break;
-		case Round::MATCH:   this->round = Round::RECAST; break;
+		case Round::INITIAL: this->round = Round::BET;     break;
+		case Round::RECAST:  this->round = Round::RESULT;  this->finish(); break;
+		case Round::BET:     this->round = Round::MATCH;   break;
+		case Round::MATCH:   this->round = Round::RECAST;  break;
 		case Round::RESULT:  this->round = Round::INITIAL; break;
 	}
 	this->updateNeeded();
@@ -421,9 +436,14 @@ bool Game::isPlayerTurn(Player *player)
 	return player->name.compare((*this->currentPlayer)->name) == 0;
 }
 
+void Game::informStart(Player *player)
+{
+	printf("startgame %d\n", this->minBet);
+}
+
 void Game::informStart()
 {
-	printf("startgame\n");
+	printf("startgame %d\n", this->minBet);
 }
 void Game::informPlayer()
 {
@@ -702,18 +722,31 @@ void RemoteGame::broadcast(string msg)
 	}
 }
 
+void RemoteGame::informStart(Player *player)
+{
+	stringstream ss;
+	ss << "startgame " << this->minBet << "\n";
+	string msg = ss.str();
+	send(player->socket, msg.c_str(), msg.size(), 0);
+}
+
 void RemoteGame::informStart()
 {
-	char msg[] = "startgame";
+	stringstream ss;
+	ss << "startgame " << this->minBet << "\n";
+	string msg = ss.str();
 	for(list<Player*>::iterator it = this->players.begin() ; it!=this->players.end() ; it++)
 	{
 		Player *player = *it;
-		send(player->socket, msg, sizeof(msg), 0);
+		send(player->socket, msg.c_str(), msg.size(), 0);
 	}
 
 }
 void RemoteGame::informPlayer()
 {
+	if(this->round == Round::RESULT)
+		return;
+
 	Player *p = *this->currentPlayer;
 	stringstream msg;
 	msg << "startturn";

@@ -150,6 +150,11 @@ void Connection::receiveMessages()
 							state = S_SKIP;
 							this->roll(player);
 						}
+						else if(strcmp(word, "fold") == 0)
+						{
+							state = S_SKIP;
+							this->fold(player);
+						}
 						break;
 					// reads the name of the player
 					case S_JOIN:
@@ -202,6 +207,15 @@ void Connection::restart(Player *player)
 	if(this->game->getNeeded() == Game::Info::ACK)
 		this->game->giveAck(player);
 }
+void Connection::fold(Player *player)
+{
+
+	if(this->game->isPlayerTurn(player))
+	{
+		this->game->giveFold();
+	}
+}
+
 void Connection::roll(Player *player)
 {
 
