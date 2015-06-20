@@ -34,6 +34,8 @@ public class PokerGame extends AppCompatActivity
     private ChipInfoFragment mChipInfo;
     private HandInfoFragment mHandInfo;
 
+    private ProgressDialog mProgress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,8 +46,9 @@ public class PokerGame extends AppCompatActivity
         Bundle args = getIntent().getExtras();
         if (args == null) return;
 
-        mPlayer = args.getString(EXTRA_NICKNAME, mPlayer);
+        mProgress = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
 
+        mPlayer = args.getString(EXTRA_NICKNAME, mPlayer);
 
         mChipInfo = new ChipInfoFragment();
         //mChipInfo.setGameControl(mGameCtrl);
@@ -63,9 +66,8 @@ public class PokerGame extends AppCompatActivity
             GameClient cli = new GameClient(this);
             mGameCtrl = cli;
 
-            final ProgressDialog dialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
-            dialog.setTitle(R.string.wait_connecting);
-            dialog.show();
+            mProgress.setTitle(R.string.wait_connecting);
+            mProgress.show();
 
             mChipInfo.setGameControl(mGameCtrl);
             mHandInfo.setGameControl(mGameCtrl);
@@ -73,13 +75,12 @@ public class PokerGame extends AppCompatActivity
             cli.connect(addr, port, new GameClient.ConnectHandler() {
                 @Override
                 public void onConnected() {
-                    dialog.dismiss();
                     mGameCtrl.join(mPlayer);
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    dialog.dismiss();
+                    mProgress.dismiss();
                     Toast.makeText(PokerGame.this, R.string.error_connect_failed, Toast.LENGTH_LONG).show();
                     Log.v(TAG, e.toString());
                     finish();
@@ -111,14 +112,15 @@ public class PokerGame extends AppCompatActivity
     public void handleMessage(GameControl.InMessage message) {
         switch (message.getType()) {
             case JOINED: {
-                Toast.makeText(this, R.string.toast_joined_server, Toast.LENGTH_LONG).show();
+                mProgress.setTitle(R.string.wait_gamestart);
+                mProgress.show();
             }
             break;
 
             case STARTGAME: {
-                mFolded = false;
+                mProgress.dismiss();
 
-                Toast.makeText(this, "Game started.", Toast.LENGTH_LONG).show();
+                mFolded = false;
 
                 getFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, new WaitingScreen())

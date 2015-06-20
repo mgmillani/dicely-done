@@ -31,5 +31,6 @@
     <string name="toast_joined_server">Conectado ao servidor.</string>
 
     <string name="wait_connecting">Conectando ao servidor...</string>
+    <string name="wait_gamestart">Esperando o jogo começar...</string>
 
 </resources>
