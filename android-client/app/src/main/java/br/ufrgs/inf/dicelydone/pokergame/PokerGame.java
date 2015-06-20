@@ -141,6 +141,7 @@ public class PokerGame extends AppCompatActivity
 
                     Bundle args = new Bundle();
                     args.putInt(RollingRound.ARG_ROUND, mRound);
+                    args.putBoolean(RollingRound.ARG_SIMULATION, true);
                     fragment.setArguments(args);
 
                     getFragmentManager().beginTransaction()

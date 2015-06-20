@@ -17,7 +17,9 @@
 
     <string name="instruction_bet">Place your bet</string>
     <string name="instruction_roll_dice">Roll your dice</string>
+    <string name="instruction_roll_shake">Shake to roll dice</string>
     <string name="instruction_reroll_dice">Roll some dice again</string>
+    <string name="instruction_reroll_shake">Select dice then shake to roll them</string>
     <string name="instruction_wait">Wait for your turn</string>
 
     <string name="label_hand">Your Hand:</string>
