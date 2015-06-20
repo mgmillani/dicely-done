@@ -63,7 +63,7 @@ public class Game {
     private LinkedList<String> mPlayers = new LinkedList<>();
     private HashMap<String, PlayerData> mData = new HashMap<>();
 
-    private Round mRound = Round.INITIAL;
+    private Round mRound = Round.RESULT;
     private int mTotalBet;
     private int mIndividualBet;
     private String mWinner;
@@ -119,10 +119,12 @@ public class Game {
         }
 
         if (mActivePlayers != null && mActivePlayers.size() == 1) {
+            // No one left playing, go straight to result round
             mRound = Round.RECAST;
             nextRound();
 
         } else if (mPlayerIt == null || !mPlayerIt.hasNext()) {
+            // All players acted this round, proceed to the next
             nextRound();
         }
 
