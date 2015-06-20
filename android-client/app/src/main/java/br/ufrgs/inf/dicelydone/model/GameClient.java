@@ -132,7 +132,7 @@ public class GameClient extends GameControl {
             }
 
             switch (msg[0]) {
-                case "join": {
+                case "joined": {
                     setExpected("startgame");
                     message = new JoinedMessage();
                 }
@@ -225,7 +225,7 @@ public class GameClient extends GameControl {
     @Override
     public void join(String playerName) {
         mSendQ.add("join " + playerName);
-        setExpected("join");
+        setExpected("joined");
     }
 
     @Override
