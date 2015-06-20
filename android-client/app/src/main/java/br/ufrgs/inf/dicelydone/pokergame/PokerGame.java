@@ -1,12 +1,15 @@
 package br.ufrgs.inf.dicelydone.pokergame;
 
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Toast;
 
 import br.ufrgs.inf.dicelydone.R;
 import br.ufrgs.inf.dicelydone.model.ChipSet;
+import br.ufrgs.inf.dicelydone.model.GameClient;
 import br.ufrgs.inf.dicelydone.model.GameControl;
 import br.ufrgs.inf.dicelydone.model.GameSimulation;
 import br.ufrgs.inf.dicelydone.model.Hand;
@@ -16,6 +19,8 @@ public class PokerGame extends AppCompatActivity
     implements GameControl.Handler, RollingRound.EventHandler, BettingRound.EventHandler, ChipInfoFragment.EventHandler {
 
     public static final String EXTRA_NICKNAME = "br.ufrgs.inf.dicelydone.NICKNAME";
+    public static final String EXTRA_SERVER_ADDR = "br.ufrgs.inf.dicelydone.SERVER_ADDR";
+    public static final String EXTRA_SERVER_PORT = "br.ufrgs.inf.dicelydone.SERVER_PORT";
 
     private static final String TAG = "PokerGame";
 
@@ -24,7 +29,7 @@ public class PokerGame extends AppCompatActivity
     private int mRound = 0;
     private boolean mFolded = false;
 
-    private GameSimulation mGameCtrl;
+    private GameControl mGameCtrl;
 
     private ChipInfoFragment mChipInfo;
     private HandInfoFragment mHandInfo;
@@ -37,21 +42,55 @@ public class PokerGame extends AppCompatActivity
         // TODO deal with savedInstanceState
 
         Bundle args = getIntent().getExtras();
-        if (args != null) {
-            mPlayer = args.getString(EXTRA_NICKNAME, mPlayer);
-        }
+        if (args == null) return;
 
-        mGameCtrl = new GameSimulation(this);
-        mGameCtrl.addHandler(this);
+        mPlayer = args.getString(EXTRA_NICKNAME, mPlayer);
+
 
         mChipInfo = new ChipInfoFragment();
-        mChipInfo.setGameControl(mGameCtrl);
+        //mChipInfo.setGameControl(mGameCtrl);
         mChipInfo.setPlayer(mPlayer);
         mChipInfo.initGame();
 
         mHandInfo = new HandInfoFragment();
-        mHandInfo.setGameControl(mGameCtrl);
+        //mHandInfo.setGameControl(mGameCtrl);
         mHandInfo.setPlayer(mPlayer);
+
+        if (args.containsKey(EXTRA_SERVER_ADDR)) {
+            String addr = args.getString(EXTRA_SERVER_ADDR);
+            int port = args.getInt(EXTRA_SERVER_PORT);
+
+            GameClient cli = new GameClient(this);
+            mGameCtrl = cli;
+
+            final ProgressDialog dialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
+            dialog.setTitle(R.string.wait_connecting);
+            dialog.show();
+
+            mChipInfo.setGameControl(mGameCtrl);
+            mHandInfo.setGameControl(mGameCtrl);
+
+            cli.connect(addr, port, new GameClient.ConnectHandler() {
+                @Override
+                public void onConnected() {
+                    dialog.dismiss();
+                    mGameCtrl.join(mPlayer);
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    dialog.dismiss();
+                    Toast.makeText(PokerGame.this, R.string.error_connect_failed, Toast.LENGTH_LONG).show();
+                    Log.v(TAG, e.toString());
+                    finish();
+                }
+            });
+
+        } else {
+            mGameCtrl = new GameSimulation(this);
+        }
+
+        mGameCtrl.addHandler(this);
 
         getFragmentManager().beginTransaction()
                 .add(R.id.fragment_container, new WaitingScreen())
@@ -60,7 +99,12 @@ public class PokerGame extends AppCompatActivity
                 .hide(mHandInfo)
                 .commit();
 
-        mGameCtrl.join(mPlayer);
+        if (mGameCtrl instanceof GameSimulation) {
+            mGameCtrl.join(mPlayer);
+
+            mChipInfo.setGameControl(mGameCtrl);
+            mHandInfo.setGameControl(mGameCtrl);
+        }
     }
 
     @Override
@@ -69,7 +113,7 @@ public class PokerGame extends AppCompatActivity
     }
 
     @Override
-    public void onStartGame() {
+    public void onStartGame(int bet) {
         mFolded = false;
 
         Toast.makeText(this, "Game started.", Toast.LENGTH_LONG).show();
@@ -174,7 +218,7 @@ public class PokerGame extends AppCompatActivity
 
     @Override
     public void onBetPlaced() {
-        mGameCtrl.bet(mChipInfo.getPlayerBet());
+        mGameCtrl.bet(mChipInfo.getAddedBet());
 
         getFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, new WaitingScreen())
@@ -184,6 +228,12 @@ public class PokerGame extends AppCompatActivity
     @Override
     public void onFolded() {
         mGameCtrl.fold();
+    }
+
+    @Override
+    public void onDisconnected() {
+        Toast.makeText(this, R.string.error_disconnect, Toast.LENGTH_LONG).show();
+        finish();
     }
 
     @Override

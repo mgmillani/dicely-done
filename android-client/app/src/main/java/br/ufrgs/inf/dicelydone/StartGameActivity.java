@@ -31,6 +31,13 @@ public class StartGameActivity extends AppCompatActivity {
         mSrvAddrEdit = (EditText) findViewById(R.id.serverAddrEdit);
         mSrvPortEdit = (EditText) findViewById(R.id.serverPortEdit);
 
+        if (savedInstanceState != null) {
+            mNickEdit.setText(savedInstanceState.getCharSequence("NICK"));
+            mCbSimulate.setChecked(savedInstanceState.getBoolean("SIMULATE"));
+            mSrvAddrEdit.setText(savedInstanceState.getCharSequence("SRV_ADDR"));
+            mSrvPortEdit.setText(savedInstanceState.getCharSequence("SRV_PORT"));
+        }
+
         mNickEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -59,6 +66,16 @@ public class StartGameActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putCharSequence("NICK", mNickEdit.getText());
+        outState.putBoolean("SIMULATE", mCbSimulate.isChecked());
+        outState.putCharSequence("SRV_ADDR", mSrvAddrEdit.getText());
+        outState.putCharSequence("SRV_PORT", mSrvPortEdit.getText());
+    }
+
     private void startGame() {
         String nick = mNickEdit.getText().toString();
         if (nick.isEmpty()) {
@@ -68,6 +85,14 @@ public class StartGameActivity extends AppCompatActivity {
 
         Intent intent = new Intent(StartGameActivity.this, PokerGame.class);
         intent.putExtra(PokerGame.EXTRA_NICKNAME, nick);
+
+        if (!mCbSimulate.isChecked()) {
+            String addr = mSrvAddrEdit.getText().toString();
+            int port = Integer.parseInt(mSrvPortEdit.getText().toString());
+
+            intent.putExtra(PokerGame.EXTRA_SERVER_ADDR, addr);
+            intent.putExtra(PokerGame.EXTRA_SERVER_PORT, port);
+        }
 
         startActivity(intent);
     }

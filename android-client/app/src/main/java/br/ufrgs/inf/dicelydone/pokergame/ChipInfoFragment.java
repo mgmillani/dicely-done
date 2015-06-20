@@ -101,6 +101,10 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
         return mPlayerBet;
     }
 
+    public ChipSet getAddedBet() {
+        return mAddedBet;
+    }
+
     public int getIndividualBet() {
         return mIndividualBet;
     }
@@ -259,6 +263,7 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
         mTotalBet = bundle.getInt(ARG_TOTAL_BET);
         mIndividualBet = bundle.getInt(ARG_INDIVIDUAL_BET, 0);
         mPlayer = bundle.getString(ARG_PLAYER);
+        mAddedBet = new ChipSet();
 
         setReadOnly(bundle.getBoolean(ARG_READ_ONLY));
     }
@@ -278,10 +283,13 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
     }
 
     @Override
-    public void onStartGame() {
+    public void onStartGame(int bet) {
         // Nothing needs to be done
         mTotalBet = 0;
-        mIndividualBet = 0;
+        mIndividualBet = bet;
+        mAddedBet = new ChipSet();
+
+        increaseBetTo(bet);
     }
 
     @Override
@@ -297,7 +305,13 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
         int addedBet = minBet - mPlayerBet.getValue();
         mIndividualBet = minBet;
         mTotalBet += addedBet;
+        increaseBetTo(minBet);
 
+
+        updateView();
+    }
+
+    private void increaseBetTo(int minBet) {
         // Increase the player's bet to the minimum value
         int toAdd = minBet - mPlayerBet.getValue();
         for (int i = Chip.values().length-1; i >= 0 && toAdd > 0; i--) {
@@ -309,8 +323,6 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
 
             toAdd -= taken * c.getValue();
         }
-
-        updateView();
     }
 
     @Override
@@ -351,4 +363,10 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
         updateView();
     }
 
+
+
+    @Override
+    public void onDisconnected() {
+        // Nothing to do
+    }
 }

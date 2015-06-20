@@ -42,9 +42,9 @@ public abstract class GameControl {
         }
     }
 
-    protected void fireStartGame() {
+    protected void fireStartGame(int bet) {
         for (Handler h: mHandlers) {
-            h.onStartGame();
+            h.onStartGame(bet);
         }
     }
 
@@ -84,12 +84,18 @@ public abstract class GameControl {
         }
     }
 
+    protected void fireDisconnected() {
+        for (Handler h : mHandlers) {
+            h.onDisconnected();
+        }
+    }
+
 
     public interface Handler {
 
         void onJoined();
 
-        void onStartGame();
+        void onStartGame(int bet);
 
         void onStartRollTurn(int turn);
 
@@ -102,6 +108,8 @@ public abstract class GameControl {
         void onFolded(String player);
 
         void onGameEnded(String winner, int prize);
+
+        void onDisconnected();
 
     }
 

@@ -3,6 +3,7 @@
     package="br.ufrgs.inf.dicelydone" >
 
     <uses-feature android:name="android.hardware.screen.portrait" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"

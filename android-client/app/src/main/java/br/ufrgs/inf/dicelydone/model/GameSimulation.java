@@ -6,7 +6,7 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class GameSimulation extends  GameControl {
+public class GameSimulation extends GameControl {
 
     private static final int MAX_BET = 40;
 
@@ -86,7 +86,7 @@ public class GameSimulation extends  GameControl {
                     fireGameEnded(mGame.getWinner(), mGame.getTotalBet());
 
                 } else if (mGame.getRound() == Game.Round.INITIAL) {
-                    fireStartGame();
+                    fireStartGame(1);
                 }
                 break;
 

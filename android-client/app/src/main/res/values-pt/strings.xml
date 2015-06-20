@@ -10,6 +10,8 @@
 
     <string name="chips_player">Suas fichas:</string>
 
+    <string name="error_connect_failed">Não conectou com o servidor.</string>
+    <string name="error_disconnect">Perdeu conexão com servidor.</string>
     <string name="error_nick_required">Digite um nome.</string>
 
     <string name="instruction_bet">Aposte</string>
@@ -25,5 +27,7 @@
     <string name="label_simulate">Simular</string>
 
     <string name="toast_joined_server">Conectado ao servidor.</string>
+
+    <string name="wait_connecting">Conectando ao servidor...</string>
 
 </resources>

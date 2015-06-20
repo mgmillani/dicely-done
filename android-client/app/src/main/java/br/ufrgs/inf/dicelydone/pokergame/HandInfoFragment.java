@@ -90,7 +90,7 @@ public class HandInfoFragment extends Fragment implements GameControl.Handler {
     }
 
     @Override
-    public void onStartGame() {
+    public void onStartGame(int bet) {
         // Nothing needs to be done
     }
 
@@ -137,5 +137,8 @@ public class HandInfoFragment extends Fragment implements GameControl.Handler {
         mPlayer = savedInstanceState.getString(ARG_PLAYER);
     }
 
-
+    @Override
+    public void onDisconnected() {
+        // Nothing to do
+    }
 }
