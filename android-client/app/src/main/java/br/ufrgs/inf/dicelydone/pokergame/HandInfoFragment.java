@@ -85,47 +85,35 @@ public class HandInfoFragment extends Fragment implements GameControl.Handler {
     }
 
     @Override
-    public void onJoined() {
-        // Nothing needs to be done
-    }
+    public void handleMessage(GameControl.InMessage message) {
+        switch(message.getType()) {
+            case DICE: {
+                GameControl.DiceMessage msg = (GameControl.DiceMessage) message;
 
-    @Override
-    public void onStartGame(int bet) {
-        // Nothing needs to be done
-    }
+                if (msg.getPlayer().equals(mPlayer)) {
+                    mHand = msg.getDice();
+                    updateView();
+                }
+            }
+            break;
 
-    @Override
-    public void onStartRollTurn(int turn) {
-        // Nothing needs to be done
-    }
+            case ENDGAME: {
+                mHand = new Hand();
+                updateView();
+            }
+            break;
 
-    @Override
-    public void onStartBetTurn(int turn, int minBet) {
-        // Nothing needs to be done
-    }
+            case JOINED:
+            case STARTGAME:
+            case STARTTURN:
+            case BETPLACED:
+            case FOLDED:
+            case DISCONNECTED:
+            case CLOSE:
+                break; // Nothing needs to be done
 
-    @Override
-    public void onDiceRolled(String player, Hand rolled) {
-        if (player.equals(mPlayer)) {
-            mHand = rolled;
-            updateView();
+
         }
-    }
-
-    @Override
-    public void onBetPlaced(String player, int totalBet, int individualBet) {
-        // Nothing needs to be done
-    }
-
-    @Override
-    public void onFolded(String player) {
-        // Nothing needs to be done
-    }
-
-    @Override
-    public void onGameEnded(String winner, int prize) {
-        mHand = new Hand();
-        updateView();
     }
 
     private void updateView() {
@@ -135,10 +123,5 @@ public class HandInfoFragment extends Fragment implements GameControl.Handler {
     private void readBundle(Bundle savedInstanceState) {
         mHand = savedInstanceState.getParcelable(ARG_HAND);
         mPlayer = savedInstanceState.getString(ARG_PLAYER);
-    }
-
-    @Override
-    public void onDisconnected() {
-        // Nothing to do
     }
 }

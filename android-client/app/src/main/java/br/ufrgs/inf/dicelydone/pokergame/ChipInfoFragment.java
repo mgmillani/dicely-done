@@ -13,7 +13,6 @@ import br.ufrgs.inf.dicelydone.R;
 import br.ufrgs.inf.dicelydone.model.Chip;
 import br.ufrgs.inf.dicelydone.model.ChipSet;
 import br.ufrgs.inf.dicelydone.model.GameControl;
-import br.ufrgs.inf.dicelydone.model.Hand;
 
 /**
  * Fragment for informing about the current bets and the player's chip stash.
@@ -278,37 +277,82 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
     }
 
     @Override
-    public void onJoined() {
-        // Nothing needs to be done
-    }
+    public void handleMessage(GameControl.InMessage message) {
+        switch (message.getType()) {
+            case STARTGAME: {
+                GameControl.StartGameMessage msg = (GameControl.StartGameMessage) message;
 
-    @Override
-    public void onStartGame(int bet) {
-        // Nothing needs to be done
-        mTotalBet = 0;
-        mIndividualBet = bet;
-        mAddedBet = new ChipSet();
+                mTotalBet = 0;
+                mIndividualBet = msg.getInitialBet();
+                mAddedBet = new ChipSet();
 
-        increaseBetTo(bet);
-    }
+                increaseBetTo(mIndividualBet);
+                break;
+            }
 
-    @Override
-    public void onStartRollTurn(int turn) {
-        setReadOnly(true);
-    }
+            case STARTTURN: {
+                GameControl.StartTurnMessage msg = (GameControl.StartTurnMessage) message;
 
-    @Override
-    public void onStartBetTurn(int turn, int minBet) {
-        setReadOnly(turn != 2);
-        mAddedBet = new ChipSet();
+                setReadOnly(msg.getRound() != 2);
 
-        int addedBet = minBet - mPlayerBet.getValue();
-        mIndividualBet = minBet;
-        mTotalBet += addedBet;
-        increaseBetTo(minBet);
+                if (msg.getRound() == 2 || msg.getRound() == 3) {
+                    mAddedBet.clear();
+                    mIndividualBet = msg.getMinBet();
+                    increaseBetTo(mIndividualBet);
 
+                    int added = mIndividualBet - mPlayerBet.getValue();
+                    mTotalBet += added;
 
-        updateView();
+                    updateView();
+                }
+
+                break;
+            }
+
+            case BETPLACED: {
+                GameControl.BetPlacedMessage msg = (GameControl.BetPlacedMessage) message;
+                mTotalBet = msg.getTotalBet();
+                mIndividualBet = msg.getIndividualBet();
+                updateView();
+
+                break;
+            }
+
+            case FOLDED: {
+                GameControl.FoldedMessage msg = (GameControl.FoldedMessage) message;
+                if (msg.getPlayer().equals(mPlayer)) {
+                    // Undo the temporary bet
+                    mTotalBet -= mAddedBet.getValue();
+                    for (Chip c : Chip.values()) {
+                        mPlayerStash.addChips(c, mAddedBet.getChips(c));
+                    }
+
+                    mPlayerBet.clear();
+                    mAddedBet.clear();
+                }
+
+                break;
+            }
+
+            case ENDGAME: {
+                GameControl.EndGameMessage msg = (GameControl.EndGameMessage) message;
+
+                if (msg.getWinner().equals(mPlayer)) {
+                    mPlayerStash.add(msg.getPrize());
+                }
+
+                mTotalBet = 0;
+                mIndividualBet = 0;
+                mPlayerBet.clear();
+                updateView();
+            }
+
+            case JOINED:
+            case DICE:
+            case DISCONNECTED:
+            case CLOSE:
+                break; // Doesn't need to handle
+        }
     }
 
     private void increaseBetTo(int minBet) {
@@ -323,50 +367,5 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
 
             toAdd -= taken * c.getValue();
         }
-    }
-
-    @Override
-    public void onDiceRolled(String player, Hand rolled) {
-        // Nothing needs to be done
-    }
-
-    @Override
-    public void onFolded(String player) {
-        if (mPlayer.equals(player)) {
-
-            // Undo the temporary bet
-            for (Chip c : Chip.values()) {
-                mPlayerStash.addChips(c, mAddedBet.getChips(c));
-            }
-
-            mPlayerBet.clear();
-            mAddedBet.clear();
-        }
-    }
-
-    @Override
-    public void onBetPlaced(String player, int totalBet, int individualBet) {
-        mTotalBet = totalBet;
-        mIndividualBet = individualBet;
-        updateView();
-    }
-
-    @Override
-    public void onGameEnded(String winner, int valueWon) {
-        if (winner.equals(mPlayer)) {
-            mPlayerStash.add(valueWon);
-        }
-
-        mTotalBet = 0;
-        mIndividualBet = 0;
-        mPlayerBet.clear();
-        updateView();
-    }
-
-
-
-    @Override
-    public void onDisconnected() {
-        // Nothing to do
     }
 }

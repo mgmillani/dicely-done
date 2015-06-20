@@ -41,7 +41,7 @@ public class GameSimulation extends GameControl {
         randomizeDice(hand);
 
         mGame.giveHand(hand);
-        fireDiceRolled(mActivePlayer, hand);
+        fireMessage(new DiceMessage(mActivePlayer, hand));
 
         resumeSimulation();
     }
@@ -49,7 +49,7 @@ public class GameSimulation extends GameControl {
     @Override
     public void bet(ChipSet bet) {
         mGame.giveBet(bet.getValue());
-        fireBetPlaced(mActivePlayer, mGame.getTotalBet(), mGame.getIndividualBet());
+        fireMessage(new BetPlacedMessage(mActivePlayer, mGame.getIndividualBet(), mGame.getTotalBet()));
 
         resumeSimulation();
     }
@@ -57,7 +57,7 @@ public class GameSimulation extends GameControl {
     @Override
     public void fold() {
         mGame.fold();
-        fireFolded(mActivePlayer);
+        fireMessage(new FoldedMessage(mActivePlayer));
 
         resumeSimulation();
     }
@@ -67,7 +67,7 @@ public class GameSimulation extends GameControl {
         randomizeDice(kept);
 
         mGame.giveHand(kept);
-        fireDiceRolled(mActivePlayer, kept);
+        fireMessage(new DiceMessage(mActivePlayer, kept));
 
         resumeSimulation();
     }
@@ -83,23 +83,23 @@ public class GameSimulation extends GameControl {
         switch (needed.type) {
             case NOTHING:
                 if (mGame.getRound() == Game.Round.RESULT) {
-                    fireGameEnded(mGame.getWinner(), mGame.getTotalBet());
+                    fireMessage(new EndGameMessage(mGame.getWinner(), mGame.getTotalBet()));
 
                 } else if (mGame.getRound() == Game.Round.INITIAL) {
-                    fireStartGame(1);
+                    fireMessage(new StartGameMessage(1));
                 }
                 break;
 
             case HAND:
                 Hand hand = Hand.random(5, mRand);
                 mGame.giveHand(hand);
-                fireDiceRolled(needed.player, hand);
+                fireMessage(new DiceMessage(needed.player, hand));
                 break;
 
             case BET:
                 if (mRand.nextInt(5) < 1) {
                     mGame.fold();
-                    fireFolded(needed.player);
+                    fireMessage(new FoldedMessage(needed.player));
 
                 } else {
                     int bet = mGame.getIndividualBet();
@@ -112,7 +112,7 @@ public class GameSimulation extends GameControl {
                     }
 
                     mGame.giveBet(bet);
-                    fireBetPlaced(needed.player, mGame.getTotalBet(), mGame.getIndividualBet());
+                    fireMessage(new BetPlacedMessage(needed.player, mGame.getIndividualBet(), mGame.getTotalBet()));
                 }
                 break;
         }
@@ -123,16 +123,16 @@ public class GameSimulation extends GameControl {
     private void startTurn() {
         switch (mGame.getRound()) {
             case CAST:
-                fireStartRollTurn(1);
+                fireMessage(new StartTurnMessage(1));
                 break;
             case BET:
-                fireStartBetTurn(2, mGame.getIndividualBet());
+                fireMessage(new StartTurnMessage(2, mGame.getIndividualBet()));
                 break;
             case MATCH:
-                fireStartBetTurn(3, mGame.getIndividualBet());
+                fireMessage(new StartTurnMessage(3, mGame.getIndividualBet()));
                 break;
             case RECAST:
-                fireStartRollTurn(4);
+                fireMessage(new StartTurnMessage(4));
                 break;
         }
     }

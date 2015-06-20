@@ -108,103 +108,124 @@ public class PokerGame extends AppCompatActivity
     }
 
     @Override
-    public void onJoined() {
-        Toast.makeText(this, R.string.toast_joined_server, Toast.LENGTH_LONG).show();
-    }
+    public void handleMessage(GameControl.InMessage message) {
+        switch (message.getType()) {
+            case JOINED: {
+                Toast.makeText(this, R.string.toast_joined_server, Toast.LENGTH_LONG).show();
+            }
+            break;
 
-    @Override
-    public void onStartGame(int bet) {
-        mFolded = false;
+            case STARTGAME: {
+                mFolded = false;
 
-        Toast.makeText(this, "Game started.", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Game started.", Toast.LENGTH_LONG).show();
 
-        getFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new WaitingScreen())
-                .hide(mHandInfo)
-                .show(mChipInfo)
-                .commit();
-    }
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new WaitingScreen())
+                        .hide(mHandInfo)
+                        .show(mChipInfo)
+                        .commit();
+            }
+            break;
 
-    @Override
-    public void onStartRollTurn(int turn) {
-        if (mFolded) return;
+            case STARTTURN: {
+                GameControl.StartTurnMessage msg = (GameControl.StartTurnMessage) message;
 
-        mRound = turn;
+                if (mFolded) return;
+                mRound = msg.getRound();
 
-        Fragment fragment = new RollingRound();
+                if (mRound == 1 || mRound == 4) {
+                    Fragment fragment = new RollingRound();
 
-        Bundle args = new Bundle();
-        args.putInt(RollingRound.ARG_ROUND, turn);
-        fragment.setArguments(args);
+                    Bundle args = new Bundle();
+                    args.putInt(RollingRound.ARG_ROUND, mRound);
+                    fragment.setArguments(args);
 
-        getFragmentManager().beginTransaction()
-                .hide(mChipInfo)
-                .replace(R.id.fragment_container, fragment)
-                .commit();
-    }
+                    getFragmentManager().beginTransaction()
+                            .hide(mChipInfo)
+                            .replace(R.id.fragment_container, fragment)
+                            .commit();
+                }
 
-    @Override
-    public void onStartBetTurn(int turn, int minBet) {
-        if (mFolded) return;
+                if (mRound == 2 || mRound == 3) {
+                    Fragment roundFragment = new BettingRound();
 
-        mRound = turn;
+                    getFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, roundFragment, "BettingRound")
+                            .show(mChipInfo)
+                            .commit();
 
-        Fragment roundFragment = new BettingRound();
+                    mChipInfo.setReadOnly(mRound != 2);
+                }
+            }
+            break;
 
-        getFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, roundFragment, "BettingRound")
-                .show(mChipInfo)
-                .commit();
+            case DICE: {
+                GameControl.DiceMessage msg = (GameControl.DiceMessage) message;
 
-        mChipInfo.setReadOnly(turn != 2);
-    }
+                if (msg.getPlayer().equals(mPlayer)) {
+                    getFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, new WaitingScreen())
+                            .show(mChipInfo)
+                            .show(mHandInfo)
+                            .commit();
+                }
+            }
+            break;
 
-    @Override
-    public void onDiceRolled(String player, Hand hand) {
-        if (!player.equals(mPlayer)) return;
+            case FOLDED: {
+                GameControl.FoldedMessage msg = (GameControl.FoldedMessage) message;
 
-        getFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new WaitingScreen())
-                .show(mChipInfo)
-                .show(mHandInfo)
-                .commit();
-    }
+                if (!msg.getPlayer().equals(mPlayer)) {
+                    Toast.makeText(this, msg.getPlayer() + " folded.", Toast.LENGTH_SHORT).show();
 
-    @Override
-    public void onFolded(String player) {
-        if (!player.equals(mPlayer)) {
-            Toast.makeText(this, player + " folded.", Toast.LENGTH_SHORT).show();
+                } else {
+                    mFolded = true;
 
-        } else {
-            mFolded = true;
+                    getFragmentManager().beginTransaction()
+                            .hide(mChipInfo)
+                            .hide(mHandInfo)
+                            .replace(R.id.fragment_container, new WaitingScreen())
+                            .commit();
+                }
+            }
+            break;
 
-            getFragmentManager().beginTransaction()
-                    .hide(mChipInfo)
-                    .hide(mHandInfo)
-                    .replace(R.id.fragment_container, new WaitingScreen())
-                    .commit();
+            case BETPLACED: {
+                GameControl.BetPlacedMessage msg = (GameControl.BetPlacedMessage) message;
+
+                if (!msg.getPlayer().equals(mPlayer)) {
+                    Toast.makeText(this, msg.getPlayer() + " placed a bet.", Toast.LENGTH_SHORT).show();
+                }
+            }
+            break;
+
+            case ENDGAME: {
+                GameControl.EndGameMessage msg = (GameControl.EndGameMessage) message;
+
+                if (msg.getWinner().equals(mPlayer)) {
+                    Toast.makeText(this, "You won!", Toast.LENGTH_LONG).show();
+
+                } else {
+                    Toast.makeText(this, "You lost...", Toast.LENGTH_LONG).show();
+                }
+
+                getFragmentManager().beginTransaction()
+                        .hide(mHandInfo)
+                        .commit();
+            }
+            break;
+
+            case CLOSE: {
+                Toast.makeText(this, R.string.error_disconnect, Toast.LENGTH_LONG).show();
+                finish();
+            }
+            break;
+
+            case DISCONNECTED:
+                break; // TODO?
         }
-    }
 
-    @Override
-    public void onBetPlaced(String player, int totalBet, int individualBet) {
-        if (!player.equals(mPlayer)) {
-            Toast.makeText(this, player + " placed a bet.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onGameEnded(String winner, int valueWon) {
-        if (winner.equals(mPlayer)) {
-            Toast.makeText(this, "You won!", Toast.LENGTH_LONG).show();
-
-        } else {
-            Toast.makeText(this, "You lost...", Toast.LENGTH_LONG).show();
-        }
-
-        getFragmentManager().beginTransaction()
-                .hide(mHandInfo)
-                .commit();
     }
 
     @Override
@@ -228,12 +249,6 @@ public class PokerGame extends AppCompatActivity
     @Override
     public void onFolded() {
         mGameCtrl.fold();
-    }
-
-    @Override
-    public void onDisconnected() {
-        Toast.makeText(this, R.string.error_disconnect, Toast.LENGTH_LONG).show();
-        finish();
     }
 
     @Override

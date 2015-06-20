@@ -113,137 +113,111 @@ public class GameClient extends GameControl {
 
     private void recvMsg() throws IOException {
         String line = mRecvStream.readLine();
+        final InMessage message;
+
         if (line == null) {
+            Log.d(TAG_RECV, "connection from server lost");
+            message = new CloseMessage();
+            stop();
+
+        } else {
+            String[] msg = line.split("\\s+");
+
+            Log.d(TAG_RECV, "received message: " + line);
+
+            synchronized (mExpectedMsgs) {
+                if (!mExpectedMsgs.contains(msg[0])) {
+                    Log.e(TAG_RECV, "received unexpected message of type " + msg[0]);
+                }
+            }
+
+            switch (msg[0]) {
+                case "join": {
+                    setExpected("startgame");
+                    message = new JoinedMessage();
+                }
+                break;
+
+                case "startgame": {
+                    mRound = 0;
+                    int bet = Integer.parseInt(msg[1]);
+
+                    setExpected("dice", "startturn");
+                    message = new StartGameMessage(bet);
+                }
+                break;
+
+                case "startturn": {
+                    mRound = Integer.parseInt(msg[1]);
+
+                    if (mRound == 1 || mRound == 4) {
+
+                        setExpected("dice");
+                        message = new StartTurnMessage(mRound);
+
+                    } else if (mRound == 2 || mRound == 3) {
+                        final int minBet = Integer.parseInt(msg[2]);
+
+                        setExpected();
+                        message = new StartTurnMessage(mRound, minBet);
+
+                    } else {
+                        // INVALID ROUND
+                        Log.e(TAG_RECV, "Invalid round " + mRound);
+                        message = null;
+                    }
+                }
+                break;
+
+                case "dice": {
+                    String player = msg[1];
+                    Die[] vals = new Die[5];
+                    for (int i=0; i<5; i++) {
+                        vals[i] = Die.byVal(Integer.parseInt(msg[i+2]));
+                    }
+                    Hand dice = new Hand(vals);
+
+                    message = new DiceMessage(player, dice);
+                }
+                break;
+
+                case "betplaced": {
+                    String player = msg[1];
+                    int singleBet = Integer.parseInt(msg[2]);
+                    int totalBet = Integer.parseInt(msg[3]);
+
+                    message = new BetPlacedMessage(player, singleBet, totalBet);
+                }
+                break;
+
+                case "folded": {
+                    String player = msg[1];
+                    message = new FoldedMessage(player);
+                }
+                break;
+
+                case "endgame": {
+                    String winner = msg[1];
+                    int amtWon = Integer.parseInt(msg[2]);
+
+                    setExpected();
+                    message = new EndGameMessage(winner, amtWon);
+                }
+                break;
+
+                default:
+                    // INVALID MESSAGE
+                    message = null;
+            }
+        }
+
+        if (message != null) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    fireDisconnected();
+                    fireMessage(message);
                 }
             });
-            stop();
-            return;
-        }
-
-        String[] msg = line.split("\\s+");
-
-        Log.d(TAG_RECV, "received message: " + line);
-
-        synchronized (mExpectedMsgs) {
-            if (!mExpectedMsgs.contains(msg[0])) {
-                Log.e(TAG_RECV, "received unexpected message of type " + msg[0]);
-            }
-        }
-
-        switch (msg[0]) {
-            case "joined": {
-                setExpected("startgame");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        fireJoined();
-                    }
-                });
-            }
-            break;
-
-            case "startgame": {
-                mRound = 0;
-                final int bet = Integer.parseInt(msg[1]);
-
-                setExpected("dice", "startturn");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        fireStartGame(bet);
-                    }
-                });
-            }
-            break;
-
-            case "startturn": {
-                mRound = Integer.parseInt(msg[1]);
-
-                if (mRound == 1 || mRound == 4) {
-
-                    setExpected("dice");
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            fireStartRollTurn(mRound);
-                        }
-                    });
-
-                } else if (mRound == 2 || mRound == 3) {
-                    final int minBet = Integer.parseInt(msg[2]);
-
-                    setExpected();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            fireStartBetTurn(mRound, minBet);
-                        }
-                    });
-                }
-            }
-            break;
-
-            case "dice": {
-                final String player = msg[1];
-                Die[] vals = new Die[5];
-                for (int i=0; i<5; i++) {
-                    vals[i] = Die.byVal(Integer.parseInt(msg[i+2]));
-                }
-                final Hand dice = new Hand(vals);
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        fireDiceRolled(player, dice);
-                    }
-                });
-            }
-            break;
-
-            case "betplaced": {
-                final String player = msg[1];
-                final int singleBet = Integer.parseInt(msg[2]);
-                final int totalBet = Integer.parseInt(msg[3]);
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        fireBetPlaced(player, totalBet, singleBet);
-                    }
-                });
-            }
-            break;
-
-            case "folded": {
-                final String player = msg[1];
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        fireFolded(player);
-                    }
-                });
-            }
-            break;
-
-            case "endgame": {
-                final String winner = msg[1];
-                final int amtWon = Integer.parseInt(msg[2]);
-
-                setExpected();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        fireGameEnded(winner, amtWon);
-                    }
-                });
-            }
-            break;
-
         }
 
     }
@@ -251,7 +225,7 @@ public class GameClient extends GameControl {
     @Override
     public void join(String playerName) {
         mSendQ.add("join " + playerName);
-        setExpected("joined");
+        setExpected("join");
     }
 
     @Override
