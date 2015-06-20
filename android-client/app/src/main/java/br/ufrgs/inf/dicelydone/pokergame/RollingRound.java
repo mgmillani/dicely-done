@@ -13,9 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import br.ufrgs.inf.dicelydone.R;
 
 /**
@@ -51,7 +48,6 @@ public class RollingRound extends Fragment implements SensorEventListener {
     private SensorManager mSensorManager;
     private Sensor mAccelSensor;
 
-    private boolean mMustRandomize = false;
     private EventHandler mCallback;
 
     private boolean mCanShake = false;
@@ -84,33 +80,11 @@ public class RollingRound extends Fragment implements SensorEventListener {
         if (getArguments() != null) {
             readBundle(getArguments());
         }
-
-        mMustRandomize = false;
-        Timer t = new Timer();
-        t.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (isResumed()) {
-                            //mCallback.rollDice();
-                        } else {
-                            mMustRandomize = true;
-                        }
-                    }
-                });
-            }
-        }, 2000);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        if (mMustRandomize) {
-            mCallback.rollDice();
-        }
 
         if (mCanShake) {
             mSensorManager.registerListener(this, mAccelSensor, SensorManager.SENSOR_DELAY_NORMAL);

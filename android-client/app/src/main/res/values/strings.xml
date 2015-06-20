@@ -5,6 +5,8 @@
     <string name="bet_player">Your Bet:</string>
     <string name="bet_total">Total Bet:</string>
 
+    <string name="action_bet">Bet</string>
+    <string name="action_fold">Fold</string>
     <string name="action_start_game">Start Game</string>
     <string name="action_start">Start</string>
 
@@ -31,7 +33,7 @@
 
     <string name="toast_joined_server">Connected to the server</string>
 
-    <string name="wait_connecting">Connecting to the server...</string>
-    <string name="wait_gamestart">Waiting for the game to start...</string>
+    <string name="wait_connecting">Connecting to the server…</string>
+    <string name="wait_gamestart">Waiting for the game to start…</string>
 
 </resources>

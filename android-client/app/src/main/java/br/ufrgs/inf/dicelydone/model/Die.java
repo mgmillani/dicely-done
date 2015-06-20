@@ -13,7 +13,7 @@ public enum Die implements Parcelable {
 
     private int val;
 
-    private Die(int val) {
+    Die(int val) {
         this.val = val;
     }
 

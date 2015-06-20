@@ -7,6 +7,7 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -20,11 +21,9 @@ public class GameClient extends GameControl {
     private LineReader mRecvStream;
     private PrintStream mSendStream;
 
-    private boolean mConnected = false;
     private volatile boolean mStop = false;
-    private IOException mError = null;
 
-    private Object mStreamsMon = new Object();
+    private final Object mStreamsMon = new Object();
 
     public interface ConnectHandler {
         void onConnected();
@@ -57,8 +56,8 @@ public class GameClient extends GameControl {
         }
     };
 
-    private BlockingQueue<String> mSendQ = new ArrayBlockingQueue<String>(10);
-    private HashSet<String> mExpectedMsgs = new HashSet<>();
+    private BlockingQueue<String> mSendQ = new ArrayBlockingQueue<>(10);
+    private final HashSet<String> mExpectedMsgs = new HashSet<>();
     private int mRound;
 
     public GameClient(Activity context) {
@@ -255,9 +254,7 @@ public class GameClient extends GameControl {
     private void setExpected(String... types) {
         synchronized (mExpectedMsgs) {
             mExpectedMsgs.clear();
-            for (String t : types) {
-                mExpectedMsgs.add(t);
-            }
+            Collections.addAll(mExpectedMsgs, types);
         }
     }
 

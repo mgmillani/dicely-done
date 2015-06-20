@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="@dimen/activity_vertical_margin"
@@ -28,7 +29,8 @@
             android:id="@+id/totalBetView"
             android:text="0"
             android:textAppearance="@style/PokerGame.TextAppearance.ChipSumVal"
-            android:gravity="center" />
+            android:gravity="center"
+            tools:ignore="HardcodedText" />
     </LinearLayout>
 
     <LinearLayout
@@ -53,7 +55,8 @@
             android:id="@+id/minBetView"
             android:text="0"
             android:textAppearance="@style/PokerGame.TextAppearance.ChipSumVal"
-            android:gravity="center" />
+            android:gravity="center"
+            tools:ignore="HardcodedText" />
     </LinearLayout>
 
     <TextView

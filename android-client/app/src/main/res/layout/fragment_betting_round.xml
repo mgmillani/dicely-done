@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/handView"
+        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="@dimen/text_margin_left"
         android:id="@+id/instructionsView"
@@ -22,7 +22,7 @@
         android:layout_below="@+id/instructionsView"
         android:layout_toLeftOf="@+id/buttonCancel"
         android:id="@+id/buttonOk"
-        android:text="Ok" />
+        android:text="@string/action_bet" />
 
     <Button
         android:layout_width="wrap_content"
@@ -30,7 +30,7 @@
         android:layout_alignTop="@+id/buttonOk"
         android:layout_alignParentRight="true"
         android:id="@+id/buttonCancel"
-        android:text="Fold" />
+        android:text="@string/action_fold" />
 
 
 </RelativeLayout>

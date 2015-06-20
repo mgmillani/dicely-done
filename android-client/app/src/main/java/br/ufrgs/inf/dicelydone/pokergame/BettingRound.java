@@ -8,10 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import br.ufrgs.inf.dicelydone.HandView;
 import br.ufrgs.inf.dicelydone.R;
-import br.ufrgs.inf.dicelydone.model.ChipSet;
-import br.ufrgs.inf.dicelydone.model.Hand;
 
 /**
  * Fragment for the betting rounds, where players place their bets.
@@ -20,11 +17,7 @@ import br.ufrgs.inf.dicelydone.model.Hand;
  * Activities using this fragment MUST implement {@link BettingRound.EventHandler}
  *
  * <p>
- * Displays the player's dice, chips and bet, as well
- * as the overall bet. Allows the player to move chips
- * from his stash to the bet and vice versa, when given
- * true for {@link #ARG_CAN_RAISE}. Also allows the
- * player to place his bet or fold.
+ * Displays instructions and buttons to place a bet or fold.
  */
 public class BettingRound extends Fragment {
 
@@ -71,11 +64,6 @@ public class BettingRound extends Fragment {
         });
 
         return result;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
     }
 
     @Override

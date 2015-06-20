@@ -12,7 +12,7 @@ public enum Chip implements Parcelable {
     private final int index;
     private final int value;
 
-    private Chip(int idx, int val) {
+    Chip(int idx, int val) {
         this.index = idx;
         this.value = val;
     }
