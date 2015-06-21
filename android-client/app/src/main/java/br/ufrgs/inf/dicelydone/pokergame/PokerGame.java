@@ -167,7 +167,7 @@ public class PokerGame extends AppCompatActivity
                 mProgress.setTitle(R.string.wait_gamestart);
                 mProgress.show();
             }
-            break;
+            return;
 
             case STARTGAME: {
                 mProgress.dismiss();
@@ -181,7 +181,7 @@ public class PokerGame extends AppCompatActivity
                         .show(mChipInfo)
                         .commit();
             }
-            break;
+            return;
 
             case STARTTURN: {
                 GameControl.StartTurnMessage msg = (GameControl.StartTurnMessage) message;
@@ -189,7 +189,6 @@ public class PokerGame extends AppCompatActivity
                 if (mFolded) return;
                 mRound = msg.getRound();
 
-                soundAlert();
 
                 if (mRound == 1 || mRound == 4) {
                     Fragment fragment = new RollingRound();
@@ -209,6 +208,11 @@ public class PokerGame extends AppCompatActivity
                     int instruction = (mRound == 2) ? R.string.instruction_bet : R.string.instruction_call;
                     Fragment roundFragment = new BettingRound();
 
+                    if (mRound == 3 && msg.getMinBet() == mChipInfo.getPlayerBet().getValue()) {
+                        mGameCtrl.bet(new ChipSet());
+                        return;
+                    }
+
                     Bundle args = new Bundle();
                     args.putString(BettingRound.ARG_MESSAGE, getString(instruction));
                     roundFragment.setArguments(args);
@@ -220,8 +224,10 @@ public class PokerGame extends AppCompatActivity
 
                     mChipInfo.setReadOnly(mRound != 2);
                 }
+
+                soundAlert();
             }
-            break;
+            return;
 
             case DICE: {
                 GameControl.DiceMessage msg = (GameControl.DiceMessage) message;
@@ -234,7 +240,7 @@ public class PokerGame extends AppCompatActivity
                             .commit();
                 }
             }
-            break;
+            return;
 
             case FOLDED: {
                 GameControl.FoldedMessage msg = (GameControl.FoldedMessage) message;
@@ -252,7 +258,7 @@ public class PokerGame extends AppCompatActivity
                             .commit();
                 }
             }
-            break;
+            return;
 
             case BETPLACED: {
                 GameControl.BetPlacedMessage msg = (GameControl.BetPlacedMessage) message;
@@ -261,7 +267,7 @@ public class PokerGame extends AppCompatActivity
                     Toast.makeText(this, msg.getPlayer() + " placed a bet.", Toast.LENGTH_SHORT).show();
                 }
             }
-            break;
+            return;
 
             case ENDGAME: {
                 GameControl.EndGameMessage msg = (GameControl.EndGameMessage) message;
@@ -278,13 +284,13 @@ public class PokerGame extends AppCompatActivity
                         .commit();
 
             }
-            break;
+            return;
 
             case CLOSE: {
                 Toast.makeText(this, R.string.error_disconnect, Toast.LENGTH_LONG).show();
                 finish();
             }
-            break;
+            return;
 
             case DISCONNECTED:
                 break; // TODO?
