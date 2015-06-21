@@ -374,6 +374,7 @@ void Game::updateNeeded()
 void Game::decideWinner()
 {
 	int rank = (int)(Game::Rank::HIGHEST)+1;
+	int sum;
 	for(list<Player*>::iterator it=this->activePlayers.begin() ; it!=this->activePlayers.end() ; it++)
 	{
 		Player *p = *it;
@@ -381,7 +382,21 @@ void Game::decideWinner()
 		if((int)p->rank < rank)
 		{
 			rank = (int)p->rank;
+			for(int i=0,sum=0 ; i<p->hand.len ; i++)
+				sum += p->hand.values[i];
 			this->winner = it;
+		}
+		// in case of a tie
+		else if((int)p->rank == rank)
+		{
+			int sum2 = 0;
+			for(int i=0,sum=0 ; i<p->hand.len ; i++)
+				sum2 += p->hand.values[i];
+			if(sum2 > sum)
+			{
+				sum = sum2;
+				this->winner = it;
+			}
 		}
 	}
 }
