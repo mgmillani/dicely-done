@@ -95,8 +95,16 @@ public class StartGameActivity extends AppCompatActivity {
         intent.putExtra(PokerGame.EXTRA_NICKNAME, nick);
 
         if (!mCbSimulate.isChecked()) {
+
             String addr = mSrvAddrEdit.getText().toString();
-            int port = Integer.parseInt(mSrvPortEdit.getText().toString());
+
+            int port;
+            try {
+                port = Integer.parseInt(mSrvPortEdit.getText().toString());
+            } catch (NumberFormatException e) {
+                mSrvPortEdit.setError(getString(R.string.error_parse_port));
+                return;
+            }
 
             intent.putExtra(PokerGame.EXTRA_SERVER_ADDR, addr);
             intent.putExtra(PokerGame.EXTRA_SERVER_PORT, port);

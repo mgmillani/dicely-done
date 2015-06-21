@@ -19,6 +19,7 @@
     <string name="error_disconnect">Perdeu conexão com servidor.</string>
     <string name="error_nick_required">Digite um nome.</string>
     <string name="error_nick_whitespace">Não pode conter espaços.</string>
+    <string name="error_parse_port">Precisa ser um número.</string>
 
 
     <string name="instruction_bet">Aposte</string>

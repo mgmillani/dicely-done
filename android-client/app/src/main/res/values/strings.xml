@@ -19,6 +19,7 @@
     <string name="error_disconnect">Lost connection to the server.</string>
     <string name="error_nick_required">You need a nickname to play.</string>
     <string name="error_nick_whitespace">Cannot contain whitespace.</string>
+    <string name="error_parse_port">Must be a number.</string>
 
     <string name="instruction_bet">Place your bet</string>
     <string name="instruction_call">Call it or fold</string>
