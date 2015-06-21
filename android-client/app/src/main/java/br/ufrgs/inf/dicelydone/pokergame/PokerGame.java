@@ -3,8 +3,13 @@ package br.ufrgs.inf.dicelydone.pokergame;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -184,6 +189,8 @@ public class PokerGame extends AppCompatActivity
                 if (mFolded) return;
                 mRound = msg.getRound();
 
+                soundAlert();
+
                 if (mRound == 1 || mRound == 4) {
                     Fragment fragment = new RollingRound();
 
@@ -259,6 +266,8 @@ public class PokerGame extends AppCompatActivity
             case ENDGAME: {
                 GameControl.EndGameMessage msg = (GameControl.EndGameMessage) message;
 
+                soundAlert();
+
                 boolean victory = msg.getWinner().equals(mPlayer);
                 mChipInfo.setBetsVisible(false);
 
@@ -331,5 +340,14 @@ public class PokerGame extends AppCompatActivity
     public void onQuitGame() {
         mGameCtrl.quit();
         finish();
+    }
+
+    private void soundAlert() {
+        Uri alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), alert);
+        r.play();
+
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        vibrator.vibrate(500);
     }
 }
