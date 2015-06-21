@@ -56,6 +56,8 @@ void Connection::setupSocket()
 		
 		ERR("Server port: %d\n", this->tcpPort);
 		this->tcpSocket = socket(PF_INET, SOCK_STREAM, 0);
+		int b = 1;
+		setsockopt(this->tcpSocket, SOL_SOCKET, SO_REUSEADDR, (void*)&b, sizeof(b));
 		if(fcntl(this->tcpSocket, F_SETFL, O_NONBLOCK) == -1)
 		{
 			TRACE("Error: %s (%d)\n", strerror(errno), errno);
