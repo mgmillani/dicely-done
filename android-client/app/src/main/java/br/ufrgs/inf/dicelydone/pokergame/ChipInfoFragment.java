@@ -73,6 +73,9 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
     private ChipSetView mPlayerBetView;
     private TextView mTotalBetView;
     private TextView mMinBetView;
+    private View mTotalBetLayout;
+    private View mMinBetLayout;
+    private View mPlayerBetLbl;
 
     private ChipSet mPlayerStash;
     private ChipSet mPlayerBet;
@@ -114,6 +117,13 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
 
     public void setPlayer(String player) {
         mPlayer = player;
+    }
+
+    public void setBetsVisible(boolean visible) {
+        mTotalBetLayout.setVisibility(visible? View.VISIBLE : View.INVISIBLE);
+        mMinBetLayout.setVisibility(visible? View.VISIBLE : View.INVISIBLE);
+        mPlayerBetLbl.setVisibility(visible? View.VISIBLE : View.GONE);
+        mPlayerBetView.setVisibility(visible? View.VISIBLE : View.GONE);
     }
 
     public void initGame() {
@@ -197,6 +207,9 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
         mMinBetView = (TextView) result.findViewById(R.id.minBetView);
         mPlayerBetView = (ChipSetView) result.findViewById(R.id.playerBetView);
         mPlayerChipsView = (ChipSetView) result.findViewById(R.id.playerChipsView);
+        mTotalBetLayout = result.findViewById(R.id.totalBetLayout);
+        mMinBetLayout = result.findViewById(R.id.minBetLayout);
+        mPlayerBetLbl = result.findViewById(R.id.playerBetLabel);
 
         // When a player's chip is clicked, it is added to the bet
         mPlayerChipsView.setOnChipClickListener(new ChipSetView.OnChipClickListener() {
@@ -314,6 +327,7 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
                 mTotalBet = msg.getTotalBet();
                 mIndividualBet = msg.getIndividualBet();
                 updateView();
+                setReadOnly(true);
 
                 break;
             }
@@ -329,6 +343,9 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
 
                     mPlayerBet.clear();
                     mAddedBet.clear();
+
+                    updateView();
+                    setReadOnly(true);
                 }
 
                 break;

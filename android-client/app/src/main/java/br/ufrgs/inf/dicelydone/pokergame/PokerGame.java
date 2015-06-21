@@ -168,6 +168,7 @@ public class PokerGame extends AppCompatActivity
                 mProgress.dismiss();
 
                 mFolded = false;
+                mChipInfo.setBetsVisible(true);
 
                 getFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, new WaitingScreen())
@@ -259,6 +260,7 @@ public class PokerGame extends AppCompatActivity
                 GameControl.EndGameMessage msg = (GameControl.EndGameMessage) message;
 
                 boolean victory = msg.getWinner().equals(mPlayer);
+                mChipInfo.setBetsVisible(false);
 
                 getFragmentManager().beginTransaction()
                         .hide(mHandInfo)
