@@ -1,10 +1,15 @@
 package br.ufrgs.inf.dicelydone.pokergame;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import br.ufrgs.inf.dicelydone.R;
@@ -106,6 +111,48 @@ public class PokerGame extends AppCompatActivity
             mChipInfo.setGameControl(mGameCtrl);
             mHandInfo.setGameControl(mGameCtrl);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_poker_game, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_quit:
+                onBackPressed();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+            .setTitle(R.string.question_confirm_quit)
+            .setNegativeButton(R.string.action_continue, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            })
+            .setPositiveButton(R.string.action_quit, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mGameCtrl.quit();
+                    dialog.dismiss();
+                    finish();
+                }
+            })
+            .create();
+
+        dialog.show();
     }
 
     @Override

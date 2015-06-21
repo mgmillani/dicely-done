@@ -6,6 +6,7 @@
     <string name="bet_total">Total Bet:</string>
 
     <string name="action_bet">Bet</string>
+    <string name="action_continue">Continue Game</string>
     <string name="action_fold">Fold</string>
     <string name="action_play">Play</string>
     <string name="action_quit">Quit</string>
@@ -34,6 +35,7 @@
     <string name="label_server_port">Port</string>
     <string name="label_simulate">Simulate</string>
 
+    <string name="question_confirm_quit">Are you sure you want to quit?</string>
     <string name="question_play_again">Do you want to play again?</string>
 
     <string name="result_victory">You Won!</string>
