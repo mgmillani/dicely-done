@@ -72,6 +72,16 @@ public class GameSimulation extends GameControl {
         resumeSimulation();
     }
 
+    @Override
+    public void restart() {
+        resumeSimulation();
+    }
+
+    @Override
+    public void quit() {
+        // Nothing to do
+    }
+
     private void simulate() {
         Game.Info needed = mGame.getNeeded();
 
@@ -82,13 +92,12 @@ public class GameSimulation extends GameControl {
 
         switch (needed.type) {
             case NOTHING:
-                if (mGame.getRound() == Game.Round.RESULT) {
-                    fireMessage(new EndGameMessage(mGame.getWinner(), mGame.getTotalBet()));
-
-                } else if (mGame.getRound() == Game.Round.INITIAL) {
-                    fireMessage(new StartGameMessage(1));
-                }
+                fireMessage(new StartGameMessage(1));
                 break;
+
+            case RESTART:
+                fireMessage(new EndGameMessage(mGame.getWinner(), mGame.getTotalBet()));
+                return; // Pause the simulation
 
             case HAND:
                 Hand hand = Hand.random(5, mRand);
@@ -149,7 +158,7 @@ public class GameSimulation extends GameControl {
     private void resumeSimulation() {
         mGame.nextTurn();
 
-        delayed(2000, new Runnable() {
+        delayed(1000, new Runnable() {
             @Override
             public void run() {
                 simulate();

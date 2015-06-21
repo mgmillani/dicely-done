@@ -17,7 +17,8 @@
     <dimen name="text_size_label">18sp</dimen>
     <dimen name="text_size_chipsumval">30sp</dimen>
 
-    <dimen name="text_margin_left">24dp</dimen>
+    <dimen name="text_icon_width">32dp</dimen>
+    <dimen name="text_margin_left">56dp</dimen>
     <dimen name="text_margin_top">48dp</dimen>
 
 </resources>

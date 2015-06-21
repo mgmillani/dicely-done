@@ -108,6 +108,10 @@ public class GameClient extends GameControl {
         String line = mSendQ.take();
         mSendStream.append(line).append('\n').flush();
         Log.d(TAG_SEND, "sent message: " + line);
+
+        if (line.equals("quit")) {
+            stop();
+        }
     }
 
     private void recvMsg() throws IOException {
@@ -249,6 +253,17 @@ public class GameClient extends GameControl {
     public void reroll(Hand kept) {
         mSendQ.add("reroll " + kept);
         setExpected("dice", "endgame");
+    }
+
+    @Override
+    public void restart() {
+        mSendQ.add("restart");
+        setExpected("startgame");
+    }
+
+    @Override
+    public void quit() {
+        mSendQ.add("quit");
     }
 
     private void setExpected(String... types) {

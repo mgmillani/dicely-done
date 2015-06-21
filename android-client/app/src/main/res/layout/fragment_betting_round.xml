@@ -19,18 +19,18 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/instructionsView"
-        android:layout_toLeftOf="@+id/buttonCancel"
         android:id="@+id/buttonOk"
-        android:text="@string/action_bet" />
+        android:text="@string/action_bet"
+        android:layout_below="@+id/instructionsView"
+        android:layout_alignParentRight="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/buttonOk"
-        android:layout_alignParentRight="true"
         android:id="@+id/buttonCancel"
-        android:text="@string/action_fold" />
+        android:text="@string/action_fold"
+        android:layout_toLeftOf="@+id/buttonOk"
+        android:layout_alignTop="@+id/buttonOk" />
 
 
 </RelativeLayout>

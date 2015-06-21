@@ -37,7 +37,7 @@ public class Game {
     public static class Info {
 
         public enum Type {
-            HAND, BET, NOTHING
+            HAND, BET, RESTART, NOTHING
         }
 
         public final Type type;
@@ -154,7 +154,7 @@ public class Game {
             break;
 
         case RESULT:
-            mNeeded = new Info(Info.Type.NOTHING, null);
+            mNeeded = new Info(Info.Type.RESTART, null);
             break;
         }
 

@@ -1,0 +1,51 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="@dimen/activity_vertical_margin"
+    android:layout_marginBottom="@dimen/activity_vertical_margin"
+    tools:context="br.ufrgs.inf.dicelydone.pokergame.EndGameFragment">
+
+    <ProgressBar
+        android:layout_width="@dimen/text_icon_width"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/lblOutcome"
+        android:layout_alignParentLeft="true"
+        android:id="@+id/progressBar" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/PokerGame.TextAppearance.Instructions"
+        android:text="@string/result_victory"
+        android:id="@+id/lblOutcome"
+        android:layout_alignParentTop="false"
+        android:layout_alignParentLeft="false"
+        android:layout_marginLeft="@dimen/text_margin_left" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/question_play_again"
+        android:id="@+id/lblQuestion"
+        android:layout_below="@+id/lblOutcome"
+        android:layout_alignParentLeft="false"
+        android:layout_alignLeft="@+id/lblOutcome" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/action_play"
+        android:id="@+id/btnPlay"
+        android:layout_below="@+id/lblQuestion"
+        android:layout_alignParentRight="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/action_quit"
+        android:id="@+id/btnQuit"
+        android:layout_toLeftOf="@+id/btnPlay"
+        android:layout_alignTop="@+id/btnPlay" />
+
+</RelativeLayout>

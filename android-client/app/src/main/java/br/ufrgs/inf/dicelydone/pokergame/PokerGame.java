@@ -16,7 +16,7 @@ import br.ufrgs.inf.dicelydone.model.Hand;
 
 
 public class PokerGame extends AppCompatActivity
-    implements GameControl.Handler, RollingRound.EventHandler, BettingRound.EventHandler, ChipInfoFragment.EventHandler {
+    implements GameControl.Handler, RollingRound.EventHandler, BettingRound.EventHandler, ChipInfoFragment.EventHandler, EndGameFragment.Handler {
 
     public static final String EXTRA_NICKNAME = "br.ufrgs.inf.dicelydone.NICKNAME";
     public static final String EXTRA_SERVER_ADDR = "br.ufrgs.inf.dicelydone.SERVER_ADDR";
@@ -193,7 +193,7 @@ public class PokerGame extends AppCompatActivity
                     getFragmentManager().beginTransaction()
                             .hide(mChipInfo)
                             .hide(mHandInfo)
-                            .replace(R.id.fragment_container, new WaitingScreen())
+                            .replace(R.id.fragment_container, EndGameFragment.newInstance(false, true))
                             .commit();
                 }
             }
@@ -211,16 +211,14 @@ public class PokerGame extends AppCompatActivity
             case ENDGAME: {
                 GameControl.EndGameMessage msg = (GameControl.EndGameMessage) message;
 
-                if (msg.getWinner().equals(mPlayer)) {
-                    Toast.makeText(this, "You won!", Toast.LENGTH_LONG).show();
-
-                } else {
-                    Toast.makeText(this, "You lost...", Toast.LENGTH_LONG).show();
-                }
+                boolean victory = msg.getWinner().equals(mPlayer);
 
                 getFragmentManager().beginTransaction()
                         .hide(mHandInfo)
+                        .show(mChipInfo)
+                        .replace(R.id.fragment_container, EndGameFragment.newInstance(victory, false))
                         .commit();
+
             }
             break;
 
@@ -271,5 +269,18 @@ public class PokerGame extends AppCompatActivity
         if (fragment != null) {
             fragment.setBetEnabled(bet.getValue() >= mChipInfo.getIndividualBet());
         }
+    }
+
+    @Override
+    public void onRestartGame() {
+        mGameCtrl.restart();
+        mProgress.setTitle(R.string.wait_gamestart);
+        mProgress.show();
+    }
+
+    @Override
+    public void onQuitGame() {
+        mGameCtrl.quit();
+        finish();
     }
 }

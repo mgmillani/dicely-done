@@ -7,6 +7,8 @@
 
     <string name="action_bet">Apostar</string>
     <string name="action_fold">Desistir</string>
+    <string name="action_play">Jogar</string>
+    <string name="action_quit">Sair</string>
     <string name="action_start_game">Começar Jogo</string>
     <string name="action_start">Jogar</string>
 
@@ -32,6 +34,11 @@
     <string name="label_server_opts">Opções do Servidor:</string>
     <string name="label_server_port">Porta</string>
     <string name="label_simulate">Simular</string>
+
+    <string name="question_play_again">Você quer jogar novamente?</string>
+
+    <string name="result_victory">Você venceu!</string>
+    <string name="result_defeat">Você perdeu…</string>
 
     <string name="toast_joined_server">Conectado ao servidor.</string>
 

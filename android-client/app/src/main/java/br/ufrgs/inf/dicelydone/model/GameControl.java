@@ -261,6 +261,10 @@ public abstract class GameControl {
 
     public abstract void reroll(Hand kept);
 
+    public abstract void restart();
+
+    public abstract void quit();
+
     private ArrayList<Handler> mHandlers;
     private Activity mContext;
 
