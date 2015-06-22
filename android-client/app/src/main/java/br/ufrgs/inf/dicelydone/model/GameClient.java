@@ -21,6 +21,8 @@ public class GameClient extends GameControl {
     private LineReader mRecvStream;
     private PrintStream mSendStream;
 
+    private String prevMsg;
+
     private volatile boolean mStop = false;
 
     private final Object mStreamsMon = new Object();
@@ -123,7 +125,12 @@ public class GameClient extends GameControl {
             message = new CloseMessage();
             stop();
 
+        } else if (line.equals(prevMsg)) {
+            Log.w(TAG_RECV, "received duplicate message: " + line);
+            return;
+
         } else {
+            prevMsg = line;
             String[] msg = line.split("\\s+");
 
             Log.d(TAG_RECV, "received message: " + line);
