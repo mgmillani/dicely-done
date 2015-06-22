@@ -183,42 +183,42 @@ public:
 	LocalGame();
 	~LocalGame();
 /**
- * let the game begin!
- */
-	void informStart();
+	 * let the game begin!
+	 */
+	virtual void informStart();
+	virtual void informStart(Player *player);
 	/**
 	 * who is the current player
 	 */
-	void informPlayer();
+	virtual void informPlayer();
 	/**
 	 * what is the current round
 	 */
-	void informRound();
+	virtual void informRound();
 	/**
 	 * which is the hand of the given player
 	 */
-	void informHand(Player *p);
+	virtual void informHand(Player *p);
 	/**
 	 * total bet of the given player
 	 */
-	void informBet(Player *p);
+	virtual void informBet(Player *p);
 	/**
 	 * given player gave up
 	 */
-	void informFold(Player *p);
+	virtual void informFold(Player *p);
 	/**
 	 * given player left the game
 	 */
-	void informQuit(Player *p);
+	virtual void informQuit(Player *p);
 	/**
 	 * given player has joined
 	 */
-	void informJoin(Player *p);
+	virtual void informJoin(Player *p);
 	/**
 	 * who won the game
 	 */
-	void informWinner();
-	//GtkWindow *window;
+	virtual void informWinner();
 	
 	std::chrono::time_point<std::chrono::steady_clock> gameStart;
 };

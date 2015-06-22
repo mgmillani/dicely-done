@@ -136,15 +136,16 @@ Game::Game(t_score minBet, t_score startScore)
 	this->startScore = startScore;
 }
 
-bool Game::join(Player *player)
+bool Game::join(Player *playerA)
 {
 	for(list<Player*>::iterator it = this->players.begin() ; it!=players.end() ; it++)
 	{
 		Player *p = *it;
-		if(p->name.compare(player->name) == 0)
+		if(p->name.compare(playerA->name) == 0)
 			return false;
 	}
-	player->score = this->startScore;
+	Player *player = new Player(playerA->name, this->startScore);
+	player->socket = playerA->socket;
 	this->players.push_back(player);
 	this->informJoin(player);
 	if(this->round == Round::INITIAL)
@@ -657,7 +658,7 @@ LocalGame::LocalGame(t_score minBet, t_score startScore)
 	time_t t = time(0);
 	struct tm * now = localtime( & t );
 	char date[1024];
-	sprintf(date, "%d-%d-%d-%d:%d:%d",(now->tm_year + 1900), (now->tm_mon + 1), now->tm_mday, now->tm_hour, now->tm_min, now->tm_sec);
+	sprintf(date, "%04d-%02d-%02d-%02d:%02d:%02d",(now->tm_year + 1900), (now->tm_mon + 1), now->tm_mday, now->tm_hour, now->tm_min, now->tm_sec);
 	ss << "dicely-done-" << date << ".log";
 	ERR("log: %s\n", ss.str().c_str());
 	this->logFile = std::ofstream(ss.str(), std::ofstream::out);
@@ -685,6 +686,16 @@ void LocalGame::informStart()
 	duration<double> elapsed_sec = t1 - this->gameStart;
 	double dt = elapsed_sec.count();
 	Player *p = *this->currentPlayer;
+	
+	this->logFile << dt << "s";
+	this->logFile << p->name << " ";
+	this->logFile << "startgame " << this->minBet << "\n";
+}
+void LocalGame::informStart(Player *p)
+{
+	time_point<steady_clock> t1 = steady_clock::now();
+	duration<double> elapsed_sec = t1 - this->gameStart;
+	double dt = elapsed_sec.count();
 	
 	this->logFile << dt << "s";
 	this->logFile << p->name << " ";
@@ -731,7 +742,7 @@ void LocalGame::informWinner()
 	duration<double> elapsed_sec = t1 - this->gameStart;
 	double dt = elapsed_sec.count();
 	Player *p = *this->currentPlayer;
-	this->logFile << dt << "s";
+	this->logFile << dt << "s ";
 	this->logFile << p->name << " ";
 	this->logFile << "endgame " << (*this->winner)->name << " " << this->pot << "\n";
 	
