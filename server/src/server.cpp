@@ -185,7 +185,7 @@ int main(int argc, char** argv)
 	LocalGame localGame(minBet, startScore);
 	MultiGame game(minBet, startScore);
 	game.add(&remoteGame);
-	//game.add(&localGame);	
+	game.add(&localGame);
 	Connection conn(port, &game, verbose);
 
 	/*conn.join("Geralt");

@@ -1,6 +1,8 @@
 #include <sstream>
 #include <list>
 #include <iterator>
+#include <fstream>
+#include <chrono>
 
 #include <stdlib.h>
 #include <sys/types.h>
@@ -17,6 +19,7 @@
 #include "debug.h"
 
 using namespace std;
+using namespace std::chrono;
 
 const string gStartGame = "startgame";
 const string gStartTurn = "startturn";
@@ -638,7 +641,7 @@ Game::Info MultiGame::getNeeded()
 
 /**
  * ==========================
- * Local Game with GTK window
+ * Local Game with log file
  * ==========================
  */
 
@@ -650,6 +653,20 @@ LocalGame::LocalGame(t_score minBet, t_score startScore)
 	this->minBet = minBet;
 	this->playerBet = minBet;
 	this->startScore = startScore;
+	stringstream ss;
+	time_t t = time(0);
+	struct tm * now = localtime( & t );
+	char date[1024];
+	sprintf(date, "%d-%d-%d-%d:%d:%d",(now->tm_year + 1900), (now->tm_mon + 1), now->tm_mday, now->tm_hour, now->tm_min, now->tm_sec);
+	ss << "dicely-done-" << date << ".log";
+	ERR("log: %s\n", ss.str().c_str());
+	this->logFile = std::ofstream(ss.str(), std::ofstream::out);
+	this->gameStart = steady_clock::now();
+}
+
+LocalGame::~LocalGame()
+{
+	this->logFile.close();
 }
 
 LocalGame::LocalGame() : Game::Game()
@@ -664,62 +681,119 @@ LocalGame::LocalGame() : Game::Game()
 
 void LocalGame::informStart()
 {
-
+	time_point<steady_clock> t1 = steady_clock::now();
+	duration<double> elapsed_sec = t1 - this->gameStart;
+	double dt = elapsed_sec.count();
+	Player *p = *this->currentPlayer;
+	
+	this->logFile << dt << "s";
+	this->logFile << p->name << " ";
+	this->logFile << "startgame " << this->minBet << "\n";
 }
 void LocalGame::informPlayer()
 {
+	if(this->round == Round::RESULT)
+		return;
 
-}
-
-void LocalGame::informRound()
-{
-
+	Player *p = *this->currentPlayer;
+	stringstream msg;
+	time_point<steady_clock> t1 = steady_clock::now();
+	duration<double> elapsed_sec = t1 - this->gameStart;
+	double dt = elapsed_sec.count();
+	this->logFile << dt << "s ";	
+	this->logFile << p->name << " ";
+	
+	this->logFile <<  "startturn";
+	this->logFile << " " << (int)this->round;
+	string msgStr;
 	switch(this->round)
 	{
 		case Round::INITIAL:
 		case Round::RECAST:
-			printf("startturn %d\n", (int)this->round);
+			this->logFile << "\n";
 			break;
 		case Round::RESULT: break;
 		case Round::BET:
-		case Round::MATCH:   printf("startturn %d %u\n", (int)this->round, this->playerBet); break;
-
+		case Round::MATCH:
+			this->logFile << " " << this->playerBet << "\n";
+			break;
 	}
+}
+
+void LocalGame::informRound()
+{
+	this->informPlayer();
 }
 
 void LocalGame::informWinner()
 {
-	printf("endgame %s %d\n", (*this->winner)->name.c_str(), this->pot);
+	time_point<steady_clock> t1 = steady_clock::now();
+	duration<double> elapsed_sec = t1 - this->gameStart;
+	double dt = elapsed_sec.count();
+	Player *p = *this->currentPlayer;
+	this->logFile << dt << "s";
+	this->logFile << p->name << " ";
+	this->logFile << "endgame " << (*this->winner)->name << " " << this->pot << "\n";
+	
 }
 
 void LocalGame::informHand(Player *p)
 {
-	printf("dice %s ", p->name.c_str());
+	time_point<steady_clock> t1 = steady_clock::now();
+	duration<double> elapsed_sec = t1 - this->gameStart;
+	double dt = elapsed_sec.count();
+	this->logFile << dt << "s ";
+	this->logFile << p->name << " ";
+	
+	this->logFile << "dice " << p->name;
 	for(int i=0 ; i<p->hand.len ; i++)
 	{
-		printf("%d ", p->hand.values[i]);
+		this->logFile << " " << p->hand.values[i];
 	}
-	printf("\n");
+
+	this->logFile << "\n";
 }
 
 void LocalGame::informBet(Player *p)
 {
-	printf("betplaced %s %d %d\n", p->name.c_str(), p->bet, this->pot);
+	time_point<steady_clock> t1 = steady_clock::now();
+	duration<double> elapsed_sec = t1 - this->gameStart;
+	double dt = elapsed_sec.count();
+	this->logFile << dt << "s ";
+	this->logFile << p->name << " ";
+	
+	this->logFile << "betplaced " << p->name << " " << p->bet << " " << this->pot << "\n";
+	
 }
 
 void LocalGame::informFold(Player *p)
 {
-	printf("folded %s\n", p->name.c_str());
+	time_point<steady_clock> t1 = steady_clock::now();
+	duration<double> elapsed_sec = t1 - this->gameStart;
+	double dt = elapsed_sec.count();
+	this->logFile << dt << "s ";
+	this->logFile << p->name << " ";
+	this->logFile << "folded " << p->name << "\n";
 }
 
 void LocalGame::informQuit(Player *p)
 {
-	printf("quit %s\n", p->name.c_str());
+	time_point<steady_clock> t1 = steady_clock::now();
+	duration<double> elapsed_sec = t1 - this->gameStart;
+	double dt = elapsed_sec.count();
+	this->logFile << dt << "s ";
+	this->logFile << p->name << " ";
+	this->logFile << "quit " << p->name << "\n";
 }
 
 void LocalGame::informJoin(Player *p)
 {
-	printf("join %s\n", p->name.c_str());
+	time_point<steady_clock> t1 = steady_clock::now();
+	duration<double> elapsed_sec = t1 - this->gameStart;
+	double dt = elapsed_sec.count();
+	this->logFile << dt << "s ";
+	this->logFile << p->name << " ";
+	this->logFile << "joined " << p->name << "\n";
 }
 
 

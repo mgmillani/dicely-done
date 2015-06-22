@@ -1,9 +1,12 @@
 #ifndef GAME_HPP_
 #define GAME_HPP_
 
+#include <fstream>
+
 #include <deque>
 #include <list>
 #include <string>
+#include <chrono>
 
 #include "hand.hpp"
 
@@ -101,6 +104,7 @@ public:
 	t_score playerBet; // how much each player is betting
 	t_score startScore; // with how many points each player starts
 	t_score minBet; // how much each player bets when the game starts
+	std::ofstream logFile;
 };
 
 class RemoteGame : public Game
@@ -177,6 +181,7 @@ class LocalGame : public Game
 public:
 	LocalGame(t_score minBet, t_score startScore );
 	LocalGame();
+	~LocalGame();
 /**
  * let the game begin!
  */
@@ -214,6 +219,8 @@ public:
 	 */
 	void informWinner();
 	//GtkWindow *window;
+	
+	std::chrono::time_point<std::chrono::steady_clock> gameStart;
 };
 
 /**
