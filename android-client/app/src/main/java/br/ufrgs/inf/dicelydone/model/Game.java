@@ -2,6 +2,7 @@ package br.ufrgs.inf.dicelydone.model;
 
 import android.util.Log;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -75,6 +76,13 @@ public class Game {
 
     private Random mRand = new Random(System.currentTimeMillis());
 
+    public int getBet(String player) {
+        return mData.get(player).bet;
+    }
+
+    public Collection<String> getPlayers() {
+        return mPlayers;
+    }
 
     public void join(String player) {
         mPlayers.add(player);
@@ -101,10 +109,6 @@ public class Game {
         data.bet += bet;
         mTotalBet += bet;
         mIndividualBet = data.bet;
-    }
-
-    public int getBet(String player) {
-        return mData.get(player).bet;
     }
 
     public void fold() {

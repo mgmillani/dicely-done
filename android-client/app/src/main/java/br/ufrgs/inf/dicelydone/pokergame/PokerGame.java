@@ -22,6 +22,9 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import br.ufrgs.inf.dicelydone.R;
 import br.ufrgs.inf.dicelydone.model.ChipSet;
 import br.ufrgs.inf.dicelydone.model.GameClient;
@@ -143,11 +146,22 @@ public class PokerGame extends AppCompatActivity
                 .commit();
 
         if (mGameCtrl instanceof GameSimulation) {
-            mGameCtrl.join(mPlayer);
-
             mChipInfo.setGameControl(mGameCtrl);
             mHandInfo.setGameControl(mGameCtrl);
             mGameCtrl.addHandler(mPlayerInfo);
+
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mGameCtrl.join(mPlayer);
+                        }
+                    });
+                }
+            }, 100);
+
         }
     }
 

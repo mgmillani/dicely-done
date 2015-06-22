@@ -51,7 +51,7 @@ public class PlayersFragment extends Fragment implements GameControl.Handler {
 
         if (getArguments() != null) {
             String mainPlayer = getArguments().getString(ARG_PLAYER);
-            mPlayers.put(mainPlayer, new Player(mainPlayer));
+            //mPlayers.put(mainPlayer, new Player(mainPlayer));
         }
     }
 
@@ -97,7 +97,12 @@ public class PlayersFragment extends Fragment implements GameControl.Handler {
     public void handleMessage(GameControl.InMessage message) {
         switch(message.getType()) {
             case JOINED: {
-                // TODO for other players
+                GameControl.JoinedMessage msg = (GameControl.JoinedMessage) message;
+
+                Player p = new Player(msg.getPlayer());
+                mPlayers.put(msg.getPlayer(), p);
+
+                addPlayerView(p);
             }
             return;
 

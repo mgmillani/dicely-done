@@ -136,8 +136,8 @@ public class GameClient extends GameControl {
 
             switch (msg[0]) {
                 case "joined": {
-                    setExpected("startgame");
-                    message = new JoinedMessage();
+                    setExpected("joined","startgame");
+                    message = new JoinedMessage(msg[1]);
                 }
                 break;
 

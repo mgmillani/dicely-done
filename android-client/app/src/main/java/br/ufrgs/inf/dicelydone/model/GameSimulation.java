@@ -30,6 +30,10 @@ public class GameSimulation extends GameControl {
     @Override
     public void join(String playerName) {
         mGame.join(playerName);
+        for (String player : mGame.getPlayers() ) {
+            fireMessage(new JoinedMessage(player));
+        }
+
         mActivePlayer = playerName;
 
         resumeSimulation();

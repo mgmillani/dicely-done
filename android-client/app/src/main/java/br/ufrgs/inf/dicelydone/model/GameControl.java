@@ -20,14 +20,26 @@ public abstract class GameControl {
     }
 
     public static class JoinedMessage extends InMessage {
+        private String player;
+
+        public JoinedMessage(String player) {
+            this.player = player;
+        }
+
         @Override
         public Type getType() {
             return Type.JOINED;
         }
 
+        public String getPlayer() {
+            return player;
+        }
+
         @Override
         public String toString() {
-            return "JoinedMessage{}";
+            return "JoinedMessage{" +
+                    "player='" + player + '\'' +
+                    '}';
         }
     }
 
