@@ -157,6 +157,7 @@ bool Game::join(Player *player)
 	}
 	this->pot += this->minBet;
 	player->bet = this->minBet;
+	player->score -= this->minBet;
 	return true;
 }
 
@@ -247,7 +248,8 @@ void Game::giveBet(t_score bet)
 			{
 				p->score -= bet;
 				p->bet += bet;
-				this->playerBet = p->bet;
+				if(p->bet > this->playerBet)
+					this->playerBet = p->bet;
 				this->pot += bet;
 				this->informBet(p);
 				this->nextPlayer();
