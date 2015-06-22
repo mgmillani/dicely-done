@@ -966,4 +966,16 @@ void RemoteGame::informJoin(Player *p)
 	stringstream ss;
 	ss << "joined " << p->name << "\n";
 	this->broadcast(ss.str());
+	
+	for(auto it=this->players.begin() ; it!=this->players.end() ; it++)
+	{
+		Player *p2 = *it;
+		if(p->name.compare(p2->name) != 0)
+		{
+			stringstream ss;
+			ss << "joined " << p2->name << "\n";
+			send(p->socket, ss.str().c_str(), ss.str().size(), 0);
+		}
+	}
+	
 }
