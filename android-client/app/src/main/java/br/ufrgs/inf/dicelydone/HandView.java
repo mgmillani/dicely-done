@@ -1,5 +1,6 @@
 package br.ufrgs.inf.dicelydone;
 
+import android.animation.LayoutTransition;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.NonNull;
@@ -42,6 +43,16 @@ public class HandView extends LinearLayout {
         // Default attributes
         int margin = 10;
         float dieElevation = 0;//getElevation();
+
+
+        LayoutTransition l = getLayoutTransition();
+        if (l == null) {
+            l = new LayoutTransition();
+            setLayoutTransition(l);
+        }
+        l.enableTransitionType(LayoutTransition.CHANGING);
+        l.enableTransitionType(LayoutTransition.CHANGE_APPEARING);
+        l.enableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
 
         // Obtain the attributes
         if (attrs != null) {

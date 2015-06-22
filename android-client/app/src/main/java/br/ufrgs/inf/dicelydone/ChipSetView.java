@@ -1,5 +1,6 @@
 package br.ufrgs.inf.dicelydone;
 
+import android.animation.LayoutTransition;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.AttributeSet;
@@ -96,6 +97,15 @@ public class ChipSetView extends GridLayout {
     private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         setRowCount(2);
         setColumnCount(2 + Chip.values().length);
+
+        LayoutTransition l = getLayoutTransition();
+        if (l == null) {
+            l = new LayoutTransition();
+            setLayoutTransition(l);
+        }
+        l.enableTransitionType(LayoutTransition.CHANGING);
+        l.enableTransitionType(LayoutTransition.CHANGE_APPEARING);
+        l.enableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
 
         Resources res = context.getResources();
 
