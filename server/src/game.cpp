@@ -243,7 +243,7 @@ void Game::giveBet(t_score bet)
 			if(p->bet + bet > this->playerBet)
 				break;
 		case Round::BET:
-			if(p->bet + bet >= this->playerBet && p->score >= bet)
+			if((p->bet + bet >= this->playerBet || p->bet + bet == p->score) && p->score >= bet)
 			{
 				p->score -= bet;
 				p->bet += bet;
@@ -334,10 +334,17 @@ void Game::restart()
 	// resets player bets
 	for(list<Player*>::iterator it = this->players.begin() ; it!=this->players.end() ; it++)
 	{
-		(*it)->bet = this->minBet;
-		pot += this->minBet;
-		this->playerBet = this->minBet;
+		Player *p = *it;
+		if(p->score > 0)
+		{
+			p->bet = this->minBet;
+			p->score -= this->minBet;
+			pot += this->minBet;
+		}
+		else
+			p->bet = 0;
 	}
+	this->playerBet = this->minBet;
 	// rotate player order
 	this->players.push_back(*this->players.begin());
 	this->players.pop_front();
@@ -382,7 +389,8 @@ void Game::decideWinner()
 		if((int)p->rank < rank)
 		{
 			rank = (int)p->rank;
-			for(int i=0,sum=0 ; i<p->hand.len ; i++)
+			sum = 0;
+			for(int i=0 ; i<p->hand.len ; i++)
 				sum += p->hand.values[i];
 			this->winner = it;
 		}
@@ -390,7 +398,7 @@ void Game::decideWinner()
 		else if((int)p->rank == rank)
 		{
 			int sum2 = 0;
-			for(int i=0,sum=0 ; i<p->hand.len ; i++)
+			for(int i=0 ; i<p->hand.len ; i++)
 				sum2 += p->hand.values[i];
 			if(sum2 > sum)
 			{
