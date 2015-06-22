@@ -22,7 +22,7 @@ std::vector<t_face> findFaces(Mat *image)
 	//GaussianBlur( canny, canny, Size(3, 3), 1.5, 1.5 );
   
 	cv::Canny(canny, canny, 70, 180, 3);
-	namedWindow( "Canny", CV_WINDOW_AUTOSIZE ); imshow("Canny", canny);
+	//namedWindow( "Canny", CV_WINDOW_AUTOSIZE ); imshow("Canny", canny);
 	std::vector<Vec3f> circles = findCircles(canny, 15);
 	
 	std::vector<t_face> faces;
