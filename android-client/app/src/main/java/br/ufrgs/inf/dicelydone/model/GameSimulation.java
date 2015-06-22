@@ -120,7 +120,7 @@ public class GameSimulation extends GameControl {
                         }
                     }
 
-                    mGame.giveBet(bet);
+                    mGame.giveBet(bet - mGame.getBet(needed.player));
                     fireMessage(new BetPlacedMessage(needed.player, mGame.getIndividualBet(), mGame.getTotalBet()));
                 }
                 break;

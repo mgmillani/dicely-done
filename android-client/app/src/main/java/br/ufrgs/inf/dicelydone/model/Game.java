@@ -97,11 +97,14 @@ public class Game {
         Log.v(TAG, mNeeded.player + " placed bet of " + bet);
 
         PlayerData data = mData.get(mNeeded.player);
-        int added = bet - data.bet;
 
-        data.bet = bet;
-        mTotalBet += added;
-        mIndividualBet = bet;
+        data.bet += bet;
+        mTotalBet += bet;
+        mIndividualBet = data.bet;
+    }
+
+    public int getBet(String player) {
+        return mData.get(player).bet;
     }
 
     public void fold() {
@@ -168,7 +171,7 @@ public class Game {
             case INITIAL:
                 mPlayerIt = null;
                 mTotalBet = 0;
-                mIndividualBet = 0;
+                mIndividualBet = 1;
                 mWinner = null;
                 break;
 
@@ -178,7 +181,7 @@ public class Game {
 
                 mData.clear();
                 for (String player : mPlayers) {
-                    mData.put(player, new PlayerData(0, new Hand()));
+                    mData.put(player, new PlayerData(1, new Hand()));
                 }
                 break;
 
