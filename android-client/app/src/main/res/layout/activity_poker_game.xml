@@ -13,7 +13,7 @@
         <LinearLayout
             android:id="@+id/container_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="top"
             android:orientation="vertical"
             android:paddingTop="@dimen/activity_vertical_margin"
@@ -30,11 +30,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/chipinfo_container" />
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/handinfo_container" />
 
         </LinearLayout>
 

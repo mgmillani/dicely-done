@@ -50,7 +50,6 @@ public class PokerGame extends AppCompatActivity
     private GameControl mGameCtrl;
 
     private ChipInfoFragment mChipInfo;
-    private HandInfoFragment mHandInfo;
     private PlayersFragment mPlayerInfo;
 
     private ActionBarDrawerToggle mDrawerToggle;
@@ -88,9 +87,7 @@ public class PokerGame extends AppCompatActivity
         mChipInfo.setPlayer(mPlayer);
         mChipInfo.initGame();
 
-        mHandInfo = new HandInfoFragment();
         //mHandInfo.setGameControl(mGameCtrl);
-        mHandInfo.setPlayer(mPlayer);
 
         mPlayerInfo = PlayersFragment.newInstance(mPlayer);
 
@@ -113,7 +110,6 @@ public class PokerGame extends AppCompatActivity
             mProgress.show();
 
             mChipInfo.setGameControl(mGameCtrl);
-            mHandInfo.setGameControl(mGameCtrl);
             mGameCtrl.addHandler(mPlayerInfo);
 
             cli.connect(addr, port, new GameClient.ConnectHandler() {
@@ -140,14 +136,11 @@ public class PokerGame extends AppCompatActivity
         getFragmentManager().beginTransaction()
                 .add(R.id.fragment_container, new WaitingScreen())
                 .add(R.id.chipinfo_container, mChipInfo)
-                .add(R.id.handinfo_container, mHandInfo)
                 .add(R.id.left_drawer, mPlayerInfo)
-                .hide(mHandInfo)
                 .commit();
 
         if (mGameCtrl instanceof GameSimulation) {
             mChipInfo.setGameControl(mGameCtrl);
-            mHandInfo.setGameControl(mGameCtrl);
             mGameCtrl.addHandler(mPlayerInfo);
 
             new Timer().schedule(new TimerTask() {
@@ -240,7 +233,6 @@ public class PokerGame extends AppCompatActivity
 
                 getFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, new WaitingScreen())
-                        .hide(mHandInfo)
                         .show(mChipInfo)
                         .commit();
             }
@@ -299,7 +291,6 @@ public class PokerGame extends AppCompatActivity
                     getFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, new WaitingScreen())
                             .show(mChipInfo)
-                            .show(mHandInfo)
                             .commit();
                 }
             }
@@ -316,7 +307,6 @@ public class PokerGame extends AppCompatActivity
 
                     getFragmentManager().beginTransaction()
                             .hide(mChipInfo)
-                            .hide(mHandInfo)
                             .replace(R.id.fragment_container, EndGameFragment.newInstance(false, true))
                             .commit();
                 }
@@ -341,7 +331,6 @@ public class PokerGame extends AppCompatActivity
                 mChipInfo.setBetsVisible(false);
 
                 getFragmentManager().beginTransaction()
-                        .hide(mHandInfo)
                         .show(mChipInfo)
                         .replace(R.id.fragment_container, EndGameFragment.newInstance(victory, false))
                         .commit();
