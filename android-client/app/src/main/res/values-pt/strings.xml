@@ -30,7 +30,8 @@
     <string name="instruction_reroll_shake">Selecione dados e sacuda para jogá-los</string>
     <string name="instruction_wait">Espere a sua vez</string>
 
-    <string name="label_hand">Sua Mão:</string>
+    <string name="label_bet">Aposta:</string>
+    <string name="label_hand">Mão:</string>
     <string name="label_nickname">Nome</string>
     <string name="label_server_addr">Servidor</string>
     <string name="label_server_opts">Opções do Servidor:</string>

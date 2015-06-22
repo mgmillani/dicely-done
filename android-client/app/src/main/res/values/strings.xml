@@ -29,7 +29,8 @@
     <string name="instruction_reroll_shake">Select dice then shake to roll them</string>
     <string name="instruction_wait">Wait for your turn</string>
 
-    <string name="label_hand">Your Hand:</string>
+    <string name="label_bet">Bet:</string>
+    <string name="label_hand">Hand:</string>
     <string name="label_nickname">Nickname</string>
     <string name="label_server_addr">Server</string>
     <string name="label_server_opts">Server Options:</string>

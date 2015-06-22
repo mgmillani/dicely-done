@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="@dimen/text_icon_width"
+        android:layout_height="@dimen/text_icon_width"
+        android:id="@+id/player_icon"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PlayerName"
+        android:id="@+id/player_name"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/player_icon"
+        tools:ignore="HardcodedText"
+        android:layout_alignTop="@+id/player_icon"
+        android:layout_alignBottom="@+id/player_icon"
+        android:gravity="left|center_vertical"
+        android:textAppearance="@style/PokerGame.TextAppearance.PlayerName" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_bet"
+        android:id="@+id/label_bet"
+        android:layout_below="@+id/player_icon"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="30dp"
+        android:textAppearance="@style/PokerGame.TextAppearance.Label"
+        android:layout_marginLeft="5dp" />
+
+    <TextView
+        android:layout_width="@dimen/chipsetview_totalval_width"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:id="@+id/player_bet"
+        android:layout_below="@+id/label_bet"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="30dp"
+        android:layout_alignTop="@+id/player_hand"
+        android:layout_alignBottom="@+id/player_hand"
+        android:textAppearance="@style/PokerGame.TextAppearance.ChipSumVal"
+        tools:ignore="HardcodedText"
+        android:gravity="center_vertical|center_horizontal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_hand"
+        android:id="@+id/label_hand"
+        android:layout_alignTop="@+id/label_bet"
+        android:layout_alignParentRight="false"
+        android:layout_alignLeft="@+id/player_hand"
+        android:layout_alignBottom="@+id/label_bet"
+        android:textAppearance="@style/PokerGame.TextAppearance.Label"
+        android:layout_marginLeft="5dp" />
+
+    <view
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        class="br.ufrgs.inf.dicelydone.HandView"
+        android:id="@+id/player_hand"
+        android:layout_below="@+id/label_hand"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@+id/player_bet"
+        android:orientation="horizontal" />
+</RelativeLayout>

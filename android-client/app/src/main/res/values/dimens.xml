@@ -14,6 +14,7 @@
     <dimen name="spacing_vertical">20dp</dimen>
 
     <dimen name="text_size_instructions">30sp</dimen>
+    <dimen name="text_size_playername">20sp</dimen>
     <dimen name="text_size_label">18sp</dimen>
     <dimen name="text_size_chipsumval">30sp</dimen>
 

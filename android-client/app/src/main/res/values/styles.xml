@@ -17,6 +17,12 @@
         <item name="android:textStyle">normal</item>
     </style>
 
+    <style name="PokerGame.TextAppearance.PlayerName" parent="@android:style/Widget.TextView">
+        <item name="android:textSize">@dimen/text_size_playername</item>
+        <item name="android:textColor">@color/bright_foreground_material_light</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
     <style name="PokerGame.TextAppearance.ChipSumVal" parent="@android:style/Widget.TextView">
         <item name="android:textSize">@dimen/text_size_chipsumval</item>
         <item name="android:textColor">@color/bright_foreground_material_light</item>

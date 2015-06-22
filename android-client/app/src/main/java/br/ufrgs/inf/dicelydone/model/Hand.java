@@ -67,6 +67,8 @@ public class Hand implements Parcelable {
         return dice.size();
     }
 
+    public boolean isEmpty() { return dice.isEmpty(); }
+
     public Die get(int i) {
         return dice.get(i);
     }
