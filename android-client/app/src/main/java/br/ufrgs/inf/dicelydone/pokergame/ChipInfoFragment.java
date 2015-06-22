@@ -313,8 +313,7 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
                     mIndividualBet = msg.getMinBet();
                     increaseBetTo(mIndividualBet);
 
-                    int added = mIndividualBet - mPlayerBet.getValue();
-                    mTotalBet += added;
+                    mTotalBet += mAddedBet.getValue();
 
                     updateView();
                 }
