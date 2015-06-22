@@ -687,7 +687,7 @@ void LocalGame::informStart()
 	double dt = elapsed_sec.count();
 	Player *p = *this->currentPlayer;
 	
-	this->logFile << dt << "s";
+	this->logFile << dt << "s ";
 	this->logFile << p->name << " ";
 	this->logFile << "startgame " << this->minBet << "\n";
 }
@@ -697,7 +697,7 @@ void LocalGame::informStart(Player *p)
 	duration<double> elapsed_sec = t1 - this->gameStart;
 	double dt = elapsed_sec.count();
 	
-	this->logFile << dt << "s";
+	this->logFile << dt << "s ";
 	this->logFile << p->name << " ";
 	this->logFile << "startgame " << this->minBet << "\n";
 }
