@@ -420,9 +420,9 @@ void Game::nextPlayer()
 
 	if(this->currentPlayer == this->activePlayers.end())
 	{
+		this->currentPlayer = this->activePlayers.begin();
 		this->nextRound();
 		this->updateNeeded();
-		this->currentPlayer = this->activePlayers.begin();
 	}
 	this->informPlayer();
 }
