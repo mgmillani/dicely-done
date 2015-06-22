@@ -78,6 +78,31 @@ public class HandView extends LinearLayout {
         mHand = hand;
         onHandChanged();
     }
+//
+//    @Override
+//    protected void onMeasure(int x, int y) {
+//        // ?
+//        if (MeasureSpec.getMode(x) == MeasureSpec.UNSPECIFIED) {
+//            x = Integer.MAX_VALUE;
+//        } else {
+//            x = MeasureSpec.getSize(x);
+//        }
+//        if (MeasureSpec.getMode(y) == MeasureSpec.UNSPECIFIED) {
+//            y = Integer.MAX_VALUE;
+//        } else {
+//            y = MeasureSpec.getSize(y);
+//        }
+//
+//        if (getOrientation() == HORIZONTAL) {
+//        }
+//
+//        int size = x<y? x : y;
+//        if (size == Integer.MAX_VALUE) {
+//            size = 100;
+//        }
+//
+//        setMeasuredDimension(size, size);
+//    }
 
     public void onHandChanged() {
         int i;

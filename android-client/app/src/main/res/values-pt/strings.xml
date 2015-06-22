@@ -15,6 +15,9 @@
 
     <string name="chips_player">Suas fichas:</string>
 
+    <string name="drawer_open">Ver Jogadores</string>
+    <string name="drawer_close">Esconder Jogadores</string>
+
     <string name="error_connect_failed">Não conectou com o servidor.</string>
     <string name="error_disconnect">Perdeu conexão com servidor.</string>
     <string name="error_nick_required">Digite um nome.</string>

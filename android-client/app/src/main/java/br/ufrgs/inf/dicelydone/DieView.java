@@ -16,7 +16,7 @@ import br.ufrgs.inf.dicelydone.model.Die;
 public class DieView extends View {
 
     private int mDotColor = R.color.bright_foreground_material_light;
-    private Die mDie;
+    private Die mDie = Die.FIVE;
 
     private Paint mPaint;
 

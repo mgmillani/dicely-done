@@ -5,11 +5,14 @@ import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -43,6 +46,9 @@ public class PokerGame extends AppCompatActivity
 
     private ChipInfoFragment mChipInfo;
     private HandInfoFragment mHandInfo;
+    private PlayersFragment mPlayerInfo;
+
+    private ActionBarDrawerToggle mDrawerToggle;
 
     private ProgressDialog mProgress;
 
@@ -69,6 +75,16 @@ public class PokerGame extends AppCompatActivity
         //mHandInfo.setGameControl(mGameCtrl);
         mHandInfo.setPlayer(mPlayer);
 
+        mPlayerInfo = PlayersFragment.newInstance(mPlayer);
+
+        DrawerLayout drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close);
+
+        drawerLayout.setDrawerListener(mDrawerToggle);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
         if (args.containsKey(EXTRA_SERVER_ADDR)) {
             String addr = args.getString(EXTRA_SERVER_ADDR);
             int port = args.getInt(EXTRA_SERVER_PORT);
@@ -81,6 +97,7 @@ public class PokerGame extends AppCompatActivity
 
             mChipInfo.setGameControl(mGameCtrl);
             mHandInfo.setGameControl(mGameCtrl);
+            mGameCtrl.addHandler(mPlayerInfo);
 
             cli.connect(addr, port, new GameClient.ConnectHandler() {
                 @Override
@@ -107,6 +124,7 @@ public class PokerGame extends AppCompatActivity
                 .add(R.id.fragment_container, new WaitingScreen())
                 .add(R.id.chipinfo_container, mChipInfo)
                 .add(R.id.handinfo_container, mHandInfo)
+                .add(R.id.left_drawer, mPlayerInfo)
                 .hide(mHandInfo)
                 .commit();
 
@@ -115,7 +133,20 @@ public class PokerGame extends AppCompatActivity
 
             mChipInfo.setGameControl(mGameCtrl);
             mHandInfo.setGameControl(mGameCtrl);
+            mGameCtrl.addHandler(mPlayerInfo);
         }
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -127,6 +158,10 @@ public class PokerGame extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
         switch (item.getItemId()) {
             case R.id.action_quit:
                 onBackPressed();
