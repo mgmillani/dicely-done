@@ -34,7 +34,7 @@ public:
 	, HIGHEST
 	};
 	Game();
-	Game(t_score minBet, t_score startScore );
+	Game(t_score minBet, t_score startScore, int minPlayers);
 	
 	bool join(std::string player);
 	bool join(Player *player);
@@ -105,12 +105,13 @@ public:
 	t_score startScore; // with how many points each player starts
 	t_score minBet; // how much each player bets when the game starts
 	std::ofstream logFile;
+	int minPlayers; // required number of players to start a game
 };
 
 class RemoteGame : public Game
 {
 public:
-	RemoteGame(t_score minBet, t_score startScore );
+	RemoteGame(t_score minBet, t_score startScore, int minPlayers );
 	void broadcast(std::string msg);
 	/**
 	 * let the game begin!
@@ -156,7 +157,7 @@ public:
 class MultiGame : public Game
 {
 public:
-	MultiGame(t_score minBet, t_score startScore );
+	MultiGame(t_score minBet, t_score startScore, int minPlayers );
 	void add(Game *game);
 	std::list<Game*> games;
 	
@@ -179,7 +180,7 @@ public:
 class LocalGame : public Game
 {
 public:
-	LocalGame(t_score minBet, t_score startScore );
+	LocalGame(t_score minBet, t_score startScore, int minPlayers );
 	LocalGame();
 	~LocalGame();
 /**

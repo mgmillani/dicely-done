@@ -126,7 +126,7 @@ Game::Game()
 	this->startScore = 45;
 }
 
-Game::Game(t_score minBet, t_score startScore)
+Game::Game(t_score minBet, t_score startScore, int minPlayers)
 {
 	this->round = Game::Round::INITIAL;
 	this->needed = Game::Info::NOTHING;
@@ -134,6 +134,7 @@ Game::Game(t_score minBet, t_score startScore)
 	this->minBet = minBet;
 	this->playerBet = minBet;
 	this->startScore = startScore;
+	this->minPlayers = minPlayers;
 }
 
 bool Game::join(Player *playerA)
@@ -151,13 +152,16 @@ bool Game::join(Player *playerA)
 	if(this->round == Round::INITIAL)
 	{
 		this->activePlayers.push_back(player);
-		this->informStart(player);
+		if(this->players.size() >= this->minPlayers)
+		{
+			 this->informStart();
+			 this->informPlayer();
+			 this->needed = Game::Info::HAND;
+		}
 	}
 	if(this->players.size() == 1)
 	{
 		this->currentPlayer = this->activePlayers.begin();
-		this->needed = Game::Info::HAND;
-		this->informPlayer();
 	}
 	this->pot += this->minBet;
 	player->bet = this->minBet;
@@ -536,7 +540,7 @@ void Game::informJoin(Player *p)
  * ========================
  */
 
-MultiGame::MultiGame(t_score minBet, t_score startScore)
+MultiGame::MultiGame(t_score minBet, t_score startScore, int minPlayers)
 {
 	this->round = Game::Round::INITIAL;
 	this->needed = Game::Info::NOTHING;
@@ -544,6 +548,7 @@ MultiGame::MultiGame(t_score minBet, t_score startScore)
 	this->minBet = minBet;
 	this->playerBet = minBet;
 	this->startScore = startScore;
+	this->minPlayers = minPlayers;
 }
 
 void MultiGame::add(Game *game)
@@ -646,7 +651,7 @@ Game::Info MultiGame::getNeeded()
  * ==========================
  */
 
-LocalGame::LocalGame(t_score minBet, t_score startScore)
+LocalGame::LocalGame(t_score minBet, t_score startScore, int minPlayers)
 {
 	this->round = Game::Round::INITIAL;
 	this->needed = Game::Info::NOTHING;
@@ -654,12 +659,13 @@ LocalGame::LocalGame(t_score minBet, t_score startScore)
 	this->minBet = minBet;
 	this->playerBet = minBet;
 	this->startScore = startScore;
+	this->minPlayers = minPlayers;
 	stringstream ss;
 	time_t t = time(0);
 	struct tm * now = localtime( & t );
 	char date[1024];
-	sprintf(date, "%04d-%02d-%02d-%02d:%02d:%02d",(now->tm_year + 1900), (now->tm_mon + 1), now->tm_mday, now->tm_hour, now->tm_min, now->tm_sec);
-	ss << "dicely-done-" << date << ".log";
+	sprintf(date, "%04d-%02d-%02d_%02d-%02d-%02d",(now->tm_year + 1900), (now->tm_mon + 1), now->tm_mday, now->tm_hour, now->tm_min, now->tm_sec);
+	ss << "dicely-done_" << date << ".log";
 	ERR("log: %s\n", ss.str().c_str());
 	this->logFile = std::ofstream(ss.str(), std::ofstream::out);
 	this->gameStart = steady_clock::now();
@@ -678,6 +684,15 @@ LocalGame::LocalGame() : Game::Game()
 	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 	gtk_widget_show(window);
 	g_signal_connect_swapped(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);*/
+	stringstream ss;
+	time_t t = time(0);
+	struct tm * now = localtime( & t );
+	char date[1024];
+	sprintf(date, "%04d-%02d-%02d_%02d-%02d-%02d",(now->tm_year + 1900), (now->tm_mon + 1), now->tm_mday, now->tm_hour, now->tm_min, now->tm_sec);
+	ss << "dicely-done_" << date << ".log";
+	ERR("log: %s\n", ss.str().c_str());
+	this->logFile = std::ofstream(ss.str(), std::ofstream::out);
+	this->gameStart = steady_clock::now();
 }
 
 void LocalGame::informStart()
@@ -813,7 +828,7 @@ void LocalGame::informJoin(Player *p)
  * REMOTE GAME *
  ***************/
 
-RemoteGame::RemoteGame(t_score minBet, t_score startScore)
+RemoteGame::RemoteGame(t_score minBet, t_score startScore, int minPlayers)
 {
 	this->round = Game::Round::INITIAL;
 	this->needed = Game::Info::NOTHING;
@@ -821,6 +836,7 @@ RemoteGame::RemoteGame(t_score minBet, t_score startScore)
 	this->minBet = minBet;
 	this->playerBet = minBet;
 	this->startScore = startScore;
+	this->minPlayers = minPlayers;
 }
 
 void RemoteGame::broadcast(string msg)

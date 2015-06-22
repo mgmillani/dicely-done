@@ -96,6 +96,7 @@ int main(int argc, char** argv)
 	//Gtk::Main kit(argc, argv);
 	int cam = 1;
 	int port = 1337;
+	int minPlayers = 2;
 	t_score minBet = 1;
 	t_score startScore = 10;
 	bool help = false;
@@ -142,6 +143,16 @@ int main(int argc, char** argv)
 			}
 			port = atoi(argv[i]);
 		}
+		else if (strcmp(argv[i], "--minimum-players") == 0)
+		{
+			i++;
+			if(i == argc)
+			{
+				help = true;
+				break;
+			}
+			minPlayers = atoi(argv[i]);
+		}
 		else if (strcmp(argv[i], "--verbose") == 0)
 		{
 			verbose = true;
@@ -157,10 +168,11 @@ int main(int argc, char** argv)
 	{
 		printf("usage:\n%s [OPTIONS]\n\n", argv[0]);
 		printf("Options:\n");
-		printf(" --camera <num=1>        sets camera to be used.\n");
-		printf(" --port <num=1337>       sets port to be used.\n");
-		printf(" --start-score <num=10>  sets starting score of each player.\n");
-		printf(" --minimum-bet <num=1>   sets minimum bet before each round.\n");
+		printf(" --camera <num=%d>            sets camera to be used.\n", cam);
+		printf(" --port <num=%d>              sets port to be used.\n", port);
+		printf(" --minimum=-players <num=%d>  sets numbers of players to wait before game start.\n", minPlayers);
+		printf(" --start-score <num=%d>       sets starting score of each player.\n", startScore);
+		printf(" --minimum-bet <num=%d>        sets minimum bet before each round.\n", minBet);
 		exit(1);
 	}
 
@@ -181,9 +193,9 @@ int main(int argc, char** argv)
 	maybeHand.len = 0;
 	t_hand viewHand;
 
-	RemoteGame remoteGame(minBet, startScore);
-	LocalGame localGame(minBet, startScore);
-	MultiGame game(minBet, startScore);
+	RemoteGame remoteGame(minBet, startScore, minPlayers);
+	LocalGame localGame(minBet, startScore, minPlayers);
+	MultiGame game(minBet, startScore, minPlayers);
 	game.add(&remoteGame);
 	game.add(&localGame);
 	Connection conn(port, &game, verbose);
