@@ -11,7 +11,7 @@
         android:id="@+id/scrollView" >
 
         <LinearLayout
-            android:id="@+id/pokergame_fragment_container"
+            android:id="@+id/container_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"

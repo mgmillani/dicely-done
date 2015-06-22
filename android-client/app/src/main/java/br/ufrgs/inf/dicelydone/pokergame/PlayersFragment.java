@@ -63,9 +63,15 @@ public class PlayersFragment extends Fragment implements GameControl.Handler {
 
         mPlayerListView = (LinearLayout) result.findViewById(R.id.playersList);
 
-        LayoutTransition l = new LayoutTransition();
+
+        LayoutTransition l = mPlayerListView.getLayoutTransition();
+        if (l == null) {
+            l = new LayoutTransition();
+            mPlayerListView.setLayoutTransition(l);
+        }
         l.enableTransitionType(LayoutTransition.CHANGING);
-        mPlayerListView.setLayoutTransition(l);
+        l.enableTransitionType(LayoutTransition.CHANGE_APPEARING);
+        l.enableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
 
         for (Player p : mPlayers.values()) {
             addPlayerView(p);

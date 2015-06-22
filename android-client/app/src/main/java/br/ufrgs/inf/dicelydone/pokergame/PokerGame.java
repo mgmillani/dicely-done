@@ -1,5 +1,6 @@
 package br.ufrgs.inf.dicelydone.pokergame;
 
+import android.animation.LayoutTransition;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.ProgressDialog;
@@ -18,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import br.ufrgs.inf.dicelydone.R;
@@ -61,6 +63,18 @@ public class PokerGame extends AppCompatActivity
 
         Bundle args = getIntent().getExtras();
         if (args == null) return;
+
+        ViewGroup mainLayout = (ViewGroup) findViewById(R.id.container_layout);
+
+        LayoutTransition l = mainLayout.getLayoutTransition();
+        if (l == null) {
+            l = new LayoutTransition();
+            mainLayout.setLayoutTransition(l);
+        }
+        l.enableTransitionType(LayoutTransition.CHANGING);
+        l.enableTransitionType(LayoutTransition.CHANGE_APPEARING);
+        l.enableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
+
 
         mProgress = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
 
