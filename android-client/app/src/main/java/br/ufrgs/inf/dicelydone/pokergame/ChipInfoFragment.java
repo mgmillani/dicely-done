@@ -83,6 +83,7 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
 
     private int mTotalBet;
     private int mIndividualBet;
+    private int mNumPlayers;
     private String mPlayer;
 
     public static ChipInfoFragment createInstance(Bundle args) {
@@ -295,13 +296,14 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
             case STARTGAME: {
                 GameControl.StartGameMessage msg = (GameControl.StartGameMessage) message;
 
-                mTotalBet = 0;
+                mTotalBet = msg.getInitialBet()*mNumPlayers;
                 mIndividualBet = msg.getInitialBet();
                 mAddedBet = new ChipSet();
 
                 increaseBetTo(mIndividualBet);
-                break;
+                updateView();
             }
+            return;
 
             case STARTTURN: {
                 GameControl.StartTurnMessage msg = (GameControl.StartTurnMessage) message;
@@ -362,8 +364,14 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
                 mPlayerBet.clear();
                 updateView();
             }
+            return;
 
-            case JOINED:
+            case JOINED: {
+                mNumPlayers++;
+            }
+            return;
+
+
             case DICE:
             case DISCONNECTED:
             case CLOSE:
