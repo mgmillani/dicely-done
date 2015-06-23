@@ -10,15 +10,39 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    signingConfigs {
+    	release {
+			storeFile file(System.getenv("KSTORE"))
+			storePassword System.getenv("KSTOREPWD")
+			keyAlias "dicely_done"
+	    	keyPassword System.getenv("KEYPWD")
+	    }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     productFlavors {
         api22 {
             targetSdkVersion 22
+        }
+        api21 {
+            targetSdkVersion 21
+        }
+        api20 {
+            targetSdkVersion 20
+        }
+        api19 {
+            targetSdkVersion 19
+        }
+        api18 {
+            targetSdkVersion 18
+        }
+        api17 {
+            targetSdkVersion 17
         }
         api16 {
             targetSdkVersion 16
@@ -27,6 +51,9 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
+    }
+    lintOptions {
+        abortOnError false
     }
 }
 
