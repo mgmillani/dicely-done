@@ -701,20 +701,22 @@ void LocalGame::informStart()
 	duration<double> elapsed_sec = t1 - this->gameStart;
 	double dt = elapsed_sec.count();
 	Player *p = *this->currentPlayer;
-	
+
 	this->logFile << dt << "s ";
 	this->logFile << p->name << " ";
 	this->logFile << "startgame " << this->minBet << "\n";
+	this->logFile.flush();
 }
 void LocalGame::informStart(Player *p)
 {
 	time_point<steady_clock> t1 = steady_clock::now();
 	duration<double> elapsed_sec = t1 - this->gameStart;
 	double dt = elapsed_sec.count();
-	
+
 	this->logFile << dt << "s ";
 	this->logFile << p->name << " ";
 	this->logFile << "startgame " << this->minBet << "\n";
+	this->logFile.flush();
 }
 void LocalGame::informPlayer()
 {
@@ -726,9 +728,9 @@ void LocalGame::informPlayer()
 	time_point<steady_clock> t1 = steady_clock::now();
 	duration<double> elapsed_sec = t1 - this->gameStart;
 	double dt = elapsed_sec.count();
-	this->logFile << dt << "s ";	
+	this->logFile << dt << "s ";
 	this->logFile << p->name << " ";
-	
+
 	this->logFile <<  "startturn";
 	this->logFile << " " << (int)this->round;
 	string msgStr;
@@ -744,6 +746,7 @@ void LocalGame::informPlayer()
 			this->logFile << " " << this->playerBet << "\n";
 			break;
 	}
+	this->logFile.flush();
 }
 
 void LocalGame::informRound()
@@ -760,7 +763,7 @@ void LocalGame::informWinner()
 	this->logFile << dt << "s ";
 	this->logFile << p->name << " ";
 	this->logFile << "endgame " << (*this->winner)->name << " " << this->pot << "\n";
-	
+	this->logFile.flush();
 }
 
 void LocalGame::informHand(Player *p)
@@ -770,7 +773,7 @@ void LocalGame::informHand(Player *p)
 	double dt = elapsed_sec.count();
 	this->logFile << dt << "s ";
 	this->logFile << p->name << " ";
-	
+
 	this->logFile << "dice " << p->name;
 	for(int i=0 ; i<p->hand.len ; i++)
 	{
@@ -778,6 +781,7 @@ void LocalGame::informHand(Player *p)
 	}
 
 	this->logFile << "\n";
+	this->logFile.flush();
 }
 
 void LocalGame::informBet(Player *p)
@@ -787,9 +791,10 @@ void LocalGame::informBet(Player *p)
 	double dt = elapsed_sec.count();
 	this->logFile << dt << "s ";
 	this->logFile << p->name << " ";
-	
+
 	this->logFile << "betplaced " << p->name << " " << p->bet << " " << this->pot << "\n";
-	
+	this->logFile.flush();
+
 }
 
 void LocalGame::informFold(Player *p)
@@ -800,6 +805,7 @@ void LocalGame::informFold(Player *p)
 	this->logFile << dt << "s ";
 	this->logFile << p->name << " ";
 	this->logFile << "folded " << p->name << "\n";
+	this->logFile.flush();
 }
 
 void LocalGame::informQuit(Player *p)
@@ -810,6 +816,7 @@ void LocalGame::informQuit(Player *p)
 	this->logFile << dt << "s ";
 	this->logFile << p->name << " ";
 	this->logFile << "quit " << p->name << "\n";
+	this->logFile.flush();
 }
 
 void LocalGame::informJoin(Player *p)
@@ -820,6 +827,7 @@ void LocalGame::informJoin(Player *p)
 	this->logFile << dt << "s ";
 	this->logFile << p->name << " ";
 	this->logFile << "joined " << p->name << "\n";
+	this->logFile.flush();
 }
 
 
@@ -966,7 +974,7 @@ void RemoteGame::informJoin(Player *p)
 	stringstream ss;
 	ss << "joined " << p->name << "\n";
 	this->broadcast(ss.str());
-	
+
 	for(auto it=this->players.begin() ; it!=this->players.end() ; it++)
 	{
 		Player *p2 = *it;
@@ -977,5 +985,5 @@ void RemoteGame::informJoin(Player *p)
 			send(p->socket, ss.str().c_str(), ss.str().size(), 0);
 		}
 	}
-	
+
 }
