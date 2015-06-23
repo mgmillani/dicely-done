@@ -20,8 +20,6 @@
         android:imeActionId="@+id/start_game"
         android:imeActionLabel="@string/action_start"
         android:imeOptions="actionUnspecified"
-        android:text="azzi"
-        tools:ignore="HardcodedText"
         android:layout_marginRight="30dp" />
 
     <Button
@@ -48,8 +46,6 @@
         android:hint="@string/label_server_addr"
         android:imeOptions="actionNext"
         android:singleLine="true" android:maxLines="1"
-        android:text="192.168.0.43"
-        tools:ignore="HardcodedText"
         android:layout_below="@+id/cb_real_dice"
         android:layout_alignLeft="@+id/textView9"
         android:layout_alignRight="@+id/btnStartGame" />
@@ -63,9 +59,7 @@
         android:hint="@string/label_server_port"
         android:imeActionId="@+id/start_game"
         android:imeActionLabel="@string/action_start"
-        android:text="1337"
         android:imeOptions="actionUnspecified"
-        tools:ignore="HardcodedText"
         android:layout_below="@+id/serverAddrEdit"
         android:layout_alignRight="@+id/serverAddrEdit" />
 
