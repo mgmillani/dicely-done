@@ -302,7 +302,7 @@ public class PokerGame extends AppCompatActivity
                 GameControl.FoldedMessage msg = (GameControl.FoldedMessage) message;
 
                 if (!msg.getPlayer().equals(mPlayer)) {
-                    Toast.makeText(this, msg.getPlayer() + " folded.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, msg.getPlayer() + " " + getString(R.string.toast_folded), Toast.LENGTH_SHORT).show();
 
                 } else {
                     mFolded = true;
@@ -319,7 +319,7 @@ public class PokerGame extends AppCompatActivity
                 GameControl.BetPlacedMessage msg = (GameControl.BetPlacedMessage) message;
 
                 if (!msg.getPlayer().equals(mPlayer)) {
-                    Toast.makeText(this, msg.getPlayer() + " placed a bet.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, msg.getPlayer() + " " + getString(R.string.toast_placed_bet), Toast.LENGTH_SHORT).show();
                 }
             }
             return;

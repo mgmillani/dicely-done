@@ -48,7 +48,9 @@
     <string name="result_victory">Você venceu!</string>
     <string name="result_defeat">Você perdeu…</string>
 
+    <string name="toast_folded"> desistiu.</string>
     <string name="toast_joined_server">Conectado ao servidor.</string>
+    <string name="toast_placed_bet"> apostou.</string>
 
     <string name="wait_connecting">Conectando ao servidor…</string>
     <string name="wait_gamestart">Esperando o jogo começar…</string>

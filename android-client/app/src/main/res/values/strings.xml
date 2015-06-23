@@ -48,7 +48,9 @@
     <string name="result_defeat">You lost…</string>
 
 
+    <string name="toast_folded"> folded.</string>
     <string name="toast_joined_server">Connected to the server</string>
+    <string name="toast_placed_bet"> placed a bet.</string>
 
     <string name="wait_connecting">Connecting to the server…</string>
     <string name="wait_gamestart">Waiting for the game to start…</string>
