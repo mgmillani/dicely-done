@@ -7,13 +7,16 @@
 
 using namespace cv;
 
+#define VEC_SIZE 20
+
 std::vector<t_face> findFaces(Mat *image)
 {
 	Mat canny;
+	//reduceChannelRange(*image, 128 | 64);
 	// Convert image to gray
 	GaussianBlur( *image, canny, Size(3, 3), 2, 2 );
 	//canny = *image;
-	reduceChannelRange(canny, 0xf0);
+	//reduceChannelRange(canny, 128);
 	cvtColor( canny, canny, CV_BGR2GRAY );
 	
 	//GaussianBlur( canny, canny, Size(3, 3), 1.5, 1.5 );
@@ -32,14 +35,16 @@ std::vector<t_face> findFaces(Mat *image)
 		face.value = 0;
 		face.center[0] = 0;
 		face.center[1] = 0;
-		int sqrRadius = bigCircle[2] * bigCircle[2] * 1.2;
+		face.radius = bigCircle[2];
+		Vec3f smallC[VEC_SIZE];
+		int sqrRadius = bigCircle[2] * bigCircle[2] * 0.95;
 		
 		for(size_t j=0; j<circles.size() ; j++)
 		{
 			if(j == i)
 				continue;
 			Vec3f smallCircle = circles[j];
-			if(smallCircle[2] > bigCircle[2])
+			if(smallCircle[2] > bigCircle[2]*0.5)
 				continue;
 				
 			int dx = bigCircle[0] - smallCircle[0];
@@ -47,15 +52,35 @@ std::vector<t_face> findFaces(Mat *image)
 			int sqrDist = dx*dx + dy*dy;
 			if(sqrDist < sqrRadius)
 			{
-				face.center[0] += smallCircle[0];
-				face.center[1] += smallCircle[1];
-				face.value++;
+				if(face.value < VEC_SIZE)
+				{
+					smallC[face.value] = smallCircle;
+					face.value++;
+				}
+				
 			}
 		}
 		
 		// if there is anything within the big circle
 		if(face.value > 0)
 		{
+			float avgRadius = 0;
+			for(int i=0 ; i<face.value ; i++)
+			{
+				avgRadius += smallC[i][2];
+			}
+			avgRadius /= face.value;
+			for(int i=0, max=face.value ; i<max ; i++)
+			{
+				if(smallC[i][2] < avgRadius * 0.8)
+					face.value--;
+				else
+				{
+					face.center[0] += smallC[i][0];
+					face.center[1] += smallC[i][1];
+				}
+			}
+			
 			face.center[0] /= face.value;
 			face.center[1] /= face.value;
 			faces.push_back(face);

@@ -1,9 +1,12 @@
 #ifndef GAME_HPP_
 #define GAME_HPP_
 
+#include <fstream>
+
 #include <deque>
 #include <list>
 #include <string>
+#include <chrono>
 
 #include "hand.hpp"
 
@@ -31,7 +34,7 @@ public:
 	, HIGHEST
 	};
 	Game();
-	Game(t_score minBet, t_score startScore );
+	Game(t_score minBet, t_score startScore, int minPlayers);
 	
 	bool join(std::string player);
 	bool join(Player *player);
@@ -101,12 +104,14 @@ public:
 	t_score playerBet; // how much each player is betting
 	t_score startScore; // with how many points each player starts
 	t_score minBet; // how much each player bets when the game starts
+	std::ofstream logFile;
+	int minPlayers; // required number of players to start a game
 };
 
 class RemoteGame : public Game
 {
 public:
-	RemoteGame(t_score minBet, t_score startScore );
+	RemoteGame(t_score minBet, t_score startScore, int minPlayers );
 	void broadcast(std::string msg);
 	/**
 	 * let the game begin!
@@ -152,7 +157,7 @@ public:
 class MultiGame : public Game
 {
 public:
-	MultiGame(t_score minBet, t_score startScore );
+	MultiGame(t_score minBet, t_score startScore, int minPlayers );
 	void add(Game *game);
 	std::list<Game*> games;
 	
@@ -175,45 +180,48 @@ public:
 class LocalGame : public Game
 {
 public:
-	LocalGame(t_score minBet, t_score startScore );
+	LocalGame(t_score minBet, t_score startScore, int minPlayers );
 	LocalGame();
+	~LocalGame();
 /**
- * let the game begin!
- */
-	void informStart();
+	 * let the game begin!
+	 */
+	virtual void informStart();
+	virtual void informStart(Player *player);
 	/**
 	 * who is the current player
 	 */
-	void informPlayer();
+	virtual void informPlayer();
 	/**
 	 * what is the current round
 	 */
-	void informRound();
+	virtual void informRound();
 	/**
 	 * which is the hand of the given player
 	 */
-	void informHand(Player *p);
+	virtual void informHand(Player *p);
 	/**
 	 * total bet of the given player
 	 */
-	void informBet(Player *p);
+	virtual void informBet(Player *p);
 	/**
 	 * given player gave up
 	 */
-	void informFold(Player *p);
+	virtual void informFold(Player *p);
 	/**
 	 * given player left the game
 	 */
-	void informQuit(Player *p);
+	virtual void informQuit(Player *p);
 	/**
 	 * given player has joined
 	 */
-	void informJoin(Player *p);
+	virtual void informJoin(Player *p);
 	/**
 	 * who won the game
 	 */
-	void informWinner();
-	//GtkWindow *window;
+	virtual void informWinner();
+	
+	std::chrono::time_point<std::chrono::steady_clock> gameStart;
 };
 
 /**
