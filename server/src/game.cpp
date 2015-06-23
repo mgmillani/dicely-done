@@ -667,7 +667,7 @@ LocalGame::LocalGame(t_score minBet, t_score startScore, int minPlayers)
 	sprintf(date, "%04d-%02d-%02d_%02d-%02d-%02d",(now->tm_year + 1900), (now->tm_mon + 1), now->tm_mday, now->tm_hour, now->tm_min, now->tm_sec);
 	ss << "dicely-done_" << date << ".log";
 	ERR("log: %s\n", ss.str().c_str());
-	this->logFile = std::ofstream(ss.str(), std::ofstream::out);
+	this->logFile.open(ss.str(), std::ofstream::out);
 	this->gameStart = steady_clock::now();
 }
 
@@ -691,7 +691,7 @@ LocalGame::LocalGame() : Game::Game()
 	sprintf(date, "%04d-%02d-%02d_%02d-%02d-%02d",(now->tm_year + 1900), (now->tm_mon + 1), now->tm_mday, now->tm_hour, now->tm_min, now->tm_sec);
 	ss << "dicely-done_" << date << ".log";
 	ERR("log: %s\n", ss.str().c_str());
-	this->logFile = std::ofstream(ss.str(), std::ofstream::out);
+	this->logFile.open(ss.str(), std::ofstream::out);
 	this->gameStart = steady_clock::now();
 }
 
