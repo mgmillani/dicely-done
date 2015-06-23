@@ -39,6 +39,7 @@ public class PokerGame extends AppCompatActivity
     public static final String EXTRA_NICKNAME = "br.ufrgs.inf.dicelydone.NICKNAME";
     public static final String EXTRA_SERVER_ADDR = "br.ufrgs.inf.dicelydone.SERVER_ADDR";
     public static final String EXTRA_SERVER_PORT = "br.ufrgs.inf.dicelydone.SERVER_PORT";
+    public static final String EXTRA_REAL_DICE = "br.ufrgs.inf.dicelydone.REAL_DICE";
 
     private static final String TAG = "PokerGame";
 

@@ -18,6 +18,7 @@ public class StartGameActivity extends AppCompatActivity {
 
     private EditText mNickEdit;
     private CheckBox mCbSimulate;
+    private CheckBox mCbRealDice;
     private EditText mSrvAddrEdit;
     private EditText mSrvPortEdit;
 
@@ -28,14 +29,22 @@ public class StartGameActivity extends AppCompatActivity {
 
         mNickEdit = (EditText) findViewById(R.id.nickEdit);
         mCbSimulate = (CheckBox) findViewById(R.id.cbSimulate);
+        mCbRealDice = (CheckBox) findViewById(R.id.cb_real_dice);
         mSrvAddrEdit = (EditText) findViewById(R.id.serverAddrEdit);
         mSrvPortEdit = (EditText) findViewById(R.id.serverPortEdit);
 
         if (savedInstanceState != null) {
             mNickEdit.setText(savedInstanceState.getCharSequence("NICK"));
             mCbSimulate.setChecked(savedInstanceState.getBoolean("SIMULATE"));
+            mCbRealDice.setChecked(savedInstanceState.getBoolean("REAL_DICE"));
             mSrvAddrEdit.setText(savedInstanceState.getCharSequence("SRV_ADDR"));
             mSrvPortEdit.setText(savedInstanceState.getCharSequence("SRV_PORT"));
+
+            if (mCbSimulate.isChecked()) {
+                mCbRealDice.setEnabled(false);
+                mSrvAddrEdit.setEnabled(false);
+                mSrvPortEdit.setEnabled(false);
+            }
         }
 
 
@@ -55,6 +64,7 @@ public class StartGameActivity extends AppCompatActivity {
         mCbSimulate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mCbRealDice.setEnabled(!isChecked);
                 mSrvAddrEdit.setEnabled(!isChecked);
                 mSrvPortEdit.setEnabled(!isChecked);
             }
@@ -75,6 +85,7 @@ public class StartGameActivity extends AppCompatActivity {
 
         outState.putCharSequence("NICK", mNickEdit.getText());
         outState.putBoolean("SIMULATE", mCbSimulate.isChecked());
+        outState.putBoolean("REAL_DICE", mCbRealDice.isChecked());
         outState.putCharSequence("SRV_ADDR", mSrvAddrEdit.getText());
         outState.putCharSequence("SRV_PORT", mSrvPortEdit.getText());
     }
@@ -106,8 +117,11 @@ public class StartGameActivity extends AppCompatActivity {
                 return;
             }
 
+            boolean realDice = mCbRealDice.isChecked();
+
             intent.putExtra(PokerGame.EXTRA_SERVER_ADDR, addr);
             intent.putExtra(PokerGame.EXTRA_SERVER_PORT, port);
+            intent.putExtra(PokerGame.EXTRA_REAL_DICE, realDice);
         }
 
         startActivity(intent);

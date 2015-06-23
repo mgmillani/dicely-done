@@ -35,11 +35,12 @@
 
     <string name="label_bet">Aposta:</string>
     <string name="label_hand">Mão:</string>
+    <string name="label_opts">Opções:</string>
     <string name="label_nickname">Nome</string>
+    <string name="label_real_dice">Usar dados de verdade</string>
     <string name="label_server_addr">Servidor</string>
-    <string name="label_server_opts">Opções do Servidor:</string>
     <string name="label_server_port">Porta</string>
-    <string name="label_simulate">Simular</string>
+    <string name="label_simulate">Simular a partida</string>
 
     <string name="question_confirm_quit">Tem certeza que quer sair?</string>
     <string name="question_play_again">Você quer jogar novamente?</string>
