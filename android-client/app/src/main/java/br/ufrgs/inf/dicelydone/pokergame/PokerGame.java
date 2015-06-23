@@ -385,7 +385,8 @@ public class PokerGame extends AppCompatActivity
         }
 
         if (fragment != null) {
-            fragment.setBetEnabled(bet.getValue() >= mChipInfo.getIndividualBet());
+            fragment.setBetEnabled(bet.getValue() >= mChipInfo.getIndividualBet()
+                    || stash.getValue() == 0);
         }
     }
 
