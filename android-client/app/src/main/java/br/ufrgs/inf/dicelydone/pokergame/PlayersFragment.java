@@ -13,6 +13,7 @@ import java.util.HashMap;
 import br.ufrgs.inf.dicelydone.PlayerView;
 import br.ufrgs.inf.dicelydone.R;
 import br.ufrgs.inf.dicelydone.model.GameControl;
+import br.ufrgs.inf.dicelydone.model.Hand;
 import br.ufrgs.inf.dicelydone.model.Player;
 
 public class PlayersFragment extends Fragment implements GameControl.Handler {
@@ -112,6 +113,7 @@ public class PlayersFragment extends Fragment implements GameControl.Handler {
 
                 for (Player p : mPlayers.values()) {
                     p.setBet(mMinBet);
+                    p.setHand(new Hand());
                 }
 
                 for (PlayerView v : mPlayerViews.values()) {
@@ -171,19 +173,7 @@ public class PlayersFragment extends Fragment implements GameControl.Handler {
             }
             return;
 
-            case ENDGAME: {
-                for (Player p : mPlayers.values()) {
-                    p.setBet(0);
-                    p.getHand().clear();
-                }
-
-                for (PlayerView v : mPlayerViews.values()) {
-                    v.setBetVisible(false);
-                    v.updateView();
-                }
-            }
-            return;
-
+            case ENDGAME:
             case CLOSE:
                 return; // Nothing to be done
         }
