@@ -58,6 +58,8 @@ public class PokerGame extends AppCompatActivity
 
     private ProgressDialog mProgress;
 
+    private boolean mRealDice;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +84,7 @@ public class PokerGame extends AppCompatActivity
 
         mProgress = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
 
+        mRealDice = args.getBoolean(EXTRA_REAL_DICE, mRealDice);
         mPlayer = args.getString(EXTRA_NICKNAME, mPlayer);
 
         mChipInfo = new ChipInfoFragment();
@@ -248,7 +251,7 @@ public class PokerGame extends AppCompatActivity
 
 
                 if (mRound == 1 || mRound == 4) {
-                    Fragment fragment = RollingRound.newInstance(mRound, true, mHand);
+                    Fragment fragment = RollingRound.newInstance(mRound, !mRealDice, mHand);
 
                     getFragmentManager().beginTransaction()
                             .hide(mChipInfo)
