@@ -13,7 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import br.ufrgs.inf.dicelydone.HandView;
 import br.ufrgs.inf.dicelydone.R;
+import br.ufrgs.inf.dicelydone.model.Die;
+import br.ufrgs.inf.dicelydone.model.Hand;
 
 /**
  * Fragment for the first round, where players roll their dice.
@@ -37,11 +40,12 @@ public class RollingRound extends Fragment implements SensorEventListener {
         /**
          * Called when the dice must be rolled
          */
-        void rollDice();
+        void rollDice(Hand kept);
     }
 
     public static final String ARG_ROUND = "br.ufrgs.inf.dicelydone.ROUND";
     public static final String ARG_SIMULATION = "br.ufrgs.inf.dicelydone.SIMULATION";
+    public static final String ARG_HAND = "br.ufrgs.inf.dicelydone.HAND";
 
     private static final float LARGE_ACCEL = 20;
 
@@ -51,6 +55,21 @@ public class RollingRound extends Fragment implements SensorEventListener {
     private EventHandler mCallback;
 
     private boolean mCanShake = false;
+
+    private Hand mHand = null;
+    private HandView mHandView;
+
+    public static RollingRound newInstance(int round, boolean simulation, Hand hand) {
+        RollingRound fragment = new RollingRound();
+
+        Bundle args = new Bundle();
+        args.putInt(ARG_ROUND, round);
+        args.putBoolean(ARG_SIMULATION, simulation);
+        args.putParcelable(ARG_HAND, hand);
+        fragment.setArguments(args);
+
+        return fragment;
+    }
 
     public RollingRound() {
         // Required empty constructor
@@ -70,7 +89,18 @@ public class RollingRound extends Fragment implements SensorEventListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_rolling_round, container, false);
+        View v = inflater.inflate(R.layout.fragment_rolling_round, container, false);
+
+        mHandView = (HandView) v.findViewById(R.id.handView);
+        mHandView.setEnabled(true);
+        if (mHand != null) {
+            mHandView.setHand(mHand);
+            mHandView.setVisibility(View.VISIBLE);
+        } else {
+            mHandView.setVisibility(View.GONE);
+        }
+
+        return v;
     }
 
     @Override
@@ -122,9 +152,21 @@ public class RollingRound extends Fragment implements SensorEventListener {
                 }
             }
 
-            if (large) {
+            if (large && mCanShake) {
                 mCanShake = false;
-                mCallback.rollDice();
+
+                Hand kept;
+                if (mHand == null) {
+                    kept = new Hand();
+
+                } else {
+                    kept = new Hand(mHand);
+                    for (Die d : mHandView.getSelection()) {
+                        kept.remove(d);
+                    }
+                }
+
+                mCallback.rollDice(kept);
             }
 
         }
@@ -145,6 +187,18 @@ public class RollingRound extends Fragment implements SensorEventListener {
 
         TextView view = (TextView) getActivity().findViewById(R.id.instructionsView);
         view.setText(round == 1 ? msgRoll : msgReRoll);
+
+        if (mCanShake && round == 4) {
+
+            mHand = bundle.getParcelable(ARG_HAND);
+            if (mHandView != null) {
+                mHandView.setHand(mHand);
+                mHandView.setVisibility(View.VISIBLE);
+            }
+
+        } else if (mHandView != null) {
+            mHandView.setVisibility(View.GONE);
+        }
 
     }
 

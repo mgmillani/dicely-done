@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import br.ufrgs.inf.dicelydone.model.Die;
@@ -16,6 +17,7 @@ import br.ufrgs.inf.dicelydone.model.Hand;
 public class HandView extends LinearLayout {
 
     private @NonNull Hand mHand = new Hand(Die.ONE, Die.TWO, Die.THREE, Die.FOUR, Die.FIVE);
+    private final Hand mSelected = new Hand();
     private final DieView[] dieViews = new DieView[5];
 
     public HandView(Context context) {
@@ -70,11 +72,24 @@ public class HandView extends LinearLayout {
         params.weight = 1;
         params.setMargins(margin, margin, margin, margin);
 
+        OnClickListener dieClickListener = new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DieView dv = (DieView) v;
+                if (dv.isSelected()) {
+                    mSelected.add(dv.getDie());
+                } else {
+                    mSelected.remove(dv.getDie());
+                }
+            }
+        };
+
         for (int i=0; i<5; i++) {
             dieViews[i] = new DieView(getContext());
             dieViews[i].setDotColor(getResources().getColor(R.color.bright_foreground_material_light));
             dieViews[i].setLayoutParams(params);
             dieViews[i].setEnabled(isEnabled());
+            dieViews[i].setOnClickListener(dieClickListener);
             //dieViews[i].setElevation(dieElevation);
 
             addView(dieViews[i], params);
@@ -84,7 +99,6 @@ public class HandView extends LinearLayout {
 
         setEnabled(true);
     }
-
 
 
     public @NonNull Hand getHand() { return mHand; }
@@ -104,6 +118,9 @@ public class HandView extends LinearLayout {
     }
 
 
+    public Hand getSelection() {
+        return mSelected;
+    }
 
 //
 //    @Override

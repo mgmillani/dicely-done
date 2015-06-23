@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -15,7 +16,7 @@ import java.util.Random;
  *
  * The dice are stored sorted by value.
  */
-public class Hand implements Parcelable {
+public class Hand implements Parcelable, Iterable<Die> {
     private List<Die> dice;
 
     /**
@@ -38,6 +39,10 @@ public class Hand implements Parcelable {
         }
         this.dice = new LinkedList<>(dice);
         Collections.sort(this.dice);
+    }
+
+    public Hand(Hand hand) {
+        this(hand.dice);
     }
 
     /**
@@ -83,6 +88,15 @@ public class Hand implements Parcelable {
         }
         dice.add(die);
         Collections.sort(dice);
+    }
+
+    public void remove(Die die) {
+        dice.remove(die);
+    }
+
+    @Override
+    public Iterator<Die> iterator() {
+        return dice.iterator();
     }
 
     @Override

@@ -90,17 +90,17 @@ public class DieView extends View {
 
         if (!result && event.getAction() == MotionEvent.ACTION_UP) {
             if (isEnabled()) {
-                mSelected = !mSelected;
+                setSelected(!isSelected());
                 updateBackground();
+                performClick();
             }
-            result = true;
         }
-        return result;
+        return true ;
     }
 
     private void updateBackground() {
         setBackground(getResources().getDrawable(
-                mSelected? R.drawable.die_bg_selected : R.drawable.die_bg_rect
+                isSelected()? R.drawable.die_bg_selected : R.drawable.die_bg_rect
         ));
     }
 

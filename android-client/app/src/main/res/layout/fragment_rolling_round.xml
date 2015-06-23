@@ -16,4 +16,13 @@
         android:text="@string/instruction_roll_dice"
         android:id="@+id/instructionsView" />
 
+    <view
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        class="br.ufrgs.inf.dicelydone.HandView"
+        android:id="@+id/handView"
+        android:layout_below="@+id/instructionsView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
+
 </RelativeLayout>

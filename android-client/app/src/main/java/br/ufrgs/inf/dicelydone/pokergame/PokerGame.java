@@ -46,6 +46,7 @@ public class PokerGame extends AppCompatActivity
     private String mPlayer = "Geralt";
     private int mRound = 0;
     private boolean mFolded = false;
+    private Hand mHand;
 
     private GameControl mGameCtrl;
 
@@ -246,12 +247,7 @@ public class PokerGame extends AppCompatActivity
 
 
                 if (mRound == 1 || mRound == 4) {
-                    Fragment fragment = new RollingRound();
-
-                    Bundle args = new Bundle();
-                    args.putInt(RollingRound.ARG_ROUND, mRound);
-                    args.putBoolean(RollingRound.ARG_SIMULATION, true);
-                    fragment.setArguments(args);
+                    Fragment fragment = RollingRound.newInstance(mRound, true, mHand);
 
                     getFragmentManager().beginTransaction()
                             .hide(mChipInfo)
@@ -288,6 +284,8 @@ public class PokerGame extends AppCompatActivity
                 GameControl.DiceMessage msg = (GameControl.DiceMessage) message;
 
                 if (msg.getPlayer().equals(mPlayer)) {
+                    mHand = msg.getDice();
+
                     getFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, new WaitingScreen())
                             .show(mChipInfo)
@@ -351,11 +349,11 @@ public class PokerGame extends AppCompatActivity
     }
 
     @Override
-    public void rollDice() {
+    public void rollDice(Hand kept) {
         if (mRound == 1) {
             mGameCtrl.roll();
         } else if (mRound == 4) {
-            mGameCtrl.reroll(new Hand()); // TODO actually choose the dice
+            mGameCtrl.reroll(kept);
         }
     }
 
