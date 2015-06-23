@@ -7,7 +7,7 @@ import android.os.Parcelable;
  * Possible values for betting chips.
  */
 public enum Chip implements Parcelable {
-    ONE(0, 1), FIVE(1, 5), TEN(2, 10);
+    ONE(0, 1); //, FIVE(1, 5), TEN(2, 10);
 
     private final int index;
     private final int value;

@@ -174,7 +174,7 @@ public class Game {
         switch (mRound) {
             case INITIAL:
                 mPlayerIt = null;
-                mTotalBet = 0;
+                mTotalBet = 1*mPlayers.size();
                 mIndividualBet = 1;
                 mWinner = null;
                 break;

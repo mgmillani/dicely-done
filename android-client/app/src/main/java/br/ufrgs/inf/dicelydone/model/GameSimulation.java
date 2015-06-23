@@ -8,7 +8,7 @@ import java.util.TimerTask;
 
 public class GameSimulation extends GameControl {
 
-    private static final int MAX_BET = 40;
+    private static final int MAX_BET = 5;
 
     private Game mGame;
     private Timer mT;
@@ -121,6 +121,8 @@ public class GameSimulation extends GameControl {
                         int other = mRand.nextInt(MAX_BET);
                         if (bet < other) {
                             bet = other;
+                        } if (bet > MAX_BET) {
+                            bet = MAX_BET;
                         }
                     }
 

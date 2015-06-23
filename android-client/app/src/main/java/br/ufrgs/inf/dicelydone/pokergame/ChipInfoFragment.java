@@ -134,7 +134,7 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
         mPlayerStash = new ChipSet();
 
         for (Chip c : Chip.values()) {
-            mPlayerStash.addChips(c, 10);
+            mPlayerStash.addChips(c, 5);
         }
     }
 
@@ -171,7 +171,7 @@ public class ChipInfoFragment extends Fragment implements GameControl.Handler {
             mIndividualBet = 0;
 
             for (Chip c : Chip.values()) {
-                mPlayerStash.addChips(c, 10);
+                mPlayerStash.addChips(c, 5);
             }
         }
     }
