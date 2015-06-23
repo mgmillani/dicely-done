@@ -43,7 +43,7 @@ public class HandView extends LinearLayout {
 
     private void init(AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         // Default attributes
-        int margin = 10;
+        int margin = getResources().getDimensionPixelSize(R.dimen.handview_margin);
         float dieElevation = 0;//getElevation();
 
 
