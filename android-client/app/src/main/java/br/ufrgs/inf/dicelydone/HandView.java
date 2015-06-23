@@ -73,15 +73,19 @@ public class HandView extends LinearLayout {
         for (int i=0; i<5; i++) {
             dieViews[i] = new DieView(getContext());
             dieViews[i].setDotColor(getResources().getColor(R.color.bright_foreground_material_light));
-            dieViews[i].setBackground(getResources().getDrawable(R.drawable.die_bg_rect));
             dieViews[i].setLayoutParams(params);
+            dieViews[i].setEnabled(isEnabled());
             //dieViews[i].setElevation(dieElevation);
 
             addView(dieViews[i], params);
         }
 
         onHandChanged();
+
+        setEnabled(true);
     }
+
+
 
     public @NonNull Hand getHand() { return mHand; }
 
@@ -89,6 +93,18 @@ public class HandView extends LinearLayout {
         mHand = hand;
         onHandChanged();
     }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+
+        for (DieView v : dieViews) {
+            v.setEnabled(enabled);
+        }
+    }
+
+
+
 //
 //    @Override
 //    protected void onMeasure(int x, int y) {

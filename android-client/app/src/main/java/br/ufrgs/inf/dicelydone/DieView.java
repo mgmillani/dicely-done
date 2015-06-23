@@ -5,6 +5,8 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 
 import br.ufrgs.inf.dicelydone.model.Die;
@@ -19,6 +21,7 @@ public class DieView extends View {
     private Die mDie = Die.FIVE;
 
     private Paint mPaint;
+    private GestureDetector mDetector;
 
     public DieView(Context context) {
         super(context);
@@ -41,6 +44,9 @@ public class DieView extends View {
                 attrs, R.styleable.DieView, defStyle, 0);
 
         mDotColor = a.getInteger(R.styleable.DieView_dotColor, mDotColor);
+        mSelected = false;
+
+        setBackground(getResources().getDrawable(R.drawable.die_bg_rect));
 
         int dieVal = a.getInteger(R.styleable.DieView_dieValue, -1);
         mDie = (1 <= dieVal && dieVal <= 6)? Die.byVal(dieVal) : mDie;
@@ -48,13 +54,22 @@ public class DieView extends View {
         a.recycle();
 
         mPaint = new Paint();
+
+        mDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDown(MotionEvent e) {
+                return true;
+            }
+        });
     }
 
-    int mDieSize;
-    int mPaddingLeft;
-    int mPaddingRight;
-    int mPaddingTop;
-    int mPaddingBottom;
+    private int mDieSize;
+    private int mPaddingLeft;
+    private int mPaddingRight;
+    private int mPaddingTop;
+    private int mPaddingBottom;
+
+    private boolean mSelected;
 
 
     public Die getDie() { return mDie; }
@@ -67,6 +82,26 @@ public class DieView extends View {
 
     public void setDotColor(int color) {
         mDotColor = color;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        boolean result = mDetector.onTouchEvent(event);
+
+        if (!result && event.getAction() == MotionEvent.ACTION_UP) {
+            if (isEnabled()) {
+                mSelected = !mSelected;
+                updateBackground();
+            }
+            result = true;
+        }
+        return result;
+    }
+
+    private void updateBackground() {
+        setBackground(getResources().getDrawable(
+                mSelected? R.drawable.die_bg_selected : R.drawable.die_bg_rect
+        ));
     }
 
     @Override

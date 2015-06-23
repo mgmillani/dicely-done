@@ -62,6 +62,8 @@ public class PlayerView extends FrameLayout {
         mBetView = (TextView) findViewById(R.id.player_bet);
         mHandView = (HandView) findViewById(R.id.player_hand);
 
+        mHandView.setEnabled(false);
+
         LayoutTransition l = new LayoutTransition();
         l.enableTransitionType(LayoutTransition.CHANGING);
         ViewGroup group = (ViewGroup) findViewById(R.id.container_layout);
