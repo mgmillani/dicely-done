@@ -34,6 +34,8 @@ typedef struct
 	int trust;
 }t_dface;
 
+typedef unsigned int score;
+
 void processNewFaces(std::vector<t_face> &newFaces, std::vector<t_dface> &faces, int maxDist)
 {
 	// sees if some face was already detected
@@ -92,15 +94,82 @@ int main(int argc, char** argv)
 {
 
 	//Gtk::Main kit(argc, argv);
+	int cam = 1;
+	int port = 1337;
+	t_score minBet = 1;
+	t_score startScore = 10;
+	bool help = false;
+	bool verbose = false;
+	for(int i=1 ; i< argc ; i++)
+	{
+		if       (strcmp(argv[i], "--camera") == 0)
+		{
+			i++;
+			if(i == argc)
+			{
+				help = true;
+				break;
+			}
+			cam = atoi(argv[i]);
+		}
+		else if (strcmp(argv[i], "--minimum-bet") == 0)
+		{
+			i++;
+			if(i == argc)
+			{
+				help = true;
+				break;
+			}
+			minBet = atoi(argv[i]);
+		}
+		else if (strcmp(argv[i], "--start-score") == 0)
+		{
+			i++;
+			if(i == argc)
+			{
+				help = true;
+				break;
+			}
+			startScore = atoi(argv[i]);
+		}
+		else if (strcmp(argv[i], "--port") == 0)
+		{
+			i++;
+			if(i == argc)
+			{
+				help = true;
+				break;
+			}
+			port = atoi(argv[i]);
+		}
+		else if (strcmp(argv[i], "--verbose") == 0)
+		{
+			verbose = true;
+		}
+		else
+		{
+			help = true;
+			break;
+		}
+		
+	}
+	if(help)
+	{
+		printf("usage:\n%s [OPTIONS]\n\n", argv[0]);
+		printf("Options:\n");
+		printf(" --camera <num=1>        sets camera to be used.\n");
+		printf(" --port <num=1337>       sets port to be used.\n");
+		printf(" --start-score <num=10>  sets starting score of each player.\n");
+		printf(" --minimum-bet <num=1>   sets minimum bet before each round.\n");
+		exit(1);
+	}
 
-	VideoCapture cap(argc > 1 ? atoi(argv[1]) : 1);
+	VideoCapture cap(cam);
 	if(!cap.isOpened())
 	{
 		TRACE("Failed to open camera");
 		return -1;
 	}
-
-	
 
 	namedWindow( window, CV_WINDOW_AUTOSIZE );
 	std::vector<t_dface> faces;
@@ -112,15 +181,15 @@ int main(int argc, char** argv)
 	maybeHand.len = 0;
 	t_hand viewHand;
 
-	RemoteGame remoteGame;
-	LocalGame localGame;
-	MultiGame game;
+	RemoteGame remoteGame(minBet, startScore);
+	LocalGame localGame(minBet, startScore);
+	MultiGame game(minBet, startScore);
 	game.add(&remoteGame);
 	//game.add(&localGame);	
-	Connection conn(1337, &game);
+	Connection conn(port, &game, verbose);
 
-	conn.join("Geralt");
-	conn.join("Zoltan");
+	/*conn.join("Geralt");
+		conn.join("Zoltan");*/
 
 	int n=2;
 	while(1)
@@ -149,10 +218,6 @@ int main(int argc, char** argv)
 					t_face face = dface.f;
 					Point center(face.center[0], face.center[1]);
 					int v = face.value;
-					if(v == 0)
-					{
-						TRACE("wtf?");
-					}
 					if(dface.trust > increment*2)
 					{
 						//ERR("  Value:%d   %d\n",v, dface.trust);
@@ -178,11 +243,11 @@ int main(int argc, char** argv)
 
 				break;
 			case Game::Info::BET:
-				game.giveBet(n);
-				n = (n+1)%5;
+				//game.giveBet(n);
+				//n = (n+1)%5;
 				break;
 			case Game::Info::ACK:
-				game.giveAck();
+				//game.giveAck();
 				break;
 		}
 
