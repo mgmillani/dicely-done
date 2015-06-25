@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import br.ufrgs.inf.dicelydone.HandView;
@@ -58,6 +59,7 @@ public class RollingRound extends Fragment implements SensorEventListener {
 
     private Hand mHand = null;
     private HandView mHandView;
+    private Button mRollButton;
 
     public static RollingRound newInstance(int round, boolean simulation, Hand hand) {
         RollingRound fragment = new RollingRound();
@@ -91,11 +93,21 @@ public class RollingRound extends Fragment implements SensorEventListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_rolling_round, container, false);
 
+        mRollButton = (Button) v.findViewById(R.id.button_roll);
+        mRollButton.setVisibility(mCanShake? View.VISIBLE : View.GONE);
+        mRollButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                roll();
+            }
+        });
+
         mHandView = (HandView) v.findViewById(R.id.handView);
         mHandView.setEnabled(true);
         if (mHand != null) {
             mHandView.setHand(mHand);
             mHandView.setVisibility(View.VISIBLE);
+
         } else {
             mHandView.setVisibility(View.GONE);
         }
@@ -153,23 +165,27 @@ public class RollingRound extends Fragment implements SensorEventListener {
             }
 
             if (large && mCanShake) {
-                mCanShake = false;
-
-                Hand kept;
-                if (mHand == null) {
-                    kept = new Hand();
-
-                } else {
-                    kept = new Hand(mHand);
-                    for (Die d : mHandView.getSelection()) {
-                        kept.remove(d);
-                    }
-                }
-
-                mCallback.rollDice(kept);
+                roll();
             }
 
         }
+    }
+
+    private void roll() {
+        mCanShake = false;
+
+        Hand kept;
+        if (mHand == null) {
+            kept = new Hand();
+
+        } else {
+            kept = new Hand(mHand);
+            for (Die d : mHandView.getSelection()) {
+                kept.remove(d);
+            }
+        }
+
+        mCallback.rollDice(kept);
     }
 
     @Override
@@ -187,6 +203,8 @@ public class RollingRound extends Fragment implements SensorEventListener {
 
         TextView view = (TextView) getActivity().findViewById(R.id.instructionsView);
         view.setText(round == 1 ? msgRoll : msgReRoll);
+
+        mRollButton.setVisibility(mCanShake? View.VISIBLE : View.GONE);
 
         if (mCanShake && round == 4) {
 

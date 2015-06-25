@@ -25,4 +25,12 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_roll"
+        android:id="@+id/button_roll"
+        android:layout_below="@+id/handView"
+        android:layout_alignParentRight="true" />
+
 </RelativeLayout>

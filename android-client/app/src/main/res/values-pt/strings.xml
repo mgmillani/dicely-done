@@ -37,6 +37,7 @@
     <string name="label_hand">Mão:</string>
     <string name="label_opts">Opções:</string>
     <string name="label_nickname">Nome</string>
+    <string name="label_roll">Jogar Dados</string>
     <string name="label_real_dice">Usar dados de verdade</string>
     <string name="label_server_addr">Servidor</string>
     <string name="label_server_port">Porta</string>

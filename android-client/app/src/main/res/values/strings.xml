@@ -37,6 +37,7 @@
     <string name="label_nickname">Nickname</string>
     <string name="label_opts">Options:</string>
     <string name="label_real_dice">Use real dice</string>
+    <string name="label_roll">Roll</string>
     <string name="label_server_addr">Server</string>
     <string name="label_server_port">Port</string>
     <string name="label_simulate">Simulate the game</string>
