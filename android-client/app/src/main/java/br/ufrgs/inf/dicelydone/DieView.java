@@ -76,6 +76,7 @@ public class DieView extends View {
 
     public void setDie(Die die) {
         mDie = die;
+        invalidate();
     }
 
     public int getDotColor() { return mDotColor; }
