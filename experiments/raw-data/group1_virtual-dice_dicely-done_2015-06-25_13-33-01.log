@@ -1,0 +1,45 @@
+2.16324s Azzi joined Azzi
+4.32819s Kern joined Kern
+4.32829s Azzi startgame 1
+4.32831s Azzi startturn 1
+10.5021s Azzi dice Azzi 5 1 4 6 3
+36.6686s Kern startturn 1
+54.4916s Kern dice Kern 5 6 2 1 3
+54.4916s Azzi startturn 2 1
+54.4916s Azzi startturn 2 1
+63.6586s Azzi betplaced Azzi 1 2
+63.6587s Kern startturn 2 1
+150.153s Kern betplaced Kern 2 3
+150.153s Azzi startturn 3 2
+150.153s Azzi startturn 3 2
+157.487s Azzi betplaced Azzi 2 4
+157.487s Kern startturn 3 2
+157.654s Kern betplaced Kern 2 4
+157.654s Azzi startturn 4
+157.654s Azzi startturn 4
+169.651s Azzi dice Azzi 1 3 4 5 6
+169.651s Kern startturn 4
+187.318s Kern dice Kern 1 2 3 5 1
+187.318s Azzi endgame Kern 4
+214.15s Kern startgame 1
+214.15s Kern startturn 1
+214.151s Kern startturn 1
+219.982s Kern dice Kern 4 6 4 1 3
+219.983s Azzi startturn 1
+223.65s Azzi dice Azzi 1 2 6 5 3
+223.65s Kern startturn 2 1
+223.65s Kern startturn 2 1
+243.647s Kern betplaced Kern 3 4
+243.647s Azzi startturn 2 3
+248.813s Azzi betplaced Azzi 3 6
+248.813s Kern startturn 3 3
+248.813s Kern startturn 3 3
+249.149s Kern betplaced Kern 3 6
+249.149s Azzi startturn 3 3
+249.315s Azzi betplaced Azzi 3 6
+249.315s Kern startturn 4
+249.315s Kern startturn 4
+268.479s Kern dice Kern 1 3 4 4 5
+268.479s Azzi startturn 4
+294.313s Azzi dice Azzi 1 2 3 5 6
+294.313s Kern endgame Kern 6

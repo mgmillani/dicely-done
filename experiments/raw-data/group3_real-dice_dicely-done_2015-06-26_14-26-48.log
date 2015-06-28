@@ -1,0 +1,80 @@
+6.27692s Alex joined Alex
+9.76018s Arthur joined Arthur
+9.76022s Alex startgame 1
+9.76023s Alex startturn 1
+14.948s Alex dice Alex 5 4 6 5 6
+26.0127s Arthur startturn 1
+37.6794s Arthur dice Arthur 5 5 1 1 3
+40.8527s Arthur dice Arthur 5 5 1 2 3
+49.3503s Alex startturn 2 1
+49.3503s Alex startturn 2 1
+57.1746s Alex betplaced Alex 4 5
+57.1746s Arthur startturn 2 4
+90.1736s Arthur betplaced Arthur 4 8
+90.1737s Alex startturn 3 4
+90.1738s Alex startturn 3 4
+90.5067s Alex betplaced Alex 4 8
+90.5067s Arthur startturn 3 4
+90.8398s Arthur betplaced Arthur 4 8
+90.8399s Alex startturn 4
+90.8399s Alex startturn 4
+106.342s Alex dice Alex 5 4 5 2 6
+109.342s Alex dice Alex 5 1 5 2 5
+113.015s Alex dice Alex 5 4 3 5 2
+121.514s Alex dice Alex 5 6 5 2 1
+127.18s Arthur startturn 4
+143.206s Arthur dice Arthur 3 2 1 1 3
+145.827s Arthur dice Arthur 3 3 2 1 1
+156.326s Arthur dice Arthur 1 3 2 1 3
+160.993s Alex endgame Alex 8
+173.65s Arthur startgame 1
+173.65s Arthur startturn 1
+173.65s Arthur startturn 1
+186.494s Arthur dice Arthur 1 1 4 2 2
+195.659s Alex startturn 1
+211.327s Alex dice Alex 1 1 5 2 1
+216.49s Alex dice Alex 1 1 5 2 2
+218.492s Alex dice Alex 1 1 5 2 1
+223.49s Alex dice Alex 1 1 5 2 1
+228.152s Alex dice Alex 1 1 5 2 2
+234.489s Arthur startturn 2 1
+234.489s Arthur startturn 2 1
+244.315s Arthur betplaced Arthur 1 2
+244.315s Alex startturn 2 1
+245.482s Alex betplaced Alex 1 2
+245.482s Arthur startturn 3 1
+245.482s Arthur startturn 3 1
+245.646s Arthur betplaced Arthur 1 2
+245.646s Alex startturn 3 1
+245.813s Alex betplaced Alex 1 2
+245.813s Arthur startturn 4
+245.813s Arthur startturn 4
+268.822s Arthur dice Arthur 6 1 4 1 2
+278.822s Alex startturn 4
+293.322s Alex dice Alex 3 2 1 5 3
+318.485s Alex dice Alex 3 1 5 3 2
+321.153s Alex dice Alex 3 1 5 2 2
+325.818s Arthur endgame Alex 2
+332.142s Alex startgame 1
+332.142s Alex startturn 1
+332.142s Alex startturn 1
+341.485s Alex dice Alex 5 4 2 2 6
+345.648s Arthur startturn 1
+350.151s Arthur dice Arthur 4 2 5 5 1
+355.315s Alex startturn 2 1
+355.315s Alex startturn 2 1
+367.306s Alex betplaced Alex 10 10
+367.306s Arthur startturn 2 10
+373.141s Arthur betplaced Arthur 0 10
+373.141s Alex startturn 3 10
+373.141s Alex startturn 3 10
+373.307s Alex betplaced Alex 10 10
+373.307s Arthur startturn 3 10
+377.141s Arthur betplaced Arthur 0 10
+377.141s Alex startturn 4
+377.141s Alex startturn 4
+389.316s Alex dice Alex 5 6 4 2 2
+395.481s Arthur startturn 4
+406.982s Arthur dice Arthur 5 4 2 5 1
+415.644s Alex endgame Alex 10
+437.637s Arthur quit Arthur

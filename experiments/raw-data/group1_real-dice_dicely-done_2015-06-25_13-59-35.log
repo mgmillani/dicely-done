@@ -1,0 +1,87 @@
+3.70954s Kern joined Kern
+12.2094s Die||Die joined Die||Die
+12.2095s Kern startgame 1
+12.2095s Kern startturn 1
+33.3846s Kern dice Kern 4 2 6 5 1
+39.7148s Die||Die startturn 1
+69.0451s Die||Die dice Die||Die 1 1 3 5 6
+75.3809s Die||Die dice Die||Die 1 1 3 6 5
+82.0453s Kern startturn 2 1
+82.0453s Kern startturn 2 1
+87.8697s Kern betplaced Kern 2 3
+87.8698s Die||Die startturn 2 2
+89.3694s Die||Die betplaced Die||Die 2 4
+89.3694s Kern startturn 3 2
+89.3694s Kern startturn 3 2
+89.5379s Kern betplaced Kern 2 4
+89.538s Die||Die startturn 3 2
+89.7037s Die||Die betplaced Die||Die 2 4
+89.7038s Kern startturn 4
+89.7038s Kern startturn 4
+120.879s Kern dice Kern 3 2 5 5 3
+123.211s Kern dice Kern 3 3 2 6 5
+125.876s Die||Die startturn 4
+143.71s Die||Die dice Die||Die 6 1 5 1 2
+172.206s Kern endgame Kern 4
+231.196s Die||Die startgame 1
+231.196s Die||Die startturn 1
+231.196s Die||Die startturn 1
+243.538s Die||Die dice Die||Die 3 2 4 2 2
+251.37s Die||Die dice Die||Die 3 2 2 2 3
+256.369s Kern startturn 1
+266.703s Kern dice Kern 2 5 3 1 1
+291.034s Die||Die startturn 2 1
+291.034s Die||Die startturn 2 1
+302.357s Die||Die betplaced Die||Die 1 2
+302.357s Kern startturn 2 1
+306.023s Kern betplaced Kern 3 4
+306.023s Die||Die startturn 3 3
+306.023s Die||Die startturn 3 3
+309.025s Die||Die betplaced Die||Die 3 6
+309.025s Kern startturn 3 3
+309.192s Kern betplaced Kern 3 6
+309.192s Die||Die startturn 4
+309.192s Die||Die startturn 4
+324.531s Die||Die dice Die||Die 1 1 1 1 3
+330.525s Kern startturn 4
+349.864s Kern dice Kern 2 6 5 4 3
+365.525s Kern dice Kern 2 4 4 5 3
+369.362s Kern dice Kern 2 4 4 6 5
+373.357s Kern dice Kern 2 6 5 3 2
+380.528s Kern dice Kern 2 3 6 5 2
+393.028s Kern dice Kern 2 3 2 5 4
+396.695s Kern dice Kern 2 3 4 6 5
+405.359s Die||Die endgame Die||Die 6
+418.517s Kern startgame 1
+418.517s Kern startturn 1
+418.517s Kern startturn 1
+442.021s Kern dice Kern 5 3 4 3 3
+461.685s Kern dice Kern 5 4 3 3 2
+466.024s Kern dice Kern 5 4 3 3 3
+469.855s Kern dice Kern 3 4 3 3 4
+476.355s Die||Die startturn 1
+489.684s Die||Die dice Die||Die 5 4 1 1 2
+507.188s Die||Die dice Die||Die 5 2 1 4 6
+509.355s Die||Die dice Die||Die 5 2 1 4 1
+516.015s Die||Die dice Die||Die 5 2 1 4 6
+524.854s Die||Die dice Die||Die 5 2 1 4 3
+527.518s Kern startturn 2 1
+527.518s Kern startturn 2 1
+533.512s Kern betplaced Kern 4 5
+533.512s Die||Die startturn 2 4
+557.842s Die||Die betplaced Die||Die 4 8
+557.842s Kern startturn 3 4
+557.842s Kern startturn 3 4
+562.676s Kern betplaced Kern 4 8
+562.676s Die||Die startturn 3 4
+562.842s Die||Die betplaced Die||Die 4 8
+562.843s Kern startturn 4
+562.843s Kern startturn 4
+574.518s Kern dice Kern 4 2 3 3 3
+585.682s Die||Die startturn 4
+611.182s Die||Die dice Die||Die 2 3 2 4 5
+614.176s Die||Die dice Die||Die 2 3 2 4 3
+617.182s Die||Die dice Die||Die 2 3 2 4 5
+635.846s Kern endgame Die||Die 8
+644.838s Kern quit Kern
+669.002s Die||Die quit Die||Die
