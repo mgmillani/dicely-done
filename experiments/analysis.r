@@ -10,8 +10,8 @@ library(ggplot2)
 rd <- read.csv('data/real-dice-freq.csv')
 vd <- read.csv('data/virtual-dice-freq.csv')
 
-reals <- rep('real', length(rd$freq))
-virtuals <- rep('virtual', length(vd$freq))
+reals <- rep('reais', length(rd$freq))
+virtuals <- rep('virtuais', length(vd$freq))
 dice <- data.frame(face = c(rd$face, vd$face), freq=c(rd$freq, vd$freq), type = c(reals,  virtuals))
 
 dice
@@ -69,4 +69,75 @@ geom_boxplot() +scale_x_discrete(breaks=NULL)+#
         , legend.background = element_rect(fill = "transparent",colour = NA)
         , plot.background = element_rect(fill = "transparent",colour = NA))+#
 xlab('')+ylab('Tempo[s]')
-        
+
+###############
+# Qualitative #
+###############
+
+
+ans <- read.csv('data/answers-parse.csv')
+auxilio <- data.frame(prat = ans$Em.relação.aos.critérios.abaixo..você.achou.melhor.ter.ou.não.auxílio.de.computador...Praticidade.
+                    , conf = ans$Em.relação.aos.critérios.abaixo..você.achou.melhor.ter.ou.não.auxílio.de.computador...Confiabilidade..ex..trapacear..dados.viciados..
+                    , div = ans$Em.relação.aos.critérios.abaixo..você.achou.melhor.ter.ou.não.auxílio.de.computador...Diversão.)
+
+pdf('aux-praticidade.pdf', width=4, height=3.25)
+ggplot(auxilio, aes(x=prat))+#
+geom_bar() +#
+theme(legend.position='top'
+        , legend.title=element_blank()
+        , legend.background = element_rect(fill = "transparent",colour = NA)
+        , plot.background = element_rect(fill = "transparent",colour = NA))+#
+    ylab('Frequência') + xlab('')
+
+pdf('aux-confiabilidade.pdf', width=4, height=3.25)
+ggplot(auxilio, aes(x=conf))+#
+geom_bar() +#
+theme(legend.position='top'
+        , legend.title=element_blank()
+        , legend.background = element_rect(fill = "transparent",colour = NA)
+        , plot.background = element_rect(fill = "transparent",colour = NA))+#
+    ylab('Frequência') + xlab('')
+
+pdf('aux-diversão.pdf', width=4, height=3.25)
+ggplot(auxilio, aes(x=div))+#
+geom_bar() +#
+theme(legend.position='top'
+        , legend.title=element_blank()
+        , legend.background = element_rect(fill = "transparent",colour = NA)
+        , plot.background = element_rect(fill = "transparent",colour = NA))+#
+ylab('Frequência') + xlab('')
+
+####
+
+pdf('dice-praticidade.pdf', width=4, height=3.25)
+dados <- data.frame(prat = ans$Em.relação.aos.critérios.abaixo..que.tipo.de.dados.você.achou.melhor...Praticidade.
+                  , conf = ans$Em.relação.aos.critérios.abaixo..que.tipo.de.dados.você.achou.melhor...Confiabilidade..ex..trapacear..dados.viciados..
+                  , div = ans$Em.relação.aos.critérios.abaixo..que.tipo.de.dados.você.achou.melhor...Diversão.
+                    )
+
+pdf('dados-praticidade.pdf', width=4, height=3.25)
+ggplot(dados, aes(x=prat))+#
+geom_bar() +#
+theme(legend.position='top'
+        , legend.title=element_blank()
+        , legend.background = element_rect(fill = "transparent",colour = NA)
+        , plot.background = element_rect(fill = "transparent",colour = NA))+#
+    ylab('Frequência') + xlab('')
+
+pdf('dados-confiabilidade.pdf', width=4, height=3.25)
+ggplot(dados, aes(x=conf))+#
+geom_bar() +#
+theme(legend.position='top'
+        , legend.title=element_blank()
+        , legend.background = element_rect(fill = "transparent",colour = NA)
+        , plot.background = element_rect(fill = "transparent",colour = NA))+#
+    ylab('Frequência') + xlab('')
+
+pdf('dados-diversão.pdf', width=4, height=3.25)
+ggplot(dados, aes(x=div))+#
+geom_bar() +#
+theme(legend.position='top'
+        , legend.title=element_blank()
+        , legend.background = element_rect(fill = "transparent",colour = NA)
+        , plot.background = element_rect(fill = "transparent",colour = NA))+#
+ylab('Frequência') + xlab('')
